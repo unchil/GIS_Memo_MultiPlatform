@@ -1,0 +1,285 @@
+import kotlin.Boolean;
+
+
+CREATE TABLE MEMO_TABLE(
+     id  INTEGER   NOT NULL,
+     latitude  INTEGER NOT NULL,
+     longitude  INTEGER NOT NULL,
+     altitude  INTEGER NOT NULL,
+     isSecret INTEGER AS Boolean DEFAULT NULL,
+     isPin INTEGER AS Boolean DEFAULT NULL,
+     title TEXT NOT NULL,
+     snippets TEXT NOT NULL,
+     desc TEXT NOT NULL,
+     snapshot TEXT NOT NULL,
+     snapshotCnt  INTEGER NOT NULL,
+     textCnt  INTEGER NOT NULL,
+     photoCnt  INTEGER NOT NULL,
+     videoCnt  INTEGER NOT NULL
+);
+
+CREATE INDEX  INDEX_MEMO_TABLE_DESC ON MEMO_TABLE (id  DESC)  ;
+
+CREATE TABLE MEMO_FILE_TABLE(
+     id  INTEGER NOT NULL,
+     type TEXT NOT NULL,
+     indexR INTEGER NOT NULL,
+     subIndex INTEGER NOT NULL,
+     filePath TEXT NOT NULL
+);
+
+CREATE TABLE MEMO_TEXT_TABLE (
+    id  INTEGER NOT NULL,
+    indexR  INTEGER NOT NULL,
+    comment TEXT NOT NULL
+);
+
+CREATE TABLE MEMO_TAG_TABLE (
+     id INTEGER NOT NULL,
+     indexR INTEGER NOT NULL
+);
+
+
+CREATE TABLE CURRENTLOCATION_TABLE (
+    dt  INTEGER  PRIMARY KEY NOT NULL,
+    latitude INTEGER  NOT NULL,
+    longitude INTEGER  NOT NULL,
+    altitude INTEGER  NOT NULL
+);
+
+CREATE TABLE CURRENTWEATHER_TABLE(
+    dt INTEGER  PRIMARY KEY NOT NULL,
+    base TEXT NOT NULL,
+    visibility INTEGER NOT NULL,
+    timezone INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    latitude INTEGER  NOT NULL,
+    longitude INTEGER  NOT NULL,
+    main TEXT NOT NULL,
+    description TEXT NOT NULL,
+    icon TEXT NOT NULL,
+    temp INTEGER  NOT NULL,
+    feels_like INTEGER  NOT NULL,
+    pressure INTEGER  NOT NULL,
+    humidity INTEGER  NOT NULL,
+    temp_min INTEGER  NOT NULL,
+    temp_max INTEGER  NOT NULL,
+    speed INTEGER  NOT NULL,
+    deg INTEGER  NOT NULL,
+    aa INTEGER NOT NULL,
+    type INTEGER NOT NULL,
+    country TEXT NOT NULL,
+    sunrise INTEGER NOT NULL,
+    sunset INTEGER NOT NULL
+);
+
+CREATE TABLE MEMO_WEATHER_TABLE(
+    id INTEGER  PRIMARY KEY NOT NULL,
+    base TEXT NOT NULL,
+    visibility INTEGER NOT NULL,
+    timezone INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    latitude INTEGER  NOT NULL,
+    longitude INTEGER  NOT NULL,
+    main TEXT NOT NULL,
+    description TEXT NOT NULL,
+    icon TEXT NOT NULL,
+    temp INTEGER  NOT NULL,
+    feels_like INTEGER  NOT NULL,
+    pressure INTEGER  NOT NULL,
+    humidity INTEGER  NOT NULL,
+    temp_min INTEGER  NOT NULL,
+    temp_max INTEGER  NOT NULL,
+    speed INTEGER  NOT NULL,
+    deg INTEGER  NOT NULL,
+    aa INTEGER NOT NULL,
+    type INTEGER NOT NULL,
+    country TEXT NOT NULL,
+    sunrise INTEGER NOT NULL,
+    sunset INTEGER NOT NULL
+);
+
+insert_CURRENTLOCATION_TBL:
+INSERT INTO CURRENTLOCATION_TABLE(
+dt, latitude, longitude, altitude
+) VALUES (?, ?, ?, ?);
+
+insert_MEMO_TBL:
+INSERT INTO MEMO_TABLE(
+     id ,  latitude,longitude, altitude,isSecret,
+     isPin,  title,snippets, desc,snapshot,
+     snapshotCnt,  textCnt,  photoCnt, videoCnt
+) VALUES (?, ?, ?, ?,?,
+?, ?, ?,?, ?,
+?, ?,?,?);
+
+select_MEMO_TBL_All:
+SELECT * FROM MEMO_TABLE WHERE id  > 0;
+
+select_MEMO_TBL_Marker:
+SELECT * FROM MEMO_TABLE  WHERE  id  > 0 AND isPin = 1;
+
+select_MEMO_TBL_Search:
+SELECT D.*
+        FROM
+        (
+           SELECT A.id
+            FROM MEMO_TABLE A, MEMO_TAG_TABLE B
+            WHERE A.id = B.id
+            AND B.indexR IN ?
+            GROUP BY A.id
+        ) C , MEMO_TABLE  D
+        WHERE D.id = C.id
+        AND D.id  BETWEEN  ? AND ?
+        AND D.isSecret IN ?
+        AND D.isPin IN ?
+        AND D.title LIKE ?;
+
+
+keyedQuery_MEMO_TBL:
+SELECT * FROM MEMO_TABLE
+WHERE id >= :beginInclusive AND (id < :endExclusive OR :endExclusive IS NULL);
+
+pageBoundaries_MEMO_TBL:
+SELECT id
+FROM (
+  SELECT
+    id,
+    CASE
+      WHEN  ( ( rowid - 1) % :limit  )  = 0 THEN 1
+      WHEN id = :anchor THEN 1
+      ELSE 0
+    END page_boundary
+  FROM MEMO_TABLE
+  WHERE id > 0
+)
+WHERE page_boundary = 1;
+
+select_MEMO_TBL_ID:
+SELECT * FROM MEMO_TABLE WHERE id = ? LIMIT 1;
+
+delete_MEMO_TBL_ID:
+DELETE FROM MEMO_TABLE WHERE id = ?;
+
+update_MEMO_TBL_Secret:
+UPDATE MEMO_TABLE  SET isSecret = ? WHERE id = ?;
+
+update_MEMO_TBL_Marker:
+UPDATE MEMO_TABLE  SET isPin = ? WHERE id = ?;
+
+update_MEMO_TBL_Snippets:
+UPDATE MEMO_TABLE  SET snippets = ? WHERE id = ?;
+
+trancate_MEMO_TBL:
+DELETE FROM MEMO_TABLE ;
+
+
+select_MEMO_FILE_TBL_ID:
+SELECT * FROM MEMO_FILE_TABLE WHERE id = ? ;
+
+delete_MEMO_FILE_TBL_ID:
+DELETE FROM MEMO_FILE_TABLE WHERE id = ?;
+
+trancate_MEMO_FILE_TBL:
+DELETE FROM MEMO_FILE_TABLE;
+
+insert_MEMO_FILE_TBL:
+INSERT INTO MEMO_FILE_TABLE (
+id, type, indexR, subIndex, filePath
+) VALUES (?, ?, ?, ?, ?);
+
+select_MEMO_TAG_TBL_ID:
+SELECT * FROM MEMO_TAG_TABLE WHERE id = ? AND indexR != 10000;
+
+delete_MEMO_TAG_TBL_ID:
+DELETE FROM MEMO_TAG_TABLE WHERE id = ?;
+
+trancate_MEMO_TAG_TBL:
+DELETE FROM MEMO_TAG_TABLE;
+
+insert_MEMO_TAG_TBL:
+INSERT INTO MEMO_TAG_TABLE (
+id, indexR
+) VALUES (?, ?);
+
+
+select_MEMO_TEXT_TBL:
+SELECT * FROM MEMO_TEXT_TABLE WHERE id = ?;
+
+delete_MEMO_TEXT_TBL_ID:
+DELETE FROM MEMO_TEXT_TABLE  WHERE id = ?;
+
+trancate_MEMO_TEXT_TBL:
+DELETE FROM MEMO_TEXT_TABLE ;
+
+insert_MEMO_TEXT_TBL:
+INSERT INTO MEMO_TEXT_TABLE (
+id, indexR, comment
+) VALUES (?, ?, ?);
+
+select_MEMO_WEATHER_TBL_ID:
+SELECT * FROM MEMO_WEATHER_TABLE WHERE id = ?  LIMIT 1 ;
+
+delete_MEMO_WEATHER_TBL_ID:
+DELETE FROM MEMO_WEATHER_TABLE WHERE id = ?;
+
+trancate_MEMO_WEATHER_TBL:
+DELETE FROM MEMO_WEATHER_TABLE ;
+
+
+insert_MEMO_WEATHER_TBL:
+INSERT INTO MEMO_WEATHER_TABLE (
+    id ,  base , visibility , timezone , name ,
+    latitude , longitude , main , description ,icon ,
+    temp, feels_like, pressure ,humidity , temp_min,
+    temp_max,speed , deg, aa, type,
+    country,  sunrise, sunset
+)
+VALUES (
+?,?,?,?,?,
+?,?,?,?,?,
+?,?,?,?,?,
+?,?,?,?,?,
+?,?,?
+);
+
+
+
+insert_CURRENTLOCATION_TBL:
+INSERT INTO CURRENTLOCATION_TABLE(
+    dt, latitude, longitude, altitude
+)  VALUES (?, ?, ?, ? );
+
+trancate_CURRENTLOCATION_TBL:
+DELETE FROM CURRENTLOCATION_TABLE;
+
+select_CURRENTLOCATION_TBL:
+SELECT *
+ FROM CURRENTLOCATION_TABLE ORDER BY dt DESC LIMIT 1 ;
+
+
+insert_CURRENTWEATHER_TBL:
+INSERT INTO CURRENTWEATHER_TABLE (
+    dt ,  base , visibility , timezone , name ,
+    latitude , longitude , main , description ,icon ,
+    temp, feels_like, pressure ,humidity , temp_min,
+    temp_max,speed , deg, aa, type,
+    country,  sunrise, sunset
+)
+VALUES (
+?,?,?,?,?,
+?,?,?,?,?,
+?,?,?,?,?,
+?,?,?,?,?,
+?,?,?
+);
+
+trancate_CURRENTWEATHER_TBL:
+DELETE FROM CURRENTWEATHER_TABLE;
+
+select_CURRENTWEATHER_TBL:
+SELECT *
+FROM CURRENTWEATHER_TABLE  ORDER BY dt DESC LIMIT 1 ;
+
+
+
