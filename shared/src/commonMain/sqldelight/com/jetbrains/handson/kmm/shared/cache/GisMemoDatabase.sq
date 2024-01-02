@@ -99,10 +99,6 @@ CREATE TABLE MEMO_WEATHER_TABLE(
     sunset INTEGER NOT NULL
 );
 
-insert_CURRENTLOCATION_TBL:
-INSERT INTO CURRENTLOCATION_TABLE(
-dt, latitude, longitude, altitude
-) VALUES (?, ?, ?, ?);
 
 insert_MEMO_TBL:
 INSERT INTO MEMO_TABLE(

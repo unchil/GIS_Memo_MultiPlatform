@@ -13,9 +13,13 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField("String", "MAPS_API_KEY", getApiKey("MAPS_API_KEY"))
+        buildConfigField("String", "OPENWEATHER_KEY", getApiKey("OPENWEATHER_KEY"))
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
@@ -45,5 +49,21 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.androidx.activity.compose)
-    debugImplementation(libs.compose.ui.tooling)
+
+    implementation (libs.accompanist.permissions)
+
+    // map
+    implementation (libs.play.services.location)
+    implementation (libs.play.services.maps)
+    implementation (libs.android.maps.utils)
+
+    implementation (libs.androidx.material.icons.extended)
+    implementation (libs.androidx.material)
+    implementation (libs.androidx.runtime)
+
+ //   debugImplementation(libs.compose.ui.tooling)
+}
+
+fun getApiKey(propertyKey: String):String {
+    return com.android.build.gradle.internal.cxx.configure.gradleLocalProperties(rootDir).getProperty(propertyKey)
 }

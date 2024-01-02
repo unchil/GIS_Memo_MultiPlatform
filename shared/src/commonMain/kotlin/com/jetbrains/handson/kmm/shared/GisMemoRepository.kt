@@ -1,5 +1,6 @@
 package com.jetbrains.handson.kmm.shared
 
+
 import app.cash.paging.Pager
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
@@ -15,8 +16,10 @@ import com.jetbrains.handson.kmm.shared.entity.MEMO_TAG_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TEXT_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_WEATHER_TBL
+import com.jetbrains.handson.kmm.shared.entity.RecvWeatherDataState
 import com.jetbrains.handson.kmm.shared.entity.WriteMemoDataType
 import com.jetbrains.handson.kmm.shared.entity.WriteMemoDataTypeList
+import com.jetbrains.handson.kmm.shared.entity.toCURRENTWEATHER_TBL
 import com.jetbrains.handson.kmm.shared.network.GisMemoApi
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
@@ -36,8 +39,11 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
        private val api = GisMemoApi()
 
 
+/*
     val _currentWeather:MutableStateFlow<CURRENTWEATHER_TBL?>
         = MutableStateFlow(null)
+
+ */
 
     val currentAudioText: MutableStateFlow<List<Pair<String, List<Url>>>>
             = MutableStateFlow( listOf())
@@ -209,9 +215,17 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         gisMemoDao.insertMemoTag(memoTagTblList)
         gisMemoDao.insertMemoFile(memoFileTblList)
         gisMemoDao.insertMemoText(memoTextTblList)
+
+        getWeatherFlow.collectLatest {
+            it?.let {
+                gisMemoDao.insertMemoWeather(it)
+            }
+        }
+        /*
         _currentWeather.value?.let {
             gisMemoDao.insertMemoWeather(it)
         }
+         */
 
         initMemoItem()
 
@@ -412,27 +426,41 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         gisMemoDao.insertCurrentLocation(it)
     }
 
-    @Throws(Exception::class)
     suspend fun getWeatherData(
             lat:String,
             lon:String,
-            units:String,
-            appid:String
-    ): CURRENTWEATHER_TBL {
-        val currentWeather = gisMemoDao.selectCurrentWeather()
-        return if (currentWeather != null ) {
-            currentWeather
-        } else {
+            appid:String,
+            units:String = "metric"
+    ): RecvWeatherDataState {
+        try {
             api.getWeatherData(
                 lat = lat,
                 lon = lon,
                 units = units,
                 appid = appid
-            ).also {
+            ).toCURRENTWEATHER_TBL().also {
                 gisMemoDao.insertCurrentWeather(it)
+             //   _currentWeather.value = it
+                return  RecvWeatherDataState.Success(it)
             }
+        }catch(e:Exception){
+            getWeatherFlow.collectLatest {
+                it?.let {
+                    RecvWeatherDataState.Success(it)
+                }
+            }
+            return if(e.message.isNullOrEmpty()){
+                RecvWeatherDataState.Error("Error")
+            }else {
+                RecvWeatherDataState.Error(e.message!!)
+            }
+
         }
+
     }
+
+    val getWeatherFlow =
+        gisMemoDao.selectCurrentWeatherFlow
 
 
 

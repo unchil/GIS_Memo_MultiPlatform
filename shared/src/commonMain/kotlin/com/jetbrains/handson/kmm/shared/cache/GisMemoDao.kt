@@ -22,6 +22,13 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
     private val dbQuery = database.gisMemoDatabaseQueries
 
 
+    val selectCurrentWeatherFlow:Flow<CURRENTWEATHER_TBL?> = flow {
+        emit(
+            selectCurrentWeather()
+        )
+    }.flowOn(Dispatchers.IO)
+
+
     internal fun selectCurrentWeather(): CURRENTWEATHER_TBL? {
         return dbQuery.select_CURRENTWEATHER_TBL(::mapCurrentWeatherSelecting).executeAsOneOrNull()
     }
@@ -82,6 +89,9 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
 
     internal fun insertCurrentWeather(it: CURRENTWEATHER_TBL) {
         dbQuery.transaction {
+
+            dbQuery.trancate_CURRENTWEATHER_TBL()
+
             dbQuery.insert_CURRENTWEATHER_TBL(
                 dt  = it.dt,
                 base   = it.base,
