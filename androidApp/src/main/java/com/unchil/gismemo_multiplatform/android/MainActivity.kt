@@ -40,6 +40,7 @@ import com.unchil.gismemo.view.WeatherContent
 import com.unchil.gismemo_multiplatform.Greeting
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
+import com.unchil.gismemo_multiplatform.android.view.GoogleMapView
 
 class MainActivity : ComponentActivity() {
 
@@ -56,7 +57,8 @@ class MainActivity : ComponentActivity() {
 
                     CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
                       //  GreetingView(Greeting().greet())
-                        WeatherContent(isSticky = false)
+                   //     WeatherContent(isSticky = false)
+                        GoogleMapView()
                     }
 
 

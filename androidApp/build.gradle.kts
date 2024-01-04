@@ -46,16 +46,27 @@ android {
 dependencies {
     implementation(projects.shared)
     implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.androidx.activity.compose)
 
     implementation (libs.accompanist.permissions)
 
+    implementation(libs.kotlinx.coroutines.android)
+
     // map
     implementation (libs.play.services.location)
     implementation (libs.play.services.maps)
     implementation (libs.android.maps.utils)
+    // map compose
+    implementation (libs.maps.compose)
+    // Optionally, you can include the Compose utils library for Clustering, etc.
+    implementation (libs.maps.compose.utils)
+    // Optionally, you can include the widgets library for ScaleBar, etc.
+    implementation (libs.maps.compose.widgets)
+
+
 
     implementation (libs.androidx.material.icons.extended)
     implementation (libs.androidx.material)

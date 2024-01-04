@@ -1,5 +1,6 @@
 package com.unchil.gismemo_multiplatform.android.viewModel
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
@@ -41,6 +42,7 @@ class WeatherViewModel(val repository:GisMemoRepository) : ViewModel() {
          }
     }
 
+    @SuppressLint("SuspiciousIndentation")
     fun searchWeather(location: LatLngAlt) {
         _currentWeatheStaterFlow.value = RecvWeatherDataState.Loading
 

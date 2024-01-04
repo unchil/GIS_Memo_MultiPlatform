@@ -15,10 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -35,6 +31,8 @@ import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
 import com.jetbrains.handson.kmm.shared.entity.RecvWeatherDataState
+import com.unchil.gismemo.shared.composables.LocalPermissionsManager
+import com.unchil.gismemo.shared.composables.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.ChkNetWork
 import com.unchil.gismemo_multiplatform.android.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.R
@@ -185,21 +183,19 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
 
                 }
                 RecvWeatherDataState.Loading -> {
-/*
+
                     Box( modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                        )
+                        androidx.compose.material.CircularProgressIndicator( )
                     }
-*/
+
 
                 }
                 is RecvWeatherDataState.Success -> {
                     val result = (resultState.value as RecvWeatherDataState.Success)
-                    androidx.compose.animation.AnimatedVisibility(true) {
+                    AnimatedVisibility(true) {
                         when (configuration.orientation) {
                             Configuration.ORIENTATION_PORTRAIT -> {
                                 WeatherView(result.data)
@@ -272,12 +268,12 @@ fun WeatherView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-
-        Text( item.toTextHeadLine()
+        Text(text =  item.toTextHeadLine()
             , modifier = Modifier.fillMaxWidth()
             , textAlign = TextAlign.Center
             , style  = MaterialTheme.typography.titleSmall
         )
+
 
         Text(item.toTextWeatherDesc()
             , modifier = Modifier.fillMaxWidth()
@@ -339,7 +335,7 @@ fun WeatherViewLandScape(
             style = MaterialTheme.typography.titleSmall
         )
 
-        Text(
+       Text(
             item.toTextWeatherDesc(),
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
@@ -402,14 +398,24 @@ fun WeatherItem(id: ImageVector, desc: String){
 
 @Preview
 @Composable
-fun PrevWeatherContent(){
+fun PrevViewWeather(){
 
-   MyApplicationTheme {
+    val permissionsManager = PermissionsManager()
+
+    MyApplicationTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            WeatherContent(isSticky = false)
+
+            CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
+
+                WeatherContent()
+
+
+            }
+
+
         }
     }
 }
