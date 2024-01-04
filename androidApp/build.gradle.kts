@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.secretsGradle)
 }
 
 android {
@@ -65,6 +66,7 @@ dependencies {
     implementation (libs.maps.compose.utils)
     // Optionally, you can include the widgets library for ScaleBar, etc.
     implementation (libs.maps.compose.widgets)
+
 
 
 
