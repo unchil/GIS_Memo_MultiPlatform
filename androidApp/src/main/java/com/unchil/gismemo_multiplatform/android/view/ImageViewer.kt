@@ -26,11 +26,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.getDrawable
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
@@ -106,12 +111,7 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
             val painter = this.painter
 
             when(painter.state){
-                AsyncImagePainter.State.Empty -> {
 
-                }
-                is AsyncImagePainter.State.Error -> {
-
-                }
                 is AsyncImagePainter.State.Loading -> {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -135,7 +135,22 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
                             contentDescription = null,
                             contentScale = ContentScale.FillWidth,
                             modifier = imageModifier
+                        )
 
+                    }
+                }
+
+                else -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = boxModifier
+
+                    ){
+                        Image(
+                             painterResource(R.drawable.outline_perm_media_black_48),
+                            contentDescription = "",
+                            contentScale = ContentScale.FillWidth,
+                            modifier = imageModifier
                         )
 
                     }
