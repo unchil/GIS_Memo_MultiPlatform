@@ -33,7 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import coil.size.Size
+import coil3.size.Size
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -47,6 +47,7 @@ import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.view.CameraCompose
 import com.unchil.gismemo_multiplatform.android.view.GoogleMapView
 import com.unchil.gismemo_multiplatform.android.view.ImageViewer
+
 
 class MainActivity : ComponentActivity() {
 

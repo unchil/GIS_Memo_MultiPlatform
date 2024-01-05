@@ -32,10 +32,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import coil.size.Size
+import coil3.ImageLoader
+import coil3.annotation.ExperimentalCoilApi
+import coil3.compose.AsyncImagePainter
+import coil3.compose.SubcomposeAsyncImage
+import coil3.fetch.NetworkFetcher
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.size.Size
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -48,6 +52,8 @@ import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredComposeFuncName
 
 
+
+@OptIn(ExperimentalCoilApi::class)
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
@@ -57,10 +63,14 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
 
     val boxModifier: Modifier = when(isZoomable) {
         true -> {
-            Modifier.fillMaxSize().pointerInput(Unit){
-                detectTransformGestures { centroid, pan, zoom, rotation ->
-                    scale.value *= zoom
-                    rotationState.value += rotation }}
+            Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTransformGestures { centroid, pan, zoom, rotation ->
+                        scale.value *= zoom
+                        rotationState.value += rotation
+                    }
+                }
         }
         false -> Modifier.fillMaxSize()
     }
@@ -70,7 +80,6 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
             Modifier
                 .fillMaxSize()
                 .graphicsLayer(
-                    // adding some zoom limits (min 50%, max 200%)
                     scaleX = maxOf(.5f, minOf(3f, scale.value)),
                     scaleY = maxOf(.5f, minOf(3f, scale.value)),
                     rotationZ = rotationState.value
@@ -79,54 +88,61 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
         false -> Modifier.fillMaxSize()
     }
 
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = boxModifier
-
-    ){
-        val painter = rememberAsyncImagePainter(
+        SubcomposeAsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(data)
-                .size(size)
-                .crossfade(true)
-                .build()
-        )
+            .data(data)
+            .size(size)
+            .crossfade(true)
+            .build() ,
+            contentDescription = "" ,
+            imageLoader = ImageLoader.Builder(LocalContext.current)
+                .components {
+                    add(NetworkFetcher.Factory())
+                }
+                .build(),
 
-        when(painter.state){
+        ) {
 
-            is AsyncImagePainter.State.Loading -> {
+            val painter = this.painter
 
+            when(painter.state){
+                AsyncImagePainter.State.Empty -> {
 
-                androidx.compose.material.CircularProgressIndicator(
-                    color = Color.Gray,
-                    modifier = Modifier.align(Alignment.Center)
-                )
+                }
+                is AsyncImagePainter.State.Error -> {
 
+                }
+                is AsyncImagePainter.State.Loading -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = boxModifier
 
+                    ){
+                        androidx.compose.material.CircularProgressIndicator(
+                            color = Color.Gray,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                }
+                is AsyncImagePainter.State.Success -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = boxModifier
 
+                    ){
+                        Image(
+                            painter = painter ,
+                            contentDescription = null,
+                            contentScale = ContentScale.FillWidth,
+                            modifier = imageModifier
 
+                        )
+
+                    }
+                }
             }
-            is AsyncImagePainter.State.Success  -> {
 
-                Image(
-
-                    painter = painter,
-                    contentDescription = null,
-                    contentScale = ContentScale.FillWidth,
-                    modifier = imageModifier
-
-                )
-            }
-            is AsyncImagePainter.State.Empty -> {
-
-            }
-            is AsyncImagePainter.State.Error -> {
-
-            }
-
-            else -> {}
         }
-    }
 
 }
 

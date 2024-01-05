@@ -6,6 +6,7 @@ androidMapsUtils = "3.5.2"
 animation = "1.6.0-beta03"
 cameraCore = "1.4.0-alpha03"
 coilCompose = "2.5.0"
+coilNetwork = "3.0.0-alpha01"
 coroutinesVersion = "1.7.3"
 dateTimeVersion = "0.4.1"
 foundationLayout = "1.6.0-beta03"
@@ -48,7 +49,21 @@ androidx-foundation-layout = { module = "androidx.compose.foundation:foundation-
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 build-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+
+
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+
+coil = { module = "io.coil-kt.coil3:coil", version.ref = "coilNetwork" }
+coil-core = { module = "io.coil-kt.coil3:coil-core", version.ref = "coilNetwork" }
+coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coilNetwork" }
+coil-network = { module = "io.coil-kt.coil3:coil-network", version.ref = "coilNetwork" }
+
+coil-core-android = { module = "io.coil-kt.coil3:coil-core-android", version.ref = "coilNetwork" }
+coil-compose-core-android = { module = "io.coil-kt.coil3:coil-compose-core-android", version.ref = "coilNetwork" }
+
+
+
+
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }

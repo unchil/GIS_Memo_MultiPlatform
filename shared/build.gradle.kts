@@ -49,6 +49,11 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.ktor.client.logging)
 
+                implementation(libs.coil)
+                implementation(libs.coil.core)
+                implementation(libs.coil.compose.core)
+                implementation(libs.coil.network)
+
 
             }
         }
@@ -68,6 +73,11 @@ kotlin {
 
                 implementation(libs.ktor.client.okhttp)
            //     implementation(libs.ktor.client.android)
+
+                implementation(libs.coil.core.android)
+                implementation(libs.coil.compose.core.android)
+                implementation(libs.coil.network)
+
 
 
             }

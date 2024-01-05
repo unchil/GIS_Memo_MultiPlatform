@@ -89,7 +89,11 @@ dependencies {
     implementation (libs.androidx.navigation.compose)
     implementation (libs.accompanist.navigation.animation)
 
-    implementation (libs.coil.compose)
+    //implementation (libs.coil.compose)
+
+    implementation(libs.coil.core.android)
+    implementation(libs.coil.compose.core.android)
+    implementation(libs.coil.network)
 
 
 
