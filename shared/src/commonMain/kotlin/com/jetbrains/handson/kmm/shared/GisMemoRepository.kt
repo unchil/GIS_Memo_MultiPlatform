@@ -111,6 +111,11 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
     }
 
 
+    fun setPhotoVideo(photoList:List<Url>, videoList:List<Url>){
+        currentPhoto.value = photoList
+        currentVideo.value = videoList
+    }
+
 
     suspend fun insertMemo(
         id:Long,

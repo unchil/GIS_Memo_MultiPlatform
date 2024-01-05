@@ -1,35 +1,54 @@
 [versions]
+accompanistNavigationAnimation = "0.31.2-alpha"
 accompanistPermissions = "0.31.0-alpha"
 agp = "8.1.2"
 androidMapsUtils = "3.5.2"
+animation = "1.6.0-beta03"
+cameraCore = "1.4.0-alpha03"
+coilCompose = "2.5.0"
 coroutinesVersion = "1.7.3"
 dateTimeVersion = "0.4.1"
+foundationLayout = "1.6.0-beta03"
 gradle = "8.2.0"
 kotlin = "1.9.21"
 compose = "1.5.4"
 compose-compiler = "1.5.6"
-compose-material3 = "1.1.2"
+media3Exoplayer = "1.2.0"
+v_ComposeMaterial3 = "1.1.2"
 androidx-activityCompose = "1.8.2"
 ktorVersion = "2.3.7"
 mapsCompose = "2.11.2"
-materialIconsExtended = "1.6.0-beta03"
+v_ComposeMaterial = "1.6.0-beta03"
+navigationCompose = "2.7.6"
 pagingCommon = "3.3.0-alpha02-0.4.0"
 pagingRuntime = "3.3.0-alpha02"
 playServicesLocation = "21.0.1"
 playServicesMaps = "18.2.0"
-runtime = "1.6.0-beta03"
+v_ComposeRuntime = "1.6.0-beta03"
 secretsGradlePlugin = "2.0.1"
 sqlDelightVersion = "2.0.1"
 
 
 [libraries]
 
+accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistNavigationAnimation" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 android-maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtils" }
-androidx-material = { module = "androidx.compose.material:material", version.ref = "materialIconsExtended" }
-androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
-androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "runtime" }
+
+androidx-animation = { module = "androidx.compose.animation:animation", version.ref = "animation" }
+androidx-camera-camera2 = { group = "androidx.camera",  name = "camera-camera2" , version.ref = "cameraCore" }
+androidx-camera-core = {  group = "androidx.camera",  name = "camera-core" ,version.ref = "cameraCore" }
+androidx-camera-lifecycle = {  group = "androidx.camera",  name = "camera-lifecycle" ,version.ref = "cameraCore" }
+androidx-camera-video = { group = "androidx.camera",  name = "camera-video" , version.ref = "cameraCore" }
+androidx-camera-view = {  group = "androidx.camera",  name = "camera-view" , version.ref = "cameraCore" }
+
+
+androidx-foundation-layout = { module = "androidx.compose.foundation:foundation-layout", version.ref = "foundationLayout" }
+
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+
 build-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
@@ -42,14 +61,35 @@ secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.se
 sqldelight-gradle-plugin = { module = "app.cash.sqldelight:gradle-plugin", version.ref = "sqlDelightVersion" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
+
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutinesVersion" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTimeVersion" }
+
+
+androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "v_ComposeRuntime" }
+
+compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "v_ComposeMaterial3" }
+androidx-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "v_ComposeMaterial3" }
+
+
+
+androidx-material = { group = "androidx.compose.material", name = "material", version.ref = "v_ComposeMaterial" }
+androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "v_ComposeMaterial" }
+
+compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose" }
+compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationLayout" }
+
+
+# media3-exoplayer
+androidx-media3-exoplayer = { group = "androidx.media3", name ="media3-exoplayer", version.ref = "media3Exoplayer" }
+androidx-media3-exoplayer-dash = { group = "androidx.media3", name = "media3-exoplayer-dash", version.ref = "media3Exoplayer" }
+androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3Exoplayer" }
+
+
+
 
 #sqldelight
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelightVersion" }

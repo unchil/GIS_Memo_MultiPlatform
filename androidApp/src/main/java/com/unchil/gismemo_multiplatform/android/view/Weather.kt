@@ -211,6 +211,8 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
                         }
                     }
                 }
+
+                else -> {}
             }
 
             AnimatedVisibility  (!isSuccessfulTask  ) {

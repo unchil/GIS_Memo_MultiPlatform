@@ -50,7 +50,16 @@ dependencies {
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
+    implementation (libs.androidx.material3.window.size)
     implementation(libs.androidx.activity.compose)
+    implementation (libs.androidx.material.icons.extended)
+    implementation (libs.androidx.material)
+    implementation (libs.androidx.runtime)
+    implementation(libs.compose.foundation)
+    implementation (libs.androidx.foundation.layout)
+    implementation (libs.androidx.animation)
+
+
 
     implementation (libs.accompanist.permissions)
 
@@ -67,12 +76,29 @@ dependencies {
     // Optionally, you can include the widgets library for ScaleBar, etc.
     implementation (libs.maps.compose.widgets)
 
+    implementation(libs.ktor.client.okhttp)
+
+    // Camera
+    implementation (libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.video)
+    implementation(libs.androidx.camera.view)
+
+    //Navigation
+    implementation (libs.androidx.navigation.compose)
+    implementation (libs.accompanist.navigation.animation)
+
+    implementation (libs.coil.compose)
 
 
 
-    implementation (libs.androidx.material.icons.extended)
-    implementation (libs.androidx.material)
-    implementation (libs.androidx.runtime)
+    // media3 formally exo Player
+    implementation (libs.androidx.media3.exoplayer)
+    implementation (libs.androidx.media3.exoplayer.dash)
+    implementation (libs.androidx.media3.ui)
+
+
 
  //   debugImplementation(libs.compose.ui.tooling)
 }

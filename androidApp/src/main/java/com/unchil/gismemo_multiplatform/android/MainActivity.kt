@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import coil.size.Size
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -40,15 +44,23 @@ import com.unchil.gismemo.view.WeatherContent
 import com.unchil.gismemo_multiplatform.Greeting
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
+import com.unchil.gismemo_multiplatform.android.view.CameraCompose
 import com.unchil.gismemo_multiplatform.android.view.GoogleMapView
+import com.unchil.gismemo_multiplatform.android.view.ImageViewer
 
 class MainActivity : ComponentActivity() {
 
     private val permissionsManager = PermissionsManager()
 
+    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            val navController = rememberAnimatedNavController()
+            val url2 = "https://images.unsplash.com/photo-1544735716-392fe2489ffa?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format"
+
+
             MyApplicationTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -58,7 +70,11 @@ class MainActivity : ComponentActivity() {
                     CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
                       //  GreetingView(Greeting().greet())
                    //     WeatherContent(isSticky = false)
-                        GoogleMapView()
+                     //   GoogleMapView()
+
+                      //  CameraCompose(   navController = navController     )
+
+                        ImageViewer(data = url2, size = Size.ORIGINAL, false)
                     }
 
 
@@ -79,6 +95,13 @@ fun DefaultPreview() {
     MyApplicationTheme {
         GreetingView("Hello, Android!")
     }
+}
+
+@Composable
+fun GisMemoNavHost(
+    navController: NavHostController
+){
+
 }
 
 
