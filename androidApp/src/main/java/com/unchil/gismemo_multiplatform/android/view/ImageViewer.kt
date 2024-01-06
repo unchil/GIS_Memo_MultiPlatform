@@ -5,13 +5,17 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
@@ -30,11 +34,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil3.SingletonImageLoader
-import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
@@ -115,18 +120,29 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
             model = model,
             contentDescription = "" ,
             imageLoader = SingletonImageLoader.get(context),
+            transform = {
+               when(it){
+                   is AsyncImagePainter.State.Error -> {
+                       if(data == ""){
+                           AsyncImagePainter.State.Empty
+                       }else {
+                           it
+                       }
+                   }
+                   else -> { it}
+               }
+            }
         ) {
 
             val painter = this.painter
 
             when(painter.state){
-
                 is AsyncImagePainter.State.Loading -> {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = boxModifier
                     ){
-                        androidx.compose.material.CircularProgressIndicator(
+                        CircularProgressIndicator(
                             color = Color.Gray,
                             modifier = Modifier.align(Alignment.Center)
                         )
@@ -145,19 +161,65 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
                         )
                     }
                 }
-                else -> {
+                AsyncImagePainter.State.Empty -> {
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = boxModifier
+                        modifier = boxModifier.padding(10.dp)
                     ){
+
                         Image(
-                             painterResource(R.drawable.outline_perm_media_black_48),
+                            painterResource(R.drawable.outline_perm_media_black_48),
                             contentDescription = "",
                             contentScale = ContentScale.FillWidth,
                             modifier = imageModifier
                         )
+
+                        Text(
+                            text = context.getString(R.string.image_load_empty),
+                            color = Color.Yellow,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .background(color = Color.DarkGray.copy(alpha = 0.8f))
+                                .padding(10.dp)
+                            ,
+                            textAlign= TextAlign.Center,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
                     }
+
                 }
+                is AsyncImagePainter.State.Error -> {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = boxModifier.padding(10.dp)
+                        ){
+                            Image(
+                                painterResource(R.drawable.outline_perm_media_black_48),
+                                contentDescription = "",
+                                contentScale = ContentScale.FillWidth,
+                                modifier = imageModifier
+                            )
+
+                            (painter.state as AsyncImagePainter.State.Error).result.throwable.localizedMessage?.let {
+                                Text(
+                                    text =it,
+                                    color = Color.Red,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .background(color = Color.DarkGray.copy(alpha = 0.8f))
+                                        .padding(10.dp)
+                                            ,
+                                    textAlign= TextAlign.Center,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                            }
+                        }
+
+                    }
+
             }
 
         }
