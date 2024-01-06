@@ -26,22 +26,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.getDrawable
-import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
 import coil3.fetch.NetworkFetcher
+import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Size
@@ -57,8 +54,8 @@ import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredComposeFuncName
 
 
-
 @OptIn(ExperimentalCoilApi::class)
+
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
@@ -93,19 +90,31 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
         false -> Modifier.fillMaxSize()
     }
 
-        SubcomposeAsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-            .data(data)
-            .size(size)
-            .crossfade(true)
-            .build() ,
-            contentDescription = "" ,
-            imageLoader = ImageLoader.Builder(LocalContext.current)
-                .components {
-                    add(NetworkFetcher.Factory())
-                }
-                .build(),
+    val context = LocalContext.current
 
+    val model =  ImageRequest.Builder(context)
+        .also {
+            it.data(data)
+            it.size(size)
+            it.crossfade(true)
+        }.build()
+
+    val imageLoader = ImageLoader.Builder(context)
+        .also {
+            it.components{
+                add(NetworkFetcher.Factory())
+            }
+            it.memoryCache {
+                    MemoryCache.Builder()
+                        .maxSizePercent(context, 0.25)
+                        .build()
+            }
+        }.build()
+
+        SubcomposeAsyncImage(
+            model = model,
+            contentDescription = "" ,
+            imageLoader = imageLoader,
         ) {
 
             val painter = this.painter
@@ -116,7 +125,6 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = boxModifier
-
                     ){
                         androidx.compose.material.CircularProgressIndicator(
                             color = Color.Gray,
@@ -128,23 +136,19 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = boxModifier
-
                     ){
                         Image(
                             painter = painter ,
-                            contentDescription = null,
+                            contentDescription = "",
                             contentScale = ContentScale.FillWidth,
                             modifier = imageModifier
                         )
-
                     }
                 }
-
                 else -> {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = boxModifier
-
                     ){
                         Image(
                              painterResource(R.drawable.outline_perm_media_black_48),
@@ -152,7 +156,6 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
                             contentScale = ContentScale.FillWidth,
                             modifier = imageModifier
                         )
-
                     }
                 }
             }
@@ -170,7 +173,6 @@ fun PhotoPreview(
     onPhotoPreviewTapped: (Any) -> Unit
 ) {
 
-
     Box(
         modifier = Modifier
             .then(modifier)
@@ -183,7 +185,6 @@ fun PhotoPreview(
         contentAlignment = Alignment.Center
 
     ) {
-
         ImageViewer(data = data, size = Size.ORIGINAL, isZoomable = false)
     }
 }
@@ -226,8 +227,7 @@ MyApplicationTheme {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-
-                ImageViewer(data = url2, size = Size.ORIGINAL, false)
+                ImageViewer(data = url2, size = Size.ORIGINAL, true)
 }}
         }
 
