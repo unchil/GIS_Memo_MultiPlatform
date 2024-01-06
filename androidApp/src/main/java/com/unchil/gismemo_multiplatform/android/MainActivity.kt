@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
 
                       //  CameraCompose(   navController = navController     )
 
-                        ImageViewer(data = url, size = Size.ORIGINAL, false)
+                        ImageViewer(data = url, size = Size.ORIGINAL)
                     }
 
 

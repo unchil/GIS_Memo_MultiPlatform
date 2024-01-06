@@ -48,6 +48,7 @@ import coil3.size.Size
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.jetbrains.handson.kmm.shared.data.DestinationsLocalDataSource
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.MyApplicationTheme
@@ -58,7 +59,7 @@ import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
+fun ImageViewer(data:Any, size: Size, contentScale: ContentScale = ContentScale.FillWidth, isZoomable:Boolean = false){
 
     val scale = remember { mutableStateOf(1f) }
     val rotationState = remember { mutableStateOf(0f) }
@@ -156,7 +157,7 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
                         Image(
                             painter = painter ,
                             contentDescription = "",
-                            contentScale = ContentScale.FillWidth,
+                            contentScale = contentScale,
                             modifier = imageModifier
                         )
                     }
@@ -235,11 +236,14 @@ fun PhotoPreview(
     onPhotoPreviewTapped: (Any) -> Unit
 ) {
 
+    val defaultDp = 100.dp
+    val defaultPx = ( defaultDp * LocalContext.current.resources.displayMetrics.density).value.toInt()
+
     Box(
         modifier = Modifier
             .then(modifier)
-            .height(100.dp)
-            .width(100.dp)
+            .height(defaultDp)
+            .width(defaultDp)
             .border(width = 1.dp, color = Color.Black, shape = ShapeDefaults.Small)
             .clip(shape = ShapeDefaults.Small)
             .combinedClickable { onPhotoPreviewTapped(data) }
@@ -247,7 +251,8 @@ fun PhotoPreview(
         contentAlignment = Alignment.Center
 
     ) {
-        ImageViewer(data = data, size = Size.ORIGINAL, isZoomable = false)
+
+        ImageViewer(data = data, size = Size( defaultPx, defaultPx) ,contentScale = ContentScale.Crop)
     }
 }
 
@@ -259,8 +264,10 @@ private fun PreviewImageViewer(
     modifier: Modifier = Modifier,
 ){
 
-    val  url1 = Uri.parse("android.resource://com.unchil.gismemo_multiplatform.android/" + R.drawable.outline_perm_media_black_48).toString().toUri()
-    val url2 = "https://images.unsplash.com/photo-1544735716-392fe2489ffa?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format"
+
+    val url = DestinationsLocalDataSource.craneDestinations.find {
+        it.city.equals("MADRID")
+    }?.imageUrl ?: ""
 
     val permissionsManager = PermissionsManager()
 
@@ -289,7 +296,19 @@ MyApplicationTheme {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-                ImageViewer(data = url2, size = Size.ORIGINAL, true)
+              //  ImageViewer(data = url2, size = Size.ORIGINAL, true)
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+
+        ){
+
+            PhotoPreview(data = url){
+        }
+
+
+
+        }
 }}
         }
 
