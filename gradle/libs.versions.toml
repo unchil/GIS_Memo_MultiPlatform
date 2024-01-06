@@ -54,12 +54,18 @@ build-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradl
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coilNetwork" }
-coil-core = { module = "io.coil-kt.coil3:coil-core", version.ref = "coilNetwork" }
-coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coilNetwork" }
-coil-network = { module = "io.coil-kt.coil3:coil-network", version.ref = "coilNetwork" }
 
+coil-network = { module = "io.coil-kt.coil3:coil-network", version.ref = "coilNetwork" }
+coil-android = { module = "io.coil-kt.coil3:coil-android", version.ref = "coilNetwork" }
+
+
+coil-core = { module = "io.coil-kt.coil3:coil-core", version.ref = "coilNetwork" }
 coil-core-android = { module = "io.coil-kt.coil3:coil-core-android", version.ref = "coilNetwork" }
+
+
+coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coilNetwork" }
 coil-compose-core-android = { module = "io.coil-kt.coil3:coil-compose-core-android", version.ref = "coilNetwork" }
+
 
 
 

@@ -38,6 +38,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.jetbrains.handson.kmm.shared.data.DestinationsLocalDataSource
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
 import com.unchil.gismemo.view.WeatherContent
@@ -59,8 +60,10 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val navController = rememberAnimatedNavController()
-            val url2 = "https://images.unsplash.com/photo-1544735716-392fe2489ffa?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format"
 
+            val url = DestinationsLocalDataSource.craneDestinations.find {
+                it.city.equals("GRANADA")
+            }?.imageUrl ?: ""
 
             MyApplicationTheme {
                 Surface(
@@ -75,7 +78,7 @@ class MainActivity : ComponentActivity() {
 
                       //  CameraCompose(   navController = navController     )
 
-                        ImageViewer(data = url2, size = Size.ORIGINAL, false)
+                        ImageViewer(data = url, size = Size.ORIGINAL, false)
                     }
 
 

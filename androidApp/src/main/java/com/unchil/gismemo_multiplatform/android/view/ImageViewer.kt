@@ -33,12 +33,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import coil3.ImageLoader
+import coil3.SingletonImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
-import coil3.fetch.NetworkFetcher
-import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Size
@@ -52,9 +50,6 @@ import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredComposeFuncName
-
-
-@OptIn(ExperimentalCoilApi::class)
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -99,22 +94,27 @@ fun ImageViewer(data:Any, size: Size, isZoomable:Boolean = false){
             it.crossfade(true)
         }.build()
 
+
+/*
     val imageLoader = ImageLoader.Builder(context)
-        .also {
-            it.components{
+            .components{
                 add(NetworkFetcher.Factory())
             }
-            it.memoryCache {
+            .memoryCache {
                     MemoryCache.Builder()
                         .maxSizePercent(context, 0.25)
                         .build()
-            }
-        }.build()
+
+            }.apply {
+                logger(DebugLogger())
+            }.build()
+*/
+
 
         SubcomposeAsyncImage(
             model = model,
             contentDescription = "" ,
-            imageLoader = imageLoader,
+            imageLoader = SingletonImageLoader.get(context),
         ) {
 
             val painter = this.painter

@@ -94,6 +94,7 @@ dependencies {
     //implementation (libs.coil.compose)
 
     // coil3     implementation(libs.ktor.client.okhttp)
+    implementation(libs.coil.android)
     implementation(libs.coil.core.android)
     implementation(libs.coil.compose.core.android)
     implementation(libs.coil.network)
