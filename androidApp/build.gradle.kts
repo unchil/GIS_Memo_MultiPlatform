@@ -76,7 +76,7 @@ dependencies {
     // Optionally, you can include the widgets library for ScaleBar, etc.
     implementation (libs.maps.compose.widgets)
 
-    implementation(libs.ktor.client.okhttp)
+
 
     // Camera
     implementation (libs.androidx.camera.core)
@@ -89,12 +89,18 @@ dependencies {
     implementation (libs.androidx.navigation.compose)
     implementation (libs.accompanist.navigation.animation)
 
+
+    // coil2
     //implementation (libs.coil.compose)
 
+    // coil3     implementation(libs.ktor.client.okhttp)
     implementation(libs.coil.core.android)
     implementation(libs.coil.compose.core.android)
     implementation(libs.coil.network)
 
+
+    // ktor
+    implementation(libs.ktor.client.okhttp)
 
 
     // media3 formally exo Player
