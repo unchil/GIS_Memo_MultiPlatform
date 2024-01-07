@@ -9,7 +9,9 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.provider.Settings
 import androidx.activity.ComponentActivity
-import com.google.android.gms.maps.model.LatLng
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.Dp
+import coil3.size.Size
 import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
 import com.jetbrains.handson.kmm.shared.entity.LatLngAlt
 import com.unchil.gismemo_multiplatform.android.R
@@ -28,6 +30,16 @@ const val HHmmss = "HH:mm:ss"
 enum class BiometricCheckType {
     DETAILVIEW, SHARE, DELETE
 }
+
+@Composable
+fun Context.dpToSize(width: Dp, height:Dp):Size {
+    return Size(
+        ( width * this.resources.displayMetrics.density).value.toInt(),
+        ( height * this.resources.displayMetrics.density).value.toInt()
+    )
+}
+
+
 
 fun BiometricCheckType.getTitle(getString: (Int)->String):Pair<String,String> {
     return when(this){

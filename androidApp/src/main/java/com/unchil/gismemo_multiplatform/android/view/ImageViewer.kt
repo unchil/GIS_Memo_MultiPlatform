@@ -55,43 +55,52 @@ import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredComposeFuncName
+import com.unchil.gismemo_multiplatform.android.common.dpToSize
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun ImageViewer(data:Any, size: Size, contentScale: ContentScale = ContentScale.FillWidth, isZoomable:Boolean = false){
 
     val context = LocalContext.current
-    val scale = remember { mutableStateOf(1f) }
-    val rotationState = remember { mutableStateOf(0f) }
+    var scale = 1f
+    var rotationState = 0f
 
-    val boxModifier: Modifier = when(isZoomable) {
-        true -> {
-            Modifier
-                .fillMaxSize()
-                .pointerInput(Unit) {
-                    detectTransformGestures { centroid, pan, zoom, rotation ->
-                        scale.value *= zoom
-                        rotationState.value += rotation
+    val boxModifier:Modifier = remember {
+        when (isZoomable) {
+            true -> {
+                Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        detectTransformGestures { _, _, zoom, rotation ->
+                            scale *= zoom
+                            rotationState += rotation
+                        }
                     }
-                }
+            }
+
+            false -> Modifier.fillMaxSize()
         }
-        false -> Modifier.fillMaxSize()
     }
 
-    val imageModifier: Modifier = when(isZoomable) {
-        true -> {
-            Modifier
-                .fillMaxSize()
-                .graphicsLayer(
-                    scaleX = maxOf(.5f, minOf(3f, scale.value)),
-                    scaleY = maxOf(.5f, minOf(3f, scale.value)),
-                    rotationZ = rotationState.value
-                )
+    val imageModifier:Modifier = remember {
+        when (isZoomable) {
+            true -> {
+                Modifier
+                    .fillMaxSize()
+                    .graphicsLayer(
+                        scaleX = maxOf(.5f, minOf(3f, scale)),
+                        scaleY = maxOf(.5f, minOf(3f, scale)),
+                        rotationZ = rotationState
+                    )
+            }
+
+            false -> Modifier.fillMaxSize()
         }
-        false -> Modifier.fillMaxSize()
     }
 
-    val model =  ImageRequest.Builder(context).data(data).size(size).crossfade(true).build()
+    val model =  remember {
+        ImageRequest.Builder(context).data(data).size(size).crossfade(true).build()
+    }
 
     val transform: (AsyncImagePainter.State) -> AsyncImagePainter.State = {
         when(it){
@@ -217,11 +226,6 @@ fun PhotoPreview(
     onPhotoPreviewTapped: (Any) -> Unit
 ) {
 
-    val size = Size(
-        ( width * LocalContext.current.resources.displayMetrics.density).value.toInt(),
-        ( width * LocalContext.current.resources.displayMetrics.density).value.toInt()
-    )
-
     Box(
         modifier = Modifier
             .then(modifier)
@@ -229,13 +233,15 @@ fun PhotoPreview(
             .width(width)
             .border(width = 1.dp, color = Color.Black, shape = ShapeDefaults.Small)
             .clip(shape = ShapeDefaults.Small)
-            .combinedClickable { onPhotoPreviewTapped(data) }
-        ,
+            .combinedClickable { onPhotoPreviewTapped(data) },
         contentAlignment = Alignment.Center
 
     ) {
-
-        ImageViewer(data = data, size = size ,contentScale = ContentScale.Crop)
+        ImageViewer(
+            data = data,
+            size = LocalContext.current.dpToSize(width = width, height = height) ,
+            contentScale = ContentScale.Crop
+        )
     }
 }
 
@@ -248,7 +254,7 @@ private fun PreviewImageViewer(
 ){
 
     val url = DestinationsLocalDataSource.craneDestinations.find {
-        it.city.equals("MADRID")
+        it.city == "MADRID"
     }?.imageUrl ?: ""
 
     val permissionsManager = PermissionsManager()
@@ -261,7 +267,7 @@ private fun PreviewImageViewer(
         val multiplePermissionsState = rememberMultiplePermissionsState( permissions)
         CheckPermission(multiplePermissionsState = multiplePermissionsState)
 
-        var isGranted by mutableStateOf(true)
+        var isGranted by remember { mutableStateOf(true) }
         permissions.forEach { chkPermission ->
             isGranted =   isGranted && multiplePermissionsState.permissions.find { it.permission == chkPermission  }?.status?.isGranted ?: false
         }
@@ -277,14 +283,15 @@ private fun PreviewImageViewer(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                          //  ImageViewer(data = url2, size = Size.ORIGINAL, true)
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ){
+                      //  ImageViewer(data = url, size = Size.ORIGINAL)
                         PhotoPreview(data = url, width = 160.dp, height = 100.dp){   }
-                  //      PhotoPreview(data = url, ){   }
+                     //  PhotoPreview(data = url, ){   }
                     }
+
 
                  }
             }
