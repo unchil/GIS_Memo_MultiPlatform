@@ -37,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil3.SingletonImageLoader
@@ -61,6 +62,7 @@ import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 @Composable
 fun ImageViewer(data:Any, size: Size, contentScale: ContentScale = ContentScale.FillWidth, isZoomable:Boolean = false){
 
+    val context = LocalContext.current
     val scale = remember { mutableStateOf(1f) }
     val rotationState = remember { mutableStateOf(0f) }
 
@@ -91,8 +93,6 @@ fun ImageViewer(data:Any, size: Size, contentScale: ContentScale = ContentScale.
         false -> Modifier.fillMaxSize()
     }
 
-    val context = LocalContext.current
-
     val model =  ImageRequest.Builder(context)
         .also {
             it.data(data)
@@ -100,74 +100,88 @@ fun ImageViewer(data:Any, size: Size, contentScale: ContentScale = ContentScale.
             it.crossfade(true)
         }.build()
 
-
-/*
-    val imageLoader = ImageLoader.Builder(context)
-            .components{
-                add(NetworkFetcher.Factory())
-            }
-            .memoryCache {
-                    MemoryCache.Builder()
-                        .maxSizePercent(context, 0.25)
-                        .build()
-
-            }.apply {
-                logger(DebugLogger())
-            }.build()
-*/
-
-
-        SubcomposeAsyncImage(
-            model = model,
-            contentDescription = "" ,
-            imageLoader = SingletonImageLoader.get(context),
-            transform = {
-               when(it){
-                   is AsyncImagePainter.State.Error -> {
-                       if(data == ""){
-                           AsyncImagePainter.State.Empty
-                       }else {
-                           it
-                       }
-                   }
-                   else -> { it}
-               }
-            }
-        ) {
-
-            val painter = this.painter
-
-            when(painter.state){
-                is AsyncImagePainter.State.Loading -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = boxModifier
-                    ){
-                        CircularProgressIndicator(
-                            color = Color.Gray,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
+    val transform: (AsyncImagePainter.State) -> AsyncImagePainter.State = {
+        when(it){
+            is AsyncImagePainter.State.Error -> {
+                if(data == ""){
+                    AsyncImagePainter.State.Empty
+                }else {
+                    it
                 }
-                is AsyncImagePainter.State.Success -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = boxModifier
-                    ){
-                        Image(
-                            painter = painter ,
-                            contentDescription = "",
-                            contentScale = contentScale,
-                            modifier = imageModifier
-                        )
-                    }
+            }
+            else -> { it}
+        }
+    }
+
+
+    SubcomposeAsyncImage(
+        model = model,
+        contentDescription = "" ,
+        imageLoader = SingletonImageLoader.get(context),
+        transform = transform
+    ) {
+
+        val painter = this.painter
+
+        when(painter.state){
+            is AsyncImagePainter.State.Loading -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = boxModifier
+                ){
+                    CircularProgressIndicator(
+                        color = Color.Gray,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
-                AsyncImagePainter.State.Empty -> {
+            }
+            is AsyncImagePainter.State.Success -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = boxModifier
+                ){
+                    Image(
+                        painter = painter ,
+                        contentDescription = "",
+                        contentScale = contentScale,
+                        modifier = imageModifier
+                    )
+                }
+            }
+            AsyncImagePainter.State.Empty -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = boxModifier.padding(10.dp)
+                ){
+
+                    Image(
+                        painterResource(R.drawable.outline_perm_media_black_48),
+                        contentDescription = "",
+                        contentScale = ContentScale.FillWidth,
+                        modifier = imageModifier
+                    )
+
+                    Text(
+                        text = context.getString(R.string.image_load_empty),
+                        color = Color.Yellow,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .background(color = Color.DarkGray.copy(alpha = 0.8f))
+                            .padding(10.dp)
+                        ,
+                        textAlign= TextAlign.Center,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                }
+
+            }
+            is AsyncImagePainter.State.Error -> {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = boxModifier.padding(10.dp)
                     ){
-
                         Image(
                             painterResource(R.drawable.outline_perm_media_black_48),
                             contentDescription = "",
@@ -175,55 +189,27 @@ fun ImageViewer(data:Any, size: Size, contentScale: ContentScale = ContentScale.
                             modifier = imageModifier
                         )
 
-                        Text(
-                            text = context.getString(R.string.image_load_empty),
-                            color = Color.Yellow,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .background(color = Color.DarkGray.copy(alpha = 0.8f))
-                                .padding(10.dp)
-                            ,
-                            textAlign= TextAlign.Center,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-
+                        (painter.state as AsyncImagePainter.State.Error).result.throwable.localizedMessage?.let {
+                            Text(
+                                text =it,
+                                color = Color.Red,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .background(color = Color.DarkGray.copy(alpha = 0.8f))
+                                    .padding(10.dp)
+                                        ,
+                                textAlign= TextAlign.Center,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
                     }
 
                 }
-                is AsyncImagePainter.State.Error -> {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = boxModifier.padding(10.dp)
-                        ){
-                            Image(
-                                painterResource(R.drawable.outline_perm_media_black_48),
-                                contentDescription = "",
-                                contentScale = ContentScale.FillWidth,
-                                modifier = imageModifier
-                            )
-
-                            (painter.state as AsyncImagePainter.State.Error).result.throwable.localizedMessage?.let {
-                                Text(
-                                    text =it,
-                                    color = Color.Red,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .background(color = Color.DarkGray.copy(alpha = 0.8f))
-                                        .padding(10.dp)
-                                            ,
-                                    textAlign= TextAlign.Center,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                            }
-                        }
-
-                    }
-
-            }
 
         }
+
+    }
 
 }
 
@@ -233,17 +219,17 @@ fun ImageViewer(data:Any, size: Size, contentScale: ContentScale = ContentScale.
 fun PhotoPreview(
     modifier: Modifier = Modifier,
     data:Any,
+    rectDp: Dp = 100.dp,
     onPhotoPreviewTapped: (Any) -> Unit
 ) {
 
-    val defaultDp = 100.dp
-    val defaultPx = ( defaultDp * LocalContext.current.resources.displayMetrics.density).value.toInt()
+    val imagePixel = ( rectDp * LocalContext.current.resources.displayMetrics.density).value.toInt()
 
     Box(
         modifier = Modifier
             .then(modifier)
-            .height(defaultDp)
-            .width(defaultDp)
+            .height(rectDp)
+            .width(rectDp)
             .border(width = 1.dp, color = Color.Black, shape = ShapeDefaults.Small)
             .clip(shape = ShapeDefaults.Small)
             .combinedClickable { onPhotoPreviewTapped(data) }
@@ -252,7 +238,7 @@ fun PhotoPreview(
 
     ) {
 
-        ImageViewer(data = data, size = Size( defaultPx, defaultPx) ,contentScale = ContentScale.Crop)
+        ImageViewer(data = data, size = Size( imagePixel, imagePixel) ,contentScale = ContentScale.Crop)
     }
 }
 
@@ -263,7 +249,6 @@ fun PhotoPreview(
 private fun PreviewImageViewer(
     modifier: Modifier = Modifier,
 ){
-
 
     val url = DestinationsLocalDataSource.craneDestinations.find {
         it.city.equals("MADRID")
@@ -284,33 +269,28 @@ private fun PreviewImageViewer(
             isGranted =   isGranted && multiplePermissionsState.permissions.find { it.permission == chkPermission  }?.status?.isGranted ?: false
         }
 
-
         PermissionRequiredCompose(
             isGranted = isGranted,
             multiplePermissions = permissions ,
             viewType = PermissionRequiredComposeFuncName.Weather
         ) {
 
-MyApplicationTheme {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-              //  ImageViewer(data = url2, size = Size.ORIGINAL, true)
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            MyApplicationTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                          //  ImageViewer(data = url2, size = Size.ORIGINAL, true)
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        PhotoPreview(data = url, rectDp = 200.dp){   }
+                    }
 
-        ){
+                 }
+            }
 
-            PhotoPreview(data = url){
         }
-
-
-
-        }
-}}
-        }
-
     }
 }
