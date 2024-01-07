@@ -2,7 +2,6 @@ package com.unchil.gismemo_multiplatform.android.view
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
@@ -93,12 +91,7 @@ fun ImageViewer(data:Any, size: Size, contentScale: ContentScale = ContentScale.
         false -> Modifier.fillMaxSize()
     }
 
-    val model =  ImageRequest.Builder(context)
-        .also {
-            it.data(data)
-            it.size(size)
-            it.crossfade(true)
-        }.build()
+    val model =  ImageRequest.Builder(context).data(data).size(size).crossfade(true).build()
 
     val transform: (AsyncImagePainter.State) -> AsyncImagePainter.State = {
         when(it){
@@ -219,17 +212,21 @@ fun ImageViewer(data:Any, size: Size, contentScale: ContentScale = ContentScale.
 fun PhotoPreview(
     modifier: Modifier = Modifier,
     data:Any,
-    rectDp: Dp = 100.dp,
+    width: Dp = 100.dp,
+    height:Dp = 100.dp,
     onPhotoPreviewTapped: (Any) -> Unit
 ) {
 
-    val imagePixel = ( rectDp * LocalContext.current.resources.displayMetrics.density).value.toInt()
+    val size = Size(
+        ( width * LocalContext.current.resources.displayMetrics.density).value.toInt(),
+        ( width * LocalContext.current.resources.displayMetrics.density).value.toInt()
+    )
 
     Box(
         modifier = Modifier
             .then(modifier)
-            .height(rectDp)
-            .width(rectDp)
+            .height(height)
+            .width(width)
             .border(width = 1.dp, color = Color.Black, shape = ShapeDefaults.Small)
             .clip(shape = ShapeDefaults.Small)
             .combinedClickable { onPhotoPreviewTapped(data) }
@@ -238,7 +235,7 @@ fun PhotoPreview(
 
     ) {
 
-        ImageViewer(data = data, size = Size( imagePixel, imagePixel) ,contentScale = ContentScale.Crop)
+        ImageViewer(data = data, size = size ,contentScale = ContentScale.Crop)
     }
 }
 
@@ -285,7 +282,8 @@ private fun PreviewImageViewer(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ){
-                        PhotoPreview(data = url, rectDp = 200.dp){   }
+                        PhotoPreview(data = url, width = 160.dp, height = 100.dp){   }
+                  //      PhotoPreview(data = url, ){   }
                     }
 
                  }
