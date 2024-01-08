@@ -4,12 +4,10 @@ package com.jetbrains.handson.kmm.shared
 import app.cash.paging.Pager
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
-
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import com.jetbrains.handson.kmm.shared.cache.GisMemoDao
 import com.jetbrains.handson.kmm.shared.entity.AsyncWeatherInfoState
 import com.jetbrains.handson.kmm.shared.entity.CURRENTLOCATION_TBL
-import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
 import com.jetbrains.handson.kmm.shared.entity.DrawingPolyline
 import com.jetbrains.handson.kmm.shared.entity.LatLngAlt
 import com.jetbrains.handson.kmm.shared.entity.MEMO_FILE_TBL
@@ -30,7 +28,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-
 
 
 class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
@@ -219,7 +216,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         gisMemoDao.insertMemoFile(memoFileTblList)
         gisMemoDao.insertMemoText(memoTextTblList)
 
-        getWeatherFlow.collectLatest {
+        gisMemoDao.selectCurrentWeatherFlow.collectLatest {
             it?.let {
                 gisMemoDao.insertMemoWeather(it)
             }
@@ -451,8 +448,6 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
 
     }
 
-    val getWeatherFlow =
-        gisMemoDao.selectCurrentWeatherFlow
 
     suspend fun setWeatherInfo(){
         gisMemoDao.selectCurrentWeatherFlow.collectLatest {

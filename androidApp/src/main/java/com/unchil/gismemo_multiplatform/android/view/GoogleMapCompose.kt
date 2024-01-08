@@ -63,14 +63,14 @@ fun GoogleMapView(){
     )
     val multiplePermissionsState = rememberMultiplePermissionsState(permissions)
     CheckPermission(multiplePermissionsState = multiplePermissionsState)
-    var isGranted by mutableStateOf(true)
+    val isGranted = remember { mutableStateOf(true) }
     permissions.forEach { chkPermission ->
-        isGranted =  isGranted && multiplePermissionsState.permissions.find { it.permission == chkPermission }?.status?.isGranted
-                ?: false
+        isGranted.value  =  isGranted.value
+                                &&
+                            multiplePermissionsState.permissions.find {
+                                it.permission == chkPermission
+                            }?.status?.isGranted ?: false
     }
-
-
-
 
     val context = LocalContext.current
 
@@ -78,16 +78,16 @@ fun GoogleMapView(){
         LocationServices.getFusedLocationProviderClient(context)
     }
 
-    var currentLocation by remember {
+    val currentLocation = remember {
         mutableStateOf(LatLng(0.0,0.0))
     }
 
 
-    LaunchedEffect(key1 =  currentLocation){
-        if( currentLocation == LatLng(0.0,0.0)) {
+    LaunchedEffect(key1 =  currentLocation.value){
+        if( currentLocation.value == LatLng(0.0,0.0)) {
             fusedLocationProviderClient.lastLocation.addOnCompleteListener( context.mainExecutor) { task ->
                 if (task.isSuccessful && task.result != null ) {
-                    currentLocation = task.result.toLatLng()
+                    currentLocation.value = task.result.toLatLng()
                 }
             }
         }
@@ -95,8 +95,8 @@ fun GoogleMapView(){
 
 
     // No ~~~~ remember
-    val markerState =  MarkerState( position = currentLocation )
-    val defaultCameraPosition =  CameraPosition.fromLatLngZoom( currentLocation, 16f)
+    val markerState =  MarkerState( position = currentLocation.value )
+    val defaultCameraPosition =  CameraPosition.fromLatLngZoom( currentLocation.value, 16f)
     var cameraPositionState =  CameraPositionState(position = defaultCameraPosition)
 
     val mapProperties by remember {
@@ -123,14 +123,13 @@ fun GoogleMapView(){
 
 
 
-
     val onMapLongClickHandler: (LatLng) -> Unit = {
         markerState.position = it
         cameraPositionState = CameraPositionState( position =  CameraPosition.fromLatLngZoom(it, 16f))
     }
 
     PermissionRequiredCompose(
-        isGranted = isGranted,
+        isGranted = isGranted.value,
         multiplePermissions = permissions,
         viewType = PermissionRequiredComposeFuncName.Weather
     ) {

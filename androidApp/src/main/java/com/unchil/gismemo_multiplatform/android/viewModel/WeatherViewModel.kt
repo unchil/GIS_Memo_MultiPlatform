@@ -1,6 +1,5 @@
 package com.unchil.gismemo_multiplatform.android.viewModel
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
@@ -14,20 +13,14 @@ import kotlinx.coroutines.launch
 
 class WeatherViewModel(val repository:GisMemoRepository) : ViewModel() {
 
-    val _currentWeatherStateFlow: MutableStateFlow<AsyncWeatherInfoState>
-            = MutableStateFlow( AsyncWeatherInfoState.Loading)
+    private val _currentWeatherStateFlow: MutableStateFlow<AsyncWeatherInfoState>
+        = MutableStateFlow( AsyncWeatherInfoState.Empty)
 
-    val currentWeatherStateFlow: StateFlow<AsyncWeatherInfoState> = _currentWeatherStateFlow
+    val currentWeatherStateFlow: StateFlow<AsyncWeatherInfoState>
+        = _currentWeatherStateFlow
 
     init {
-        viewModelScope.launch {
-
-            repository.setWeatherInfo()
-
-            repository._currentWeatherStateFlow.collectLatest {
-                _currentWeatherStateFlow.value = it
-            }
-        }
+        connectWeatherInfoStream()
     }
 
     fun onEvent(event: Event){
@@ -35,14 +28,19 @@ class WeatherViewModel(val repository:GisMemoRepository) : ViewModel() {
             is Event.SearchWeather -> {
                 searchWeather(event.location)
             }
-
         }
     }
 
+    private fun connectWeatherInfoStream(){
+        viewModelScope.launch {
+            repository.setWeatherInfo()
+            repository._currentWeatherStateFlow.collectLatest {
+                _currentWeatherStateFlow.value = it
+            }
+        }
+    }
 
-    @SuppressLint("SuspiciousIndentation")
-    fun searchWeather(location: LatLngAlt) {
-
+    private fun searchWeather(location: LatLngAlt) {
         _currentWeatherStateFlow.value =  AsyncWeatherInfoState.Loading
 
         viewModelScope.launch {
@@ -54,12 +52,8 @@ class WeatherViewModel(val repository:GisMemoRepository) : ViewModel() {
         }
     }
 
-
-
-
     sealed class  Event{
         data class SearchWeather (val location: LatLngAlt) :Event()
-
     }
 
 
