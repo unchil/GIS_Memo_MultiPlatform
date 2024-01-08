@@ -119,41 +119,19 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
             LocationServices.getFusedLocationProviderClient(context)
         }
 
+        var isSetLocation by remember { mutableStateOf( false ) }
 
-        val isSuccessfulTask = remember { mutableStateOf( false ) }
-        val isAvailableCheckLocation = remember { mutableStateOf(true) }
-        val isConnected = remember { mutableStateOf(context.checkInternetConnected()) }
+        var isConnected by remember { mutableStateOf(context.checkInternetConnected()) }
 
-
-        LaunchedEffect(key1 = isConnected.value ){
-            while(!isConnected.value) {
-                delay(500)
-                isConnected.value = context.checkInternetConnected()
-
-                if(isConnected.value && !isAvailableCheckLocation.value){
-                    isAvailableCheckLocation.value = true
-                }
-            }
-        }
-
-
-        LaunchedEffect(key1 =  isAvailableCheckLocation, key2 = isConnected.value){
-            if(isAvailableCheckLocation.value) {
-                isAvailableCheckLocation.value = false
+        LaunchedEffect(key1 = isConnected, key2 = isSetLocation){
+            if(isConnected && !isSetLocation ) {
                 fusedLocationProviderClient.lastLocation.addOnCompleteListener( context.mainExecutor) { task ->
                     if (task.isSuccessful && task.result != null ) {
-                        isSuccessfulTask.value = true
+                        isSetLocation = true
 
-                        if(isConnected.value) {
-                            viewModel.onEvent(
-                                WeatherViewModel.Event.SearchWeather(task.result.toLatLngAlt())
-                            )
-                        }
-
-                    } else {
-                        onCheckLocationService?.let {
-                            it(false)
-                        }
+                        viewModel.onEvent(
+                            WeatherViewModel.Event.SearchWeather(task.result.toLatLngAlt())
+                        )
                     }
                 }
             }
@@ -222,37 +200,6 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
                             style = MaterialTheme.typography.titleMedium
                         )
 
-
-                        if(!isSuccessfulTask.value) {
-                            IconButton(
-                                onClick = { isAvailableCheckLocation.value = true },
-                                content = {
-                                    Row(
-                                        modifier = Modifier,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        Icon(
-                                            modifier = Modifier.padding(end = 10.dp),
-                                            imageVector = Icons.Outlined.LocationSearching,
-                                            contentDescription = "LocationSearching"
-                                        )
-                                        Text(text = context.resources.getString(R.string.weather_location_searching))
-                                    }
-                                })
-                        }
-
-
-                        if (!isConnected.value) {
-                            ChkNetWork(
-                                onCheckState = {
-                                    coroutineScope.launch {
-                                        isConnected.value =  context.checkInternetConnected()
-                                    }
-                                }
-                            )
-                        }
-
-
                     }
                 }
                 AsyncWeatherInfoState.Loading -> {
@@ -284,6 +231,35 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
                 }
 
                 else -> {}
+            }
+
+            if(!isSetLocation) {
+                IconButton(
+                    onClick = { isSetLocation = false },
+                    content = {
+                        Row(
+                            modifier = Modifier,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                modifier = Modifier.padding(end = 10.dp),
+                                imageVector = Icons.Outlined.LocationSearching,
+                                contentDescription = "LocationSearching"
+                            )
+                            Text(text = context.resources.getString(R.string.weather_location_searching))
+                        }
+                    })
+            }
+
+
+            if (!isConnected) {
+                ChkNetWork(
+                    onCheckState = {
+                        coroutineScope.launch {
+                            isConnected =  context.checkInternetConnected()
+                        }
+                    }
+                )
             }
 
         }

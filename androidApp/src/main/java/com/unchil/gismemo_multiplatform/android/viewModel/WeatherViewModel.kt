@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class WeatherViewModel(val repository:GisMemoRepository) : ViewModel() {
 
     private val _currentWeatherStateFlow: MutableStateFlow<AsyncWeatherInfoState>
-        = MutableStateFlow( AsyncWeatherInfoState.Empty)
+        = MutableStateFlow( AsyncWeatherInfoState.Loading)
 
     val currentWeatherStateFlow: StateFlow<AsyncWeatherInfoState>
         = _currentWeatherStateFlow
