@@ -352,9 +352,10 @@ val WriteMemoDataTypeList = listOf(
     WriteMemoDataType.VIDEO
 )
 
-sealed class RecvWeatherDataState {
-    data class Success(val data:CURRENTWEATHER_TBL): RecvWeatherDataState()
-    object  Loading: RecvWeatherDataState()
+sealed class AsyncWeatherInfoState {
+    data class Success(val data:CURRENTWEATHER_TBL):AsyncWeatherInfoState()
+    data class Error(val message:String) :AsyncWeatherInfoState()
+    object  Loading:AsyncWeatherInfoState()
 
-    data class Error(val message:String) : RecvWeatherDataState()
+    object  Empty:AsyncWeatherInfoState()
 }

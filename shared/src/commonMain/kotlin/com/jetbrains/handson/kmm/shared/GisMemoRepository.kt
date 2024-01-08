@@ -7,6 +7,7 @@ import app.cash.paging.PagingData
 
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import com.jetbrains.handson.kmm.shared.cache.GisMemoDao
+import com.jetbrains.handson.kmm.shared.entity.AsyncWeatherInfoState
 import com.jetbrains.handson.kmm.shared.entity.CURRENTLOCATION_TBL
 import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
 import com.jetbrains.handson.kmm.shared.entity.DrawingPolyline
@@ -16,7 +17,6 @@ import com.jetbrains.handson.kmm.shared.entity.MEMO_TAG_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TEXT_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_WEATHER_TBL
-import com.jetbrains.handson.kmm.shared.entity.RecvWeatherDataState
 import com.jetbrains.handson.kmm.shared.entity.WriteMemoDataType
 import com.jetbrains.handson.kmm.shared.entity.WriteMemoDataTypeList
 import com.jetbrains.handson.kmm.shared.entity.toCURRENTWEATHER_TBL
@@ -39,11 +39,9 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
        private val api = GisMemoApi()
 
 
-/*
-    val _currentWeather:MutableStateFlow<CURRENTWEATHER_TBL?>
-        = MutableStateFlow(null)
+    val _currentWeatherStateFlow: MutableStateFlow<AsyncWeatherInfoState>
+            = MutableStateFlow( AsyncWeatherInfoState.Empty)
 
- */
 
     val currentAudioText: MutableStateFlow<List<Pair<String, List<Url>>>>
             = MutableStateFlow( listOf())
@@ -436,7 +434,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
             lon:String,
             appid:String,
             units:String = "metric"
-    ): RecvWeatherDataState {
+    ) {
         try {
             api.getWeatherData(
                 lat = lat,
@@ -445,21 +443,10 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
                 appid = appid
             ).toCURRENTWEATHER_TBL().also {
                 gisMemoDao.insertCurrentWeather(it)
-             //   _currentWeather.value = it
-                return  RecvWeatherDataState.Success(it)
+                _currentWeatherStateFlow.value = AsyncWeatherInfoState.Success(it)
             }
         }catch(e:Exception){
-            getWeatherFlow.collectLatest {
-                it?.let {
-                    RecvWeatherDataState.Success(it)
-                }
-            }
-            return if(e.message.isNullOrEmpty()){
-                RecvWeatherDataState.Error("Error")
-            }else {
-                RecvWeatherDataState.Error(e.message!!)
-            }
-
+            _currentWeatherStateFlow.value = AsyncWeatherInfoState.Error(e.message?: "Unknown Error")
         }
 
     }
@@ -467,6 +454,15 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
     val getWeatherFlow =
         gisMemoDao.selectCurrentWeatherFlow
 
+    suspend fun setWeatherInfo(){
+        gisMemoDao.selectCurrentWeatherFlow.collectLatest {
+            if(it == null){
+                _currentWeatherStateFlow.value = AsyncWeatherInfoState.Empty
+            }else {
+                _currentWeatherStateFlow.value = AsyncWeatherInfoState.Success(it)
+            }
+        }
+    }
 
 
     val getMemoListPagingFlow: Flow<PagingData<MEMO_TBL>> = flow  {

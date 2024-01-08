@@ -27,7 +27,8 @@
     <string name="permission_setting_title">"시스템 설정"</string>
     <string name="permission_setting_msg"> "App Info 에서 권한 설정을 해 주세요."</string>
 
-
     <string name="image_load_empty">"The file does not exist."</string>
+    <string name="weather_load_empty">"날씨 정보를 연동 하지 못 하였습니다."</string>
+
 
 </resources>

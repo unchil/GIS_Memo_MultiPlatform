@@ -15,11 +15,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,8 +31,8 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.LocationServices
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
+import com.jetbrains.handson.kmm.shared.entity.AsyncWeatherInfoState
 import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
-import com.jetbrains.handson.kmm.shared.entity.RecvWeatherDataState
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.ChkNetWork
@@ -91,7 +93,9 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
 
     var isGranted by mutableStateOf(true)
     permissions.forEach { chkPermission ->
-        isGranted =   isGranted && multiplePermissionsState.permissions.find { it.permission == chkPermission  }?.status?.isGranted ?: false
+        isGranted =   isGranted && multiplePermissionsState.permissions.find {
+            it.permission == chkPermission
+        }?.status?.isGranted ?: false
     }
 
 
@@ -107,7 +111,9 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
         val coroutineScope = rememberCoroutineScope()
 
         val viewModel = remember {
-            WeatherViewModel(repository = GisMemoRepository(DatabaseDriverFactory(context = context))  )
+            WeatherViewModel(
+                repository = GisMemoRepository(DatabaseDriverFactory(context = context))
+            )
         }
 
         val fusedLocationProviderClient = remember {
@@ -115,34 +121,34 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
         }
 
 
-        var isSuccessfulTask by remember { mutableStateOf( false ) }
-        var checkCurrentLocation by remember { mutableStateOf(true) }
+        val isSuccessfulTask = remember { mutableStateOf( false ) }
+        val isAvailableCheckLocation = remember { mutableStateOf(true) }
+        val isConnected = remember { mutableStateOf(context.checkInternetConnected()) }
 
-        var isConnect  by  remember { mutableStateOf(context.checkInternetConnected()) }
 
-        LaunchedEffect(key1 = isConnect ){
-            while(!isConnect) {
+        LaunchedEffect(key1 = isConnected.value ){
+            while(!isConnected.value) {
                 delay(500)
-                isConnect = context.checkInternetConnected()
+                isConnected.value = context.checkInternetConnected()
 
-                if(isConnect && !checkCurrentLocation){
-                    checkCurrentLocation = true
+                if(isConnected.value && !isAvailableCheckLocation.value){
+                    isAvailableCheckLocation.value = true
                 }
             }
         }
 
 
-        isConnect  = context.checkInternetConnected()
-
-        LaunchedEffect(key1 =  checkCurrentLocation, key2 = isConnect){
-            if(checkCurrentLocation) {
-                checkCurrentLocation = false
+        LaunchedEffect(key1 =  isAvailableCheckLocation, key2 = isConnected.value){
+            if(isAvailableCheckLocation.value) {
+                isAvailableCheckLocation.value = false
                 fusedLocationProviderClient.lastLocation.addOnCompleteListener( context.mainExecutor) { task ->
                     if (task.isSuccessful && task.result != null ) {
-                        isSuccessfulTask = true
+                        isSuccessfulTask.value = true
 
-                        if(isConnect) {
-                            viewModel.onEvent(WeatherViewModel.Event.SearchWeather(task.result.toLatLngAlt()))
+                        if(isConnected.value) {
+                            viewModel.onEvent(
+                                WeatherViewModel.Event.SearchWeather(task.result.toLatLngAlt())
+                            )
                         }
 
                     } else {
@@ -154,47 +160,113 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
             }
         }
 
-        val resultState = viewModel.currentWeatheStaterFlow.collectAsState()
+        val resultState = viewModel.currentWeatherStateFlow.collectAsState()
 
         Column(
             modifier = Modifier
                 .clip(shape = ShapeDefaults.ExtraSmall)
                 .clickable(false, null, null) {}
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.surfaceVariant)
-
-            ,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(color = MaterialTheme.colorScheme.surfaceVariant) ,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
 
             when(resultState.value){
-                is RecvWeatherDataState.Error -> {
-                    val result = (resultState.value as RecvWeatherDataState.Error)
-                    Box( modifier = Modifier
-                        .fillMaxSize()
+                is AsyncWeatherInfoState.Error -> {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.TopCenter
                     ) {
+
+                        Image(
+                            painterResource(R.drawable.weathercontent),
+                            contentDescription = "",
+                            contentScale = ContentScale.FillWidth,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        val msg = (resultState.value as AsyncWeatherInfoState.Error).message
+
                         Text(
-                            text = result.message,
+                            text = msg,
+                            color = Color.Red,
                             modifier = Modifier
-                                .align(Alignment.Center),
-                            textAlign = TextAlign.Center
+                                .align(Alignment.Center)
+                                .background(color = Color.DarkGray.copy(alpha = 0.3f))
+                                .padding(10.dp),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.titleSmall
                         )
                     }
-
                 }
-                RecvWeatherDataState.Loading -> {
+                AsyncWeatherInfoState.Empty -> {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
 
-                    Box( modifier = Modifier
-                        .fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        Image(
+                            painterResource(R.drawable.weathercontent),
+                            contentDescription = "",
+                            contentScale = ContentScale.FillWidth,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Text(
+                            text = context.getString(R.string.weather_load_empty),
+                            color = Color.Red,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .background(color = Color.DarkGray.copy(alpha = 0.8f))
+                                .padding(10.dp),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+
+                        if(!isSuccessfulTask.value) {
+                            IconButton(
+                                onClick = { isAvailableCheckLocation.value = true },
+                                content = {
+                                    Row(
+                                        modifier = Modifier,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Icon(
+                                            modifier = Modifier.padding(end = 10.dp),
+                                            imageVector = Icons.Outlined.LocationSearching,
+                                            contentDescription = "LocationSearching"
+                                        )
+                                        Text(text = context.resources.getString(R.string.weather_location_searching))
+                                    }
+                                })
+                        }
+
+
+                        if (!isConnected.value) {
+                            ChkNetWork(
+                                onCheckState = {
+                                    coroutineScope.launch {
+                                        isConnected.value =  context.checkInternetConnected()
+                                    }
+                                }
+                            )
+                        }
+
+
+                    }
+                }
+                AsyncWeatherInfoState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize().padding(top = 60.dp),
+                        contentAlignment = Alignment.TopCenter
                     ) {
                         androidx.compose.material.CircularProgressIndicator( )
                     }
-
-
                 }
-                is RecvWeatherDataState.Success -> {
-                    val result = (resultState.value as RecvWeatherDataState.Success)
+
+                is AsyncWeatherInfoState.Success -> {
+                    val result = (resultState.value as AsyncWeatherInfoState.Success)
                     AnimatedVisibility(true) {
                         when (configuration.orientation) {
                             Configuration.ORIENTATION_PORTRAIT -> {
@@ -215,37 +287,6 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
                 else -> {}
             }
 
-            AnimatedVisibility  (!isSuccessfulTask  ) {
-                IconButton(
-                    onClick = { checkCurrentLocation = true },
-                    content = {
-                        Row(
-                            modifier = Modifier,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                modifier = Modifier.padding(end = 10.dp),
-                                imageVector = Icons.Outlined.LocationSearching,
-                                contentDescription = "LocationSearching"
-                            )
-                            Text(text = context.resources.getString(R.string.weather_location_searching))
-                        }
-                    })
-
-            }
-
-            if (!isConnect) {
-                ChkNetWork(
-                    onCheckState = {
-                        coroutineScope.launch {
-                            isConnect =  context.checkInternetConnected()
-                        }
-                    }
-                )
-            }
-
-
-
         }
 
     }
@@ -261,21 +302,16 @@ fun WeatherView(
 
     val context = LocalContext.current
 
-
-
-
     Column(
         modifier = modifier
             .padding(vertical = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Text(text =  item.toTextHeadLine()
             , modifier = Modifier.fillMaxWidth()
             , textAlign = TextAlign.Center
             , style  = MaterialTheme.typography.titleSmall
         )
-
 
         Text(item.toTextWeatherDesc()
             , modifier = Modifier.fillMaxWidth()
@@ -285,10 +321,7 @@ fun WeatherView(
 
         Row(
             modifier = Modifier.align(Alignment.Start)
-
         ) {
-
-
             Image(
                 painter =  painterResource(id = getWeatherIcon(item.icon)),
                 modifier = Modifier
@@ -300,17 +333,12 @@ fun WeatherView(
                 alignment = Alignment.Center,
             )
 
-
-
-
             Column (modifier = Modifier.padding(start= 10.dp)){
                 WeatherItem(id =  Icons.Outlined.WbTwilight, desc = item.toTextSun(context.resources::getString))
                 WeatherItem(id = Icons.Outlined.DeviceThermostat, desc = item.toTextTemp(context.resources::getString))
                 WeatherItem(id = Icons.Outlined.WindPower, desc = item.toTextWind(context.resources::getString))
                 WeatherItem(id = Icons.Outlined.Storm, desc = item.toTextWeather(context.resources::getString))
             }
-
-
         }
 
     }

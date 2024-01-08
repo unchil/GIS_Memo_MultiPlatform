@@ -288,7 +288,7 @@ private fun PreviewImageViewer(
                         contentAlignment = Alignment.Center
                     ){
                       //  ImageViewer(data = url, size = Size.ORIGINAL)
-                        PhotoPreview(data = url, width = 160.dp, height = 100.dp){   }
+                        PhotoPreview(data = url, width = 160.dp, height = 160.dp){   }
                      //  PhotoPreview(data = url, ){   }
                     }
 

@@ -73,12 +73,12 @@ class MainActivity : ComponentActivity() {
 
                     CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
                       //  GreetingView(Greeting().greet())
-                   //     WeatherContent(isSticky = false)
+                        WeatherContent(isSticky = false)
                      //   GoogleMapView()
 
                       //  CameraCompose(   navController = navController     )
 
-                        ImageViewer(data = url, size = Size.ORIGINAL)
+                   //     ImageViewer(data = url, size = Size.ORIGINAL)
                     }
 
 

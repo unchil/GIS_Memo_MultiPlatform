@@ -1,7 +1,7 @@
 [versions]
 accompanistNavigationAnimation = "0.31.2-alpha"
 accompanistPermissions = "0.31.0-alpha"
-agp = "8.1.2"
+agp = "8.2.1"
 androidMapsUtils = "3.5.2"
 animation = "1.6.0-beta03"
 cameraCore = "1.4.0-alpha03"
@@ -10,7 +10,7 @@ coilNetwork = "3.0.0-alpha01"
 coroutinesVersion = "1.7.3"
 dateTimeVersion = "0.4.1"
 foundationLayout = "1.6.0-beta03"
-gradle = "8.2.0"
+gradle = "8.2.1"
 kotlin = "1.9.21"
 compose = "1.5.4"
 compose-compiler = "1.5.6"
@@ -47,12 +47,8 @@ androidx-camera-view = {  group = "androidx.camera",  name = "camera-view" , ver
 androidx-foundation-layout = { module = "androidx.compose.foundation:foundation-layout", version.ref = "foundationLayout" }
 
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
-
 build-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
-
-
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
-
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coilNetwork" }
 
 coil-network = { module = "io.coil-kt.coil3:coil-network", version.ref = "coilNetwork" }
@@ -65,11 +61,6 @@ coil-core-android = { module = "io.coil-kt.coil3:coil-core-android", version.ref
 
 coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coilNetwork" }
 coil-compose-core-android = { module = "io.coil-kt.coil3:coil-compose-core-android", version.ref = "coilNetwork" }
-
-
-
-
-
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
