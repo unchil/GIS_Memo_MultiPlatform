@@ -105,6 +105,10 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         currentSnapShot.value = listOf()
     }
 
+    fun setAudioText(audioTextList: List<Pair<String, List<Url>>>){
+        currentAudioText.value = audioTextList
+    }
+
 
     fun setPhotoVideo(photoList:List<Url>, videoList:List<Url>){
         currentPhoto.value = photoList

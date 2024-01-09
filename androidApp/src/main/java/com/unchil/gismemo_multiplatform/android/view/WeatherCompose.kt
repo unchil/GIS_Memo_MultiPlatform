@@ -49,7 +49,6 @@ import com.unchil.gismemo_multiplatform.android.common.toTextWeather
 import com.unchil.gismemo_multiplatform.android.common.toTextWeatherDesc
 import com.unchil.gismemo_multiplatform.android.common.toTextWind
 import com.unchil.gismemo_multiplatform.android.viewModel.WeatherViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
