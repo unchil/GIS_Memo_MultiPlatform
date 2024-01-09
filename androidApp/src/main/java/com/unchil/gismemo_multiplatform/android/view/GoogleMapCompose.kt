@@ -102,9 +102,10 @@ fun GoogleMapView(){
     val mapProperties by remember {
         mutableStateOf(
             MapProperties(
-                mapType = MapType.NORMAL,
+                isBuildingEnabled =true,
                 isMyLocationEnabled = true,
-          //      mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.mapstyle_night)
+             //  mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.mapstyle_night),
+               mapType = MapType.TERRAIN
             )
         )
     }
@@ -125,7 +126,9 @@ fun GoogleMapView(){
 
     val onMapLongClickHandler: (LatLng) -> Unit = {
         markerState.position = it
-        cameraPositionState = CameraPositionState( position =  CameraPosition.fromLatLngZoom(it, 16f))
+        cameraPositionState = CameraPositionState(
+            position =  CameraPosition.fromLatLngZoom(it, 16f)
+        )
     }
 
     PermissionRequiredCompose(
@@ -133,8 +136,6 @@ fun GoogleMapView(){
         multiplePermissions = permissions,
         viewType = PermissionRequiredComposeFuncName.Weather
     ) {
-
-
         Scaffold(
             modifier = Modifier,
         ) {
@@ -146,8 +147,7 @@ fun GoogleMapView(){
                     properties = mapProperties,
                     uiSettings = uiSettings,
                     onMapLongClick = onMapLongClickHandler,
-
-                    ) {
+                ){
 
                     Marker(
                         state = markerState,

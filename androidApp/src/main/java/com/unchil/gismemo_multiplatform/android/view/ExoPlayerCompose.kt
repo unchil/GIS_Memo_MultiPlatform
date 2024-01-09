@@ -1,5 +1,6 @@
 package com.unchil.gismemo_multiplatform.android.view
 
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
@@ -35,6 +36,7 @@ import com.unchil.gismemo_multiplatform.android.MyApplicationTheme
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
 
 fun Context.getExoPlayer(exoPlayerListener: Player.Listener): ExoPlayer {
     return ExoPlayer.Builder(this).build().apply {
@@ -155,39 +157,36 @@ fun  ExoplayerCompose(
                 text = mediaItemTitle,
                 textAlign = TextAlign.Center
             )
-
         }
 
-        DisposableEffect(
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                AndroidView(
-                    factory = { context ->
 
-                        PlayerView(context).apply {
-                            player = exoPlayer
-                            this.controllerShowTimeoutMs = 0
-
-                            val params = FrameLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.MATCH_PARENT
-                            )
-                            layoutParams = params
-                        }
-
-                    },
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
+            AndroidView(
+                factory = { context ->
+
+                    PlayerView(context).apply {
+                        player = exoPlayer
+                        this.controllerShowTimeoutMs = 0
+
+                        val params = FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+                        layoutParams = params
+                    }
+
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        DisposableEffect(key1 = exoPlayer){
             onDispose {
                 exoPlayer.release()
             }
         }
-
-
-
 
 
     }
@@ -201,9 +200,11 @@ fun  ExoplayerCompose(
 private fun PrevExoplayerCompose(){
 
     val uriList = listOf<Uri>(
-        "/data/data/com.example.gismemo/files/videos/2023-08-23-09-56-21-341.mp4".toUri(),
-        "/data/data/com.example.gismemo/files/videos/2023-08-23-09-56-37-675.mp4".toUri()
+        "/data/data/com.unchil.gismemo_multiplatform.android/files/videos/test.mp4".toUri()
     )
+
+
+
 
     MyApplicationTheme {
 

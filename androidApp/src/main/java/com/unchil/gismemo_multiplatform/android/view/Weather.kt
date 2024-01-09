@@ -128,7 +128,6 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
                 fusedLocationProviderClient.lastLocation.addOnCompleteListener( context.mainExecutor) { task ->
                     if (task.isSuccessful && task.result != null ) {
                         isSetLocation = true
-
                         viewModel.onEvent(
                             WeatherViewModel.Event.SearchWeather(task.result.toLatLngAlt())
                         )
