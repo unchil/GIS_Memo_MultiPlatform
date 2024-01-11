@@ -126,16 +126,8 @@ class WriteMemoViewModel (val repository: GisMemoRepository) : ViewModel() {
 
 
     private fun setSnapShot(snapShotList:  List<String>){
-
         repository.setSnapShot(snapShotList)
-        /*
-        viewModelScope.launch {
-            repository.setSnapShot(snapShotList)
-        }
-
-         */
-      //      repository.setSelectedTab(WriteMemoDataType.SNAPSHOT)
-
+        repository.setSelectedTab(WriteMemoDataType.SNAPSHOT)
     }
 
 

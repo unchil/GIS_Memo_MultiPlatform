@@ -41,13 +41,6 @@ class MemoDataViewModel  (val repository: GisMemoRepository, val user:MemoDataUs
     init {
         when(user){
             MemoDataUser.DetailMemoView -> {
-                /*
-                photoListStateFlow  = repository.detailPhoto
-                videoListStateFlow  = repository.detailVideo
-                audioTextStateFlow  = repository.detailAudioText
-                snapShotListStateFlow  = repository.detailSnapShot
-
-                 */
 
                 viewModelScope.launch {
                     repository.detailVideo.collect { it ->
@@ -74,13 +67,6 @@ class MemoDataViewModel  (val repository: GisMemoRepository, val user:MemoDataUs
                 }
             }
             MemoDataUser.WriteMemoView -> {
-                /*
-                photoListStateFlow = repository.currentPhoto
-                videoListStateFlow = repository.currentVideo
-                audioTextStateFlow = repository.currentAudioText
-                snapShotListStateFlow = repository.currentSnapShot
-
-                 */
 
                 viewModelScope.launch {
                     repository.currentVideo.collect { it ->

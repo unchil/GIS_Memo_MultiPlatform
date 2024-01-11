@@ -175,14 +175,7 @@ fun WriteMemoCompose(navController: NavController){
         val repository = LocalRepository.current
         val viewModel = remember { WriteMemoViewModel( repository = repository ) }
 
-//-----------------------------
-        val aa = viewModel.snapShotListStateFlow.collectAsState()
 
-        LaunchedEffect(key1 = aa.value){
-            val bb = aa.value.size
-        }
-
-        //-----------------------------
         val fusedLocationProviderClient = remember {
             LocationServices.getFusedLocationProviderClient(context)
         }
@@ -545,7 +538,10 @@ fun WriteMemoCompose(navController: NavController){
                                     snapShotList.add(filePath)
                                     viewModel.onEvent(
                                         WriteMemoViewModel.Event.SetSnapShot(
-                                            snapShotList
+                                            //
+                                            //  MutableList -> List Casting 하지 않으면 갱신 되지 않음.
+                                            //
+                                            snapShotList.toList()
                                         )
                                     )
                                     isSnapShot = false

@@ -24,9 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -36,29 +33,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
-import coil3.PlatformContext
-import coil3.size.Size
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
-import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import com.jetbrains.handson.kmm.shared.data.DestinationsLocalDataSource
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
-import com.unchil.gismemo.view.WeatherContent
-import com.unchil.gismemo_multiplatform.Greeting
-import com.unchil.gismemo_multiplatform.Platform
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
-import com.unchil.gismemo_multiplatform.android.model.MemoDataUser
-import com.unchil.gismemo_multiplatform.android.view.CameraCompose
-import com.unchil.gismemo_multiplatform.android.view.ExoplayerCompose
-import com.unchil.gismemo_multiplatform.android.view.GoogleMapView
-import com.unchil.gismemo_multiplatform.android.view.ImageViewer
 import com.unchil.gismemo_multiplatform.android.view.WriteMemoCompose
-import com.unchil.gismemo_multiplatform.getPlatform
+
 
 
 val LocalRepository = compositionLocalOf<GisMemoRepository> { error("No repository handler found!") }
@@ -68,8 +54,6 @@ class MainActivity : ComponentActivity() {
 
     private val permissionsManager = PermissionsManager()
     private val repository = GisMemoApp.repository!!
-
-       // =  GisMemoRepository( DatabaseDriverFactory(context = GisMemoApp.context()))
 
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,6 +83,7 @@ class MainActivity : ComponentActivity() {
                         (LocalRepository provides repository),
                     ){
                  //   CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
+
 
                         WriteMemoCompose(navController = navController)
                       //  ExoplayerCompose( uriList = uriList)

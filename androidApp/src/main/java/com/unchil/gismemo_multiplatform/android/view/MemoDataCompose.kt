@@ -161,9 +161,8 @@ fun MemoDataCompose(
             WriteMemoDataType.PHOTO ->  MemoData.Photo(dataList = viewModel.photoListStateFlow.collectAsState().value.toMutableList())
             WriteMemoDataType.AUDIOTEXT -> MemoData.AudioText(dataList = viewModel.audioTextStateFlow.collectAsState().value.toMutableList())
             WriteMemoDataType.VIDEO ->  MemoData.Video(dataList = viewModel.videoListStateFlow.collectAsState().value.toMutableList())
-            WriteMemoDataType.SNAPSHOT ->  {
-                MemoData.SnapShot(dataList = viewModel.snapShotListStateFlow.collectAsState().value.toMutableList())
-            }
+            WriteMemoDataType.SNAPSHOT ->   MemoData.SnapShot(dataList = viewModel.snapShotListStateFlow.collectAsState().value.toMutableList())
+
         }
     )
 
