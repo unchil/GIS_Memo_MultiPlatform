@@ -56,6 +56,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -69,6 +70,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -77,6 +79,7 @@ import androidx.core.util.Consumer
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import coil3.toUri
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -85,6 +88,7 @@ import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
+import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
@@ -93,6 +97,7 @@ import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredComposeFuncName
 import com.unchil.gismemo_multiplatform.android.navigation.GisMemoDestinations
 import com.unchil.gismemo_multiplatform.android.viewModel.CameraViewModel
+import com.unchil.gismemo_multiplatform.android.viewModel.SpeechRecognizerViewModel
 import io.ktor.http.Url
 import kotlinx.coroutines.launch
 import java.io.File
@@ -205,9 +210,8 @@ fun CameraCompose( navController: NavController? = null   ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    val viewModel = remember {
-        CameraViewModel(repository = GisMemoRepository(DatabaseDriverFactory(context = context))  )
-    }
+    val repository = LocalRepository.current
+    val viewModel = remember { CameraViewModel( repository = repository ) }
 
     val previewView: PreviewView = remember { PreviewView(context) }
     val videoCapture: MutableState<VideoCapture<Recorder>?> =   mutableStateOf(null)
@@ -254,13 +258,13 @@ fun CameraCompose( navController: NavController? = null   ) {
 
     val currentPhotoList = viewModel._currentPhoto
 
-    val photoList:MutableList<Url>
+    val photoList:MutableList<String>
             =  rememberSaveable { mutableListOf() }
 
     val currentVideoList = viewModel._currentVideo
 
 
-    val videoList:MutableList<Url>
+    val videoList:MutableList<String>
             =  rememberSaveable { mutableListOf()  }
 
     val findVideoList
@@ -274,7 +278,7 @@ fun CameraCompose( navController: NavController? = null   ) {
 
                     photoPreviewData = uri
 
-                    photoList.add(Url(urlString = uri.encodedPath?: "" ))
+                    photoList.add( uri.encodedPath ?: "")
 
                     findVideoList.add(isVideoRecording.value)
 
@@ -300,7 +304,7 @@ fun CameraCompose( navController: NavController? = null   ) {
 
 
                     videoList.add(
-                        Url(urlString =  event.outputResults.outputUri.encodedPath ?: "")
+                          event.outputResults.outputUri.encodedPath ?: ""
                     )
 
                     recordingLength = 0
@@ -468,7 +472,7 @@ fun CameraCompose( navController: NavController? = null   ) {
                                         else -> {
 
                                             if(findVideoList.last()) {
-                                                videoList.last().encodedPath?.let {videoUri ->
+                                                videoList.last().let {videoUri ->
                                                     navController?.navigate(
                                                         GisMemoDestinations.ExoPlayerView.createRoute(
                                                             videoUri
@@ -512,9 +516,10 @@ fun CameraCompose( navController: NavController? = null   ) {
 
 
                                     photoPreviewData = if (findVideoList.isEmpty()) {
-                                        mutableStateOf(R.drawable.outline_perm_media_black_48)
+                                     //   mutableIntStateOf(R.drawable.outline_perm_media_black_48)
+                                       R.drawable.outline_perm_media_black_48
                                     } else {
-                                        photoList.last()
+                                        photoList.last().toUri()
                                     }
 
 

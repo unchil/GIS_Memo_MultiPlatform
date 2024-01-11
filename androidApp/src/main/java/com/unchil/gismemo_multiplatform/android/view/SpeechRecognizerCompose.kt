@@ -55,12 +55,14 @@ import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
+import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.FileManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredComposeFuncName
 import com.unchil.gismemo_multiplatform.android.viewModel.SpeechRecognizerViewModel
+import com.unchil.gismemo_multiplatform.android.viewModel.WriteMemoViewModel
 import io.ktor.http.Url
 import java.io.FileOutputStream
 import java.util.Locale
@@ -99,24 +101,21 @@ fun SpeechRecognizerCompose(navController: NavController) {
     CheckPermission(multiplePermissionsState = multiplePermissionsState)
 
     val context = LocalContext.current
-
-
-    val viewModel = remember {
-        SpeechRecognizerViewModel (repository = GisMemoRepository(DatabaseDriverFactory(context = context))  )
-    }
+    val repository = LocalRepository.current
+    val viewModel = remember { SpeechRecognizerViewModel( repository = repository ) }
 
     val currentBackStack by navController.currentBackStackEntryAsState()
 
-    var recordingUrl: Url?  by rememberSaveable { mutableStateOf(null) }
+    var recordingUrl: String?  by rememberSaveable { mutableStateOf(null) }
 
 
     val currentAudioTextList = viewModel._currentAudioText
 
-    val audioTextList:MutableList<Pair<String, List<Url>>>
+    val audioTextList:MutableList<Pair<String, List<String>>>
             =  rememberSaveable { currentAudioTextList }
 
 
-    val audioTextData:Pair<MutableState<String>, MutableList<Url>>
+    val audioTextData:Pair<MutableState<String>, MutableList<String>>
             =  rememberSaveable { Pair(mutableStateOf(""), mutableListOf()) }
 
 
@@ -135,10 +134,10 @@ fun SpeechRecognizerCompose(navController: NavController) {
                     context.contentResolver.openInputStream(uri)?.copyTo(FileOutputStream(outputFilePath))
 
                     audioTextData.second.add(
-                        Url(outputFilePath)
+                        outputFilePath
                     )
 
-                    recordingUrl = Url(outputFilePath)
+                    recordingUrl = outputFilePath
 
                 }
 
@@ -257,7 +256,7 @@ fun SpeechRecognizerCompose(navController: NavController) {
                     .fillMaxWidth()
                     .height(280.dp)
                 ) {
-                    ExoplayerCompose(uri  = it.encodedPath.toUri() )
+                    ExoplayerCompose(uri  = it.toUri() )
                 }
             }
 

@@ -341,16 +341,6 @@ data class DrawingPolyline (
 )
 
 
-enum class WriteMemoDataType {
-    PHOTO,AUDIOTEXT,VIDEO,SNAPSHOT
-}
-
-val WriteMemoDataTypeList = listOf(
-    WriteMemoDataType.SNAPSHOT,
-    WriteMemoDataType.AUDIOTEXT,
-    WriteMemoDataType.PHOTO,
-    WriteMemoDataType.VIDEO
-)
 
 sealed class AsyncWeatherInfoState {
     data class Success(val data:CURRENTWEATHER_TBL):AsyncWeatherInfoState()

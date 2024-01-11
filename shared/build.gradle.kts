@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.skieGradle)
 }
 
 kotlin {
@@ -30,6 +31,8 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+
+              //  implementation(libs.gradle.plugin.loader)
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)
@@ -73,7 +76,7 @@ kotlin {
 
                 implementation(libs.ktor.client.okhttp)
            //     implementation(libs.ktor.client.android)
-
+                implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.coil.core.android)
                 implementation(libs.coil.compose.core.android)
                 implementation(libs.coil.network)

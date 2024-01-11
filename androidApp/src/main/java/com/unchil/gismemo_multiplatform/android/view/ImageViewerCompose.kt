@@ -287,8 +287,8 @@ private fun PreviewImageViewer(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ){
-                      //  ImageViewer(data = url, size = Size.ORIGINAL)
-                        PhotoPreview(data = url, width = 160.dp, height = 160.dp){   }
+                        ImageViewer(data = url, size = Size.ORIGINAL)
+                    //    PhotoPreview(data = url, width = 160.dp, height = 160.dp){   }
                      //  PhotoPreview(data = url, ){   }
                     }
 

@@ -4,7 +4,7 @@ pluginManagement {
         google()
         gradlePluginPortal()
         mavenCentral()
-      //  maven (   url ="https://androidx.dev/storage/compose-compiler/repository/"   )
+        maven (   url ="https://github.com/touchlab/SKIE/releases"   )
     }
 }
 
@@ -12,7 +12,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-      //  maven (  url ="https://androidx.dev/storage/compose-compiler/repository/" )
+        maven (   url ="https://github.com/touchlab/SKIE/releases"   )
     }
 }
 

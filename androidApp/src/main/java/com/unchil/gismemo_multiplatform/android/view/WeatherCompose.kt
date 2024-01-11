@@ -35,6 +35,7 @@ import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.ChkNetWork
+import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
@@ -107,12 +108,8 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
         val context = LocalContext.current
         val configuration = LocalConfiguration.current
         val coroutineScope = rememberCoroutineScope()
-
-        val viewModel = remember {
-            WeatherViewModel(
-                repository = GisMemoRepository(DatabaseDriverFactory(context = context))
-            )
-        }
+        val repository = LocalRepository.current
+        val viewModel = remember {  WeatherViewModel(repository = repository ) }
 
         val fusedLocationProviderClient = remember {
             LocationServices.getFusedLocationProviderClient(context)

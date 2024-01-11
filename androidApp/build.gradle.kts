@@ -63,7 +63,8 @@ dependencies {
 
     implementation (libs.accompanist.permissions)
 
-    implementation(libs.kotlinx.coroutines.android)
+  //  implementation(libs.kotlinx.coroutines.android)
+  //  implementation(libs.kotlinx.coroutines.android)
 
     // map
     implementation (libs.play.services.location)
@@ -109,7 +110,9 @@ dependencies {
     implementation (libs.androidx.media3.exoplayer.dash)
     implementation (libs.androidx.media3.ui)
 
-
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.kotlinx.coroutines.android)
 
  //   debugImplementation(libs.compose.ui.tooling)
 }

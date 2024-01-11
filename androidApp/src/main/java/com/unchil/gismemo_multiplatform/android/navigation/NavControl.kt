@@ -31,6 +31,10 @@ sealed class GisMemoDestinations(
 
     ){
 
+    object SpeechToText : GisMemoDestinations ( route = "voicerecording")
+
+    object CameraCompose : GisMemoDestinations ( route = "camerapreview")
+
     object PhotoPreview : GisMemoDestinations( route = "photopreview?${ARG_NAME_FILE_PATH}={$ARG_NAME_FILE_PATH}") {
 
         fun createRoute(filePath: Any): String {

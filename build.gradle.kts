@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.sqldelight).apply(false)
     alias(libs.plugins.kotlinSerialization).apply(false)
     alias(libs.plugins.secretsGradle).apply(false)
-
+    alias(libs.plugins.skieGradle).apply(false)
 }
 
 

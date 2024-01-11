@@ -7,13 +7,15 @@ animation = "1.6.0-beta03"
 cameraCore = "1.4.0-alpha03"
 coilCompose = "2.5.0"
 coilNetwork = "3.0.0-alpha01"
-coroutinesVersion = "1.7.3"
+coroutinesVersion = "1.8.0-RC2"
 dateTimeVersion = "0.4.1"
 foundationLayout = "1.6.0-beta03"
 gradle = "8.2.1"
+gradlePluginLoader = "0.6.1"
 kotlin = "1.9.21"
 compose = "1.5.4"
 compose-compiler = "1.5.6"
+lifecycleViewmodelKtx = "2.7.0-rc02"
 media3Exoplayer = "1.2.0"
 v_ComposeMaterial3 = "1.1.2"
 androidx-activityCompose = "1.8.2"
@@ -46,6 +48,8 @@ androidx-camera-view = {  group = "androidx.camera",  name = "camera-view" , ver
 
 androidx-foundation-layout = { module = "androidx.compose.foundation:foundation-layout", version.ref = "foundationLayout" }
 
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleViewmodelKtx" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 build-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
@@ -61,6 +65,7 @@ coil-core-android = { module = "io.coil-kt.coil3:coil-core-android", version.ref
 
 coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coilNetwork" }
 coil-compose-core-android = { module = "io.coil-kt.coil3:coil-compose-core-android", version.ref = "coilNetwork" }
+gradle-plugin-loader = { module = "co.touchlab.skie:gradle-plugin-loader", version.ref = "gradlePluginLoader" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
@@ -133,12 +138,13 @@ paging-runtime-uikit = { module = "app.cash.paging:paging-runtime-uikit", versio
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "coroutinesVersion" }
+#kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "coroutinesVersion" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelightVersion" }
 secretsGradle = { id ="com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
-
+skieGradle = { id = "co.touchlab.skie", version.ref = "gradlePluginLoader"}
 
 

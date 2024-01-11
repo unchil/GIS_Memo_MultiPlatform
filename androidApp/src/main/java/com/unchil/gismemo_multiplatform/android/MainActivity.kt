@@ -2,6 +2,7 @@ package com.unchil.gismemo_multiplatform.android
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -32,38 +34,59 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.NavHostController
+import coil3.PlatformContext
 import coil3.size.Size
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.jetbrains.handson.kmm.shared.GisMemoRepository
+import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import com.jetbrains.handson.kmm.shared.data.DestinationsLocalDataSource
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
 import com.unchil.gismemo.view.WeatherContent
 import com.unchil.gismemo_multiplatform.Greeting
+import com.unchil.gismemo_multiplatform.Platform
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
+import com.unchil.gismemo_multiplatform.android.model.MemoDataUser
 import com.unchil.gismemo_multiplatform.android.view.CameraCompose
+import com.unchil.gismemo_multiplatform.android.view.ExoplayerCompose
 import com.unchil.gismemo_multiplatform.android.view.GoogleMapView
 import com.unchil.gismemo_multiplatform.android.view.ImageViewer
+import com.unchil.gismemo_multiplatform.android.view.WriteMemoCompose
+import com.unchil.gismemo_multiplatform.getPlatform
+
+
+val LocalRepository = compositionLocalOf<GisMemoRepository> { error("No repository handler found!") }
 
 
 class MainActivity : ComponentActivity() {
 
     private val permissionsManager = PermissionsManager()
+    private val repository = GisMemoApp.repository!!
+
+       // =  GisMemoRepository( DatabaseDriverFactory(context = GisMemoApp.context()))
 
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
 
+
             val navController = rememberAnimatedNavController()
+
 
             val url = DestinationsLocalDataSource.craneDestinations.find {
                 it.city.equals("GRANADA")
             }?.imageUrl ?: ""
+
+            val uriList = listOf<Uri>(
+                "/data/data/com.unchil.gismemo_multiplatform.android/files/videos/test.mp4".toUri()
+            )
 
             MyApplicationTheme {
                 Surface(
@@ -71,9 +94,16 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
+                    CompositionLocalProvider(
+                        (LocalPermissionsManager provides permissionsManager),
+                        (LocalRepository provides repository),
+                    ){
+                 //   CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
+
+                        WriteMemoCompose(navController = navController)
+                      //  ExoplayerCompose( uriList = uriList)
                       //  GreetingView(Greeting().greet())
-                        WeatherContent(isSticky = false)
+                     //   WeatherContent(isSticky = false)
                      //   GoogleMapView()
 
                       //  CameraCompose(   navController = navController     )

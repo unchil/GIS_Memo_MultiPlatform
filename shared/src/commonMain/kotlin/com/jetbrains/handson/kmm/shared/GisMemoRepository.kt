@@ -6,6 +6,8 @@ import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import com.jetbrains.handson.kmm.shared.cache.GisMemoDao
+import com.jetbrains.handson.kmm.shared.data.WriteMemoDataType
+import com.jetbrains.handson.kmm.shared.data.WriteMemoDataTypeList
 import com.jetbrains.handson.kmm.shared.entity.AsyncWeatherInfoState
 import com.jetbrains.handson.kmm.shared.entity.CURRENTLOCATION_TBL
 import com.jetbrains.handson.kmm.shared.entity.DrawingPolyline
@@ -15,11 +17,8 @@ import com.jetbrains.handson.kmm.shared.entity.MEMO_TAG_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TEXT_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_WEATHER_TBL
-import com.jetbrains.handson.kmm.shared.entity.WriteMemoDataType
-import com.jetbrains.handson.kmm.shared.entity.WriteMemoDataTypeList
 import com.jetbrains.handson.kmm.shared.entity.toCURRENTWEATHER_TBL
 import com.jetbrains.handson.kmm.shared.network.GisMemoApi
-import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -35,22 +34,25 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
        private val gisMemoDao = GisMemoDao(databaseDriverFactory)
        private val api = GisMemoApi()
 
+    val currentSelectedTab: MutableStateFlow<WriteMemoDataType?>
+            = MutableStateFlow(null)
+
 
     val _currentWeatherStateFlow: MutableStateFlow<AsyncWeatherInfoState>
             = MutableStateFlow( AsyncWeatherInfoState.Empty)
 
 
-    val currentAudioText: MutableStateFlow<List<Pair<String, List<Url>>>>
+    val currentAudioText: MutableStateFlow<List<Pair<String, List<String>>>>
             = MutableStateFlow( listOf())
 
-    val currentPhoto:  MutableStateFlow<List<Url>>
+    val currentPhoto:  MutableStateFlow<List<String>>
             = MutableStateFlow( listOf())
 
-    val currentVideo: MutableStateFlow<List<Url>>
+    val currentVideo: MutableStateFlow<List<String>>
             = MutableStateFlow( listOf())
 
-    val currentSnapShot: MutableStateFlow<List<Url>>
-            = MutableStateFlow( listOf())
+    val currentSnapShot: MutableStateFlow<List<String>>
+            = MutableStateFlow( emptyList())
 
     val _markerMemoList:MutableStateFlow<List<MEMO_TBL>>
             = MutableStateFlow(listOf())
@@ -65,16 +67,16 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
     val selectedWeather:MutableStateFlow<MEMO_WEATHER_TBL?>
         = MutableStateFlow(null)
 
-    val detailAudioText: MutableStateFlow<List<Pair<String, List<Url>>>>
+    val detailAudioText: MutableStateFlow<List<Pair<String, List<String>>>>
             = MutableStateFlow( listOf())
 
-    val detailPhoto:  MutableStateFlow<List<Url>>
+    val detailPhoto:  MutableStateFlow<List<String>>
             = MutableStateFlow( listOf())
 
-    val detailVideo: MutableStateFlow<List<Url>>
+    val detailVideo: MutableStateFlow<List<String>>
             = MutableStateFlow( listOf())
 
-    val detailSnapShot: MutableStateFlow<List<Url>>
+    val detailSnapShot: MutableStateFlow<List<String>>
             = MutableStateFlow( listOf())
 
 
@@ -92,7 +94,29 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
             = MutableStateFlow(false)
 
 
-    val currentPolylineList:MutableStateFlow<List<DrawingPolyline>>     = MutableStateFlow(listOf())
+    val currentPolylineList:MutableStateFlow<List<DrawingPolyline>>
+        = MutableStateFlow(listOf())
+
+
+    fun setSelectedTab(data: WriteMemoDataType){
+        currentSelectedTab.value = data
+    }
+
+    fun updateCurrentIsDrawing(isDrawing:Boolean){
+        currentIsDrawing.value = isDrawing
+    }
+
+    fun updateCurrentIsEraser(isEraser:Boolean){
+        currentIsEraser.value = isEraser
+    }
+
+    fun updateCurrentIsLock(isLock:Boolean){
+        currentIsLock.value = isLock
+    }
+
+    fun updateCurrentIsMarker(isMarker:Boolean){
+        currentIsMarker.value = isMarker
+    }
 
     fun clearCurrentValue(){
         selectedTagList.value = arrayListOf()
@@ -105,16 +129,18 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         currentSnapShot.value = listOf()
     }
 
-    fun setAudioText(audioTextList: List<Pair<String, List<Url>>>){
+    fun setAudioText(audioTextList: List<Pair<String, List<String>>>){
         currentAudioText.value = audioTextList
     }
 
-
-    fun setPhotoVideo(photoList:List<Url>, videoList:List<Url>){
+    fun setPhotoVideo(photoList:List<String>, videoList:List<String>){
         currentPhoto.value = photoList
         currentVideo.value = videoList
     }
 
+    fun setSnapShot(data:List<String> ){
+          currentSnapShot.value = data
+    }
 
     suspend fun insertMemo(
         id:Long,
@@ -131,7 +157,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         val memoFileTblList = mutableListOf<MEMO_FILE_TBL>()
         val memoTextTblList = mutableListOf<MEMO_TEXT_TBL>()
 
-        val snapshot = currentSnapShot.value.first().encodedPath
+        val snapshot = currentSnapShot.value.first()
 
         val memoTbl = MEMO_TBL(
             id = id,
@@ -159,7 +185,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
                     type = WriteMemoDataType.SNAPSHOT.name,
                     index = index,
                     subIndex = 0,
-                    filePath = uri.encodedPath
+                    filePath = uri
                 )
             )
         }
@@ -171,7 +197,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
                     type = WriteMemoDataType.PHOTO.name,
                     index = index,
                     subIndex = 0,
-                    filePath = uri.encodedPath
+                    filePath = uri
                 )
             )
         }
@@ -183,7 +209,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
                     type = WriteMemoDataType.VIDEO.name,
                     index = index,
                     subIndex = 0,
-                    filePath = uri.encodedPath
+                    filePath = uri
                 )
             )
         }
@@ -205,7 +231,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
                         type = WriteMemoDataType.AUDIOTEXT.name,
                         index = index,
                         subIndex = subIndex,
-                        filePath = uri.encodedPath
+                        filePath = uri
                     )
                 )
             }
@@ -244,23 +270,27 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
                 WriteMemoDataType.PHOTO -> {
                     val newMemoItem = currentPhoto.value.toMutableList()
                     newMemoItem.clear()
-                    currentPhoto.emit(newMemoItem)
+                 //   currentPhoto.emit(newMemoItem)
+                    currentPhoto.value = newMemoItem
                 }
 
                 WriteMemoDataType.AUDIOTEXT -> {
                     val newMemoItem = currentAudioText.value.toMutableList()
                     newMemoItem.clear()
-                    currentAudioText.emit(newMemoItem)
+                  //  currentAudioText.emit(newMemoItem)
+                    currentAudioText.value = newMemoItem
                 }
                 WriteMemoDataType.VIDEO -> {
                     val newMemoItem = currentVideo.value.toMutableList()
                     newMemoItem.clear()
-                    currentVideo.emit(newMemoItem)
+                  //  currentVideo.emit(newMemoItem)
+                    currentVideo.value = newMemoItem
                 }
                 WriteMemoDataType.SNAPSHOT -> {
                     val newMemoItem = currentSnapShot.value.toMutableList()
                     newMemoItem.clear()
-                    currentSnapShot.emit(newMemoItem)
+                 //   currentSnapShot.emit(newMemoItem)
+                    currentSnapShot.value = newMemoItem
                 }
 
             }
@@ -311,14 +341,14 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         }
     }
 
-    fun getShareMemoData(   id:Long, completeHandle:(attachments:ArrayList<Url>,  comments:ArrayList<String>)->Unit )
+    fun getShareMemoData(   id:Long, completeHandle:(attachments:ArrayList<String>,  comments:ArrayList<String>)->Unit )
             = CoroutineScope(Dispatchers.IO).launch {
-        val attachments = arrayListOf<Url>()
+        val attachments = arrayListOf<String>()
         val comments = arrayListOf<String>()
 
 
         gisMemoDao.selectMemoFile(id).forEach {
-            attachments.add(Url(it.filePath))
+            attachments.add(it.filePath)
         }
 
         gisMemoDao.selectMemoText(id).forEach {
@@ -350,13 +380,13 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
 
     suspend fun setFiles(id:Long){
 
-        gisMemoDao.selectMemoFileListFlow(id).collectLatest {
+        gisMemoDao.selectMemoFileListFlow(id).collectLatest { it ->
             val currentSnapShotList = it.filter {
                 it.type ==  WriteMemoDataType.SNAPSHOT.name
             }.sortedBy {
                 it.index
             }.map {
-                Url(it.filePath)
+                it.filePath
             }
 
             detailSnapShot.emit( currentSnapShotList )
@@ -366,7 +396,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
             }.sortedBy {
                 it.index
             }.map {
-                Url(it.filePath)
+                it.filePath
             }
 
             detailPhoto.emit(  currentPhotoList )
@@ -376,14 +406,14 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
             }.sortedBy {
                 it.index
             }.map {
-                Url(it.filePath)
+                it.filePath
             }
 
             detailVideo.emit(  currentVideoList  )
 
             gisMemoDao.selectMemoTextListFlow(id).collectLatest {memoTextTblList ->
 
-                val audiTextList = mutableListOf<Pair<String,List<Url>>>()
+                val audiTextList = mutableListOf<Pair<String,List<String>>>()
                 val audioTextFileList = it.filter { it.type ==  WriteMemoDataType.AUDIOTEXT.name}
 
                 memoTextTblList.forEach {commentList ->
@@ -395,7 +425,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
                             }.sortedBy {
                                 it.subIndex
                             }.map {
-                                Url(it.filePath)
+                                it.filePath
                             }
                         )
                     )

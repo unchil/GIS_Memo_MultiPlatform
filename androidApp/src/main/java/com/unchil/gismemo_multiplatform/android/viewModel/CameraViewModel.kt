@@ -10,8 +10,8 @@ import kotlinx.coroutines.launch
 
 class CameraViewModel (val repository: GisMemoRepository) : ViewModel() {
 
-    var _currentPhoto: MutableList<Url> = mutableListOf()
-    var _currentVideo: MutableList<Url> = mutableListOf()
+    var _currentPhoto: MutableList<String> = mutableListOf()
+    var _currentVideo: MutableList<String> = mutableListOf()
 
     init {
         _currentPhoto  = repository.currentPhoto.value.toMutableList()
@@ -30,7 +30,7 @@ class CameraViewModel (val repository: GisMemoRepository) : ViewModel() {
     }
 
 
-    private fun setPhotoVideo(photoList:List<Url>, videoList:List<Url>){
+    private fun setPhotoVideo(photoList:List<String>, videoList:List<String>){
         viewModelScope.launch {
             repository.setPhotoVideo(photoList, videoList)
         }
@@ -38,14 +38,14 @@ class CameraViewModel (val repository: GisMemoRepository) : ViewModel() {
 
 
     sealed class Event {
-        data class SetPhotoVideo(val photoList:List<Url>, val videoList:List<Url>):Event()
+        data class SetPhotoVideo(val photoList:List<String>, val videoList:List<String>):Event()
     }
 
     private val _effect = MutableSharedFlow<Effect>()
     val effect: SharedFlow<Effect> = _effect
 
     sealed class Effect {
-        object NoAction: Effect()
+        data object NoAction: Effect()
     }
 
 

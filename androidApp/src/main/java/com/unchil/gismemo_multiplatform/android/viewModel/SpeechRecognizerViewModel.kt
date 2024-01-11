@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 
 class SpeechRecognizerViewModel (val repository: GisMemoRepository) : ViewModel() {
 
-    var _currentAudioText: MutableList<Pair<String, List<Url>>> = mutableListOf()
+    var _currentAudioText: MutableList<Pair<String, List<String>>> = mutableListOf()
 
     init {
         _currentAudioText = repository.currentAudioText.value.toMutableList()
@@ -24,7 +24,7 @@ class SpeechRecognizerViewModel (val repository: GisMemoRepository) : ViewModel(
         }
     }
 
-    private fun setAudioText(data: List<Pair<String, List<Url>>>){
+    private fun setAudioText(data: List<Pair<String, List<String>>>){
         viewModelScope.launch {
             repository.setAudioText(data)
         }
@@ -32,7 +32,7 @@ class SpeechRecognizerViewModel (val repository: GisMemoRepository) : ViewModel(
 
 
     sealed class Event {
-        data class SetAudioText(val data: List<Pair<String,  List<Url>>>):Event()
+        data class SetAudioText(val data: List<Pair<String,  List<String>>>):Event()
 
     }
 }
