@@ -134,7 +134,6 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
     internal fun insertMemo(it: MEMO_TBL){
         dbQuery.transaction {
 
-            dbQuery.trancate_CURRENTWEATHER_TBL()
 
             dbQuery.insert_MEMO_TBL(
                 id = it.id,

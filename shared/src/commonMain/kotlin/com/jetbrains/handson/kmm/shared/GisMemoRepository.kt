@@ -246,16 +246,14 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         gisMemoDao.insertMemoFile(memoFileTblList)
         gisMemoDao.insertMemoText(memoTextTblList)
 
+
         gisMemoDao.selectCurrentWeatherFlow.collectLatest {
             it?.let {
+                it.dt = id
                 gisMemoDao.insertMemoWeather(it)
             }
         }
-        /*
-        _currentWeather.value?.let {
-            gisMemoDao.insertMemoWeather(it)
-        }
-         */
+
 
         initMemoItem()
 
