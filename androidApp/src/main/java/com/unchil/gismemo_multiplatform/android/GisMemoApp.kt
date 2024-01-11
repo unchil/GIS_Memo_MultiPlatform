@@ -26,9 +26,7 @@ class GisMemoApp: Application(), SingletonImageLoader.Factory {
     override fun onCreate() {
         super.onCreate()
         platform.context = applicationContext
-        platform.repository?.let {
-            repository = it
-        }
+        repository = platform.getRepository(applicationContext)
 
     }
 

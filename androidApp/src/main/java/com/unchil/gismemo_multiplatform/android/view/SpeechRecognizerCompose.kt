@@ -51,19 +51,15 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.jetbrains.handson.kmm.shared.GisMemoRepository
-import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.LocalRepository
-import com.unchil.gismemo_multiplatform.android.MyApplicationTheme
+import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.FileManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredComposeFuncName
 import com.unchil.gismemo_multiplatform.android.viewModel.SpeechRecognizerViewModel
-import com.unchil.gismemo_multiplatform.android.viewModel.WriteMemoViewModel
-import io.ktor.http.Url
 import java.io.FileOutputStream
 import java.util.Locale
 

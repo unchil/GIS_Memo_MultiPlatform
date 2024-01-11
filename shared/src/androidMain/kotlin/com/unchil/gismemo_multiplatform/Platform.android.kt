@@ -8,18 +8,19 @@ import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 class AndroidPlatform : Platform {
     override val name: String = "Android ${android.os.Build.VERSION.SDK_INT}"
 
-    override var context: PlatformContext? = null
-        set(value) {
-            field = value as PlatformContext
-        }
+    override var context: Context? = null
 
-    override val repository: GisMemoRepository?
-        get() =
-            if(this.context == null) {
-                null
-            } else {
-                GisMemoRepository( DatabaseDriverFactory(this.context!!) )
-            }
+    override var repository: GisMemoRepository? = null
+
+
+    override fun getRepository(context: Context): GisMemoRepository? {
+         if(repository != null){
+            repository
+        }else {
+            repository = GisMemoRepository( DatabaseDriverFactory(context) )
+        }
+        return repository
+    }
 
 
 }

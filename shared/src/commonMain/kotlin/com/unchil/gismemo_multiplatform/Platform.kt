@@ -8,6 +8,8 @@ interface Platform {
     var context:PlatformContext?
     val repository: GisMemoRepository?
 
+    fun getRepository(context: PlatformContext):GisMemoRepository?
+
 }
 
 expect fun getPlatform(): Platform

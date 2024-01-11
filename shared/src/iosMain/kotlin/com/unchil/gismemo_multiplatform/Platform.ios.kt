@@ -11,6 +11,10 @@ class IOSPlatform: Platform {
     override val repository: GisMemoRepository
         get() = GisMemoRepository( DatabaseDriverFactory() )
 
+    override fun getRepository(context: PlatformContext): GisMemoRepository {
+        return repository
+    }
+
 
 }
 
