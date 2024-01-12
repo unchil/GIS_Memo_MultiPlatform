@@ -3,6 +3,16 @@ package com.unchil.gismemo_multiplatform
 import coil3.PlatformContext
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
 
+object PlatformObject {
+    val platform: Platform = getPlatform()
+    fun getRepository(context: PlatformContext): GisMemoRepository {
+        return platform.getRepository(context)!!
+    }
+
+}
+
+
+/*
 class PlatformHandler(context: PlatformContext) {
 
     private val platform: Platform = getPlatform()
@@ -27,4 +37,4 @@ class PlatformHandler(context: PlatformContext) {
     }
 
 }
-
+*/

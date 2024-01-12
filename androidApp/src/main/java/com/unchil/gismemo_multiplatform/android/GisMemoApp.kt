@@ -10,9 +10,7 @@ import coil3.fetch.NetworkFetcher
 import coil3.memory.MemoryCache
 import coil3.util.DebugLogger
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
-import com.unchil.gismemo_multiplatform.Platform
-import com.unchil.gismemo_multiplatform.PlatformHandler
-import com.unchil.gismemo_multiplatform.getPlatform
+import com.unchil.gismemo_multiplatform.PlatformObject
 
 class GisMemoApp: Application(), SingletonImageLoader.Factory {
 
@@ -22,7 +20,8 @@ class GisMemoApp: Application(), SingletonImageLoader.Factory {
 
     override fun onCreate() {
         super.onCreate()
-        repository = PlatformHandler.Builder(applicationContext).repository
+      //  repository = PlatformHandler.Builder(applicationContext).repository
+        repository = PlatformObject.getRepository(applicationContext)
     }
 
     companion object {

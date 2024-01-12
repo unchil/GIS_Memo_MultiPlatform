@@ -87,7 +87,7 @@ import com.google.maps.android.compose.widgets.ScaleBar
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
 import com.unchil.gismemo.view.WeatherView
-import com.unchil.gismemo_multiplatform.PlatformHandler
+import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
@@ -698,7 +698,8 @@ fun PrevDetailMemo(){
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    val repository = PlatformHandler.Builder(context).repository
+   // val repository = PlatformHandler.Builder(context).repository
+    val repository = PlatformObject.getRepository(context)
 
     CompositionLocalProvider(
         LocalPermissionsManager provides permissionsManager,

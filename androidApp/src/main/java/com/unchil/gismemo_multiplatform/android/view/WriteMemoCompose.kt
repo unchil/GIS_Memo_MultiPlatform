@@ -108,7 +108,7 @@ import com.jetbrains.handson.kmm.shared.data.WriteMemoDataType
 import com.jetbrains.handson.kmm.shared.entity.CURRENTLOCATION_TBL
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
-import com.unchil.gismemo_multiplatform.PlatformHandler
+import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.ChkNetWork
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
@@ -1266,8 +1266,8 @@ fun PrevWriteMemo(){
     val context = LocalContext.current
 
 
-    val repository = PlatformHandler.Builder(context).repository
-
+   // val repository = PlatformHandler.Builder(context).repository
+    val repository = PlatformObject.getRepository(context)
     CompositionLocalProvider(
         LocalPermissionsManager provides permissionsManager,
         LocalRepository provides repository
