@@ -698,12 +698,11 @@ fun PrevDetailMemo(){
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    val platformHandler = PlatformHandler()
-    val repository = platformHandler.getRepository(context)
+    val repository = PlatformHandler.Builder(context).repository
 
     CompositionLocalProvider(
         LocalPermissionsManager provides permissionsManager,
-        LocalRepository provides repository!!
+        LocalRepository provides repository
     ) {
 
         MyApplicationTheme {

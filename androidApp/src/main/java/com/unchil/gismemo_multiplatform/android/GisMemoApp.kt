@@ -16,20 +16,13 @@ import com.unchil.gismemo_multiplatform.getPlatform
 
 class GisMemoApp: Application(), SingletonImageLoader.Factory {
 
-    private val platformHandler: PlatformHandler
-   // val platform: Platform
-
     init {
         instance = this
-     //   platform = getPlatform()
-        platformHandler = PlatformHandler()
     }
 
     override fun onCreate() {
         super.onCreate()
-       // platform.context = applicationContext
-        repository = platformHandler.getRepository(applicationContext)
-
+        repository = PlatformHandler.Builder(applicationContext).repository
     }
 
     companion object {
