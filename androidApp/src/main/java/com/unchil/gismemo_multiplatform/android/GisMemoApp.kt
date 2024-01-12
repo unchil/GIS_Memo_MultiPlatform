@@ -11,22 +11,24 @@ import coil3.memory.MemoryCache
 import coil3.util.DebugLogger
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.unchil.gismemo_multiplatform.Platform
+import com.unchil.gismemo_multiplatform.PlatformHandler
 import com.unchil.gismemo_multiplatform.getPlatform
 
 class GisMemoApp: Application(), SingletonImageLoader.Factory {
 
-
-    val platform: Platform
+    private val platformHandler: PlatformHandler
+   // val platform: Platform
 
     init {
         instance = this
-        platform = getPlatform()
+     //   platform = getPlatform()
+        platformHandler = PlatformHandler()
     }
 
     override fun onCreate() {
         super.onCreate()
-        platform.context = applicationContext
-        repository = platform.getRepository(applicationContext)
+       // platform.context = applicationContext
+        repository = platformHandler.getRepository(applicationContext)
 
     }
 

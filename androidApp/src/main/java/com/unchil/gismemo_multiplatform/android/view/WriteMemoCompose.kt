@@ -108,6 +108,7 @@ import com.jetbrains.handson.kmm.shared.data.WriteMemoDataType
 import com.jetbrains.handson.kmm.shared.entity.CURRENTLOCATION_TBL
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
+import com.unchil.gismemo_multiplatform.PlatformHandler
 import com.unchil.gismemo_multiplatform.android.ChkNetWork
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
@@ -1262,8 +1263,15 @@ fun ConfirmDialog(
 fun PrevWriteMemo(){
     val permissionsManager = PermissionsManager()
     val navController = rememberNavController()
+    val context = LocalContext.current
+    val platformHandler = PlatformHandler()
+    val repository = platformHandler.getRepository(context)
 
-    CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
+
+    CompositionLocalProvider(
+        LocalPermissionsManager provides permissionsManager,
+        LocalRepository provides repository!!
+    ) {
 
 
         MyApplicationTheme {

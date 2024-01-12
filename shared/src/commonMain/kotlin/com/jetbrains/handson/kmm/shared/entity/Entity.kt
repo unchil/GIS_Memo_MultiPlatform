@@ -16,71 +16,6 @@ data class CURRENTLOCATION_TBL(
     var altitude: Float
 )
 
-fun CurrentWeather.toCURRENTWEATHER_TABLE(): CURRENTWEATHER_TABLE {
-
-    val currentWeatherTbl = CURRENTWEATHER_TABLE(
-        dt = this.dt,
-        base = this.base,
-        visibility = this.visibility.toLong(),
-        timezone = this.timezone,
-        name = this.name,
-        latitude = this.coord.lat.toLong(),
-        longitude = this.coord.lon.toLong(),
-        main = this.weather[0].main,
-        description = this.weather[0].description,
-        icon = this.weather[0].icon,
-        temp = this.main.temp.toLong(),
-        feels_like = this.main.feels_like.toLong(),
-        pressure = this.main.pressure.toLong(),
-        humidity = this.main.humidity.toLong(),
-        temp_min = this.main.temp_min.toLong(),
-        temp_max = this.main.temp_max.toLong(),
-        speed = this.wind.speed.toLong(),
-        deg = this.wind.deg.toLong(),
-        aa = this.clouds.all.toLong(),
-        //  type = this.sys.type,
-        type = 0,
-        country = this.sys.country,
-        sunrise = this.sys.sunrise,
-        sunset = this.sys.sunset
-    )
-
-    return currentWeatherTbl
-}
-
-fun CurrentWeather.toCURRENTWEATHER_TBL(): CURRENTWEATHER_TBL {
-
-    val currentWeatherTbl = CURRENTWEATHER_TBL(
-        dt = this.dt,
-        base = this.base,
-        visibility = this.visibility,
-        timezone = this.timezone,
-        name = this.name,
-        latitude = this.coord.lat,
-        longitude = this.coord.lon,
-        main = this.weather[0].main,
-        description = this.weather[0].description,
-        icon = this.weather[0].icon,
-        temp = this.main.temp,
-        feels_like = this.main.feels_like,
-        pressure = this.main.pressure,
-        humidity = this.main.humidity,
-        temp_min = this.main.temp_min,
-        temp_max = this.main.temp_max,
-        speed = this.wind.speed,
-        deg = this.wind.deg,
-        all = this.clouds.all,
-        //  type = this.sys.type,
-        type = 0,
-        country = this.sys.country,
-        sunrise = this.sys.sunrise,
-        sunset = this.sys.sunset
-    )
-
-    return currentWeatherTbl
-}
-
-
 @Serializable
 data class CurrentWeather(
     @SerialName("coord") var coord: Coord,
@@ -99,7 +34,75 @@ data class CurrentWeather(
 //   var rain: Rain,
 //   var snow: Snow,
 
-)
+){
+    fun toCURRENTWEATHER_TABLE(): CURRENTWEATHER_TABLE {
+
+        val currentWeatherTbl = CURRENTWEATHER_TABLE(
+            dt = this.dt,
+            base = this.base,
+            visibility = this.visibility.toLong(),
+            timezone = this.timezone,
+            name = this.name,
+            latitude = this.coord.lat.toLong(),
+            longitude = this.coord.lon.toLong(),
+            main = this.weather[0].main,
+            description = this.weather[0].description,
+            icon = this.weather[0].icon,
+            temp = this.main.temp.toLong(),
+            feels_like = this.main.feels_like.toLong(),
+            pressure = this.main.pressure.toLong(),
+            humidity = this.main.humidity.toLong(),
+            temp_min = this.main.temp_min.toLong(),
+            temp_max = this.main.temp_max.toLong(),
+            speed = this.wind.speed.toLong(),
+            deg = this.wind.deg.toLong(),
+            aa = this.clouds.all.toLong(),
+            //  type = this.sys.type,
+            type = 0,
+            country = this.sys.country,
+            sunrise = this.sys.sunrise,
+            sunset = this.sys.sunset
+        )
+
+        return currentWeatherTbl
+    }
+
+    fun toCURRENTWEATHER_TBL(): CURRENTWEATHER_TBL {
+
+        val currentWeatherTbl = CURRENTWEATHER_TBL(
+            dt = this.dt,
+            base = this.base,
+            visibility = this.visibility,
+            timezone = this.timezone,
+            name = this.name,
+            latitude = this.coord.lat,
+            longitude = this.coord.lon,
+            main = this.weather[0].main,
+            description = this.weather[0].description,
+            icon = this.weather[0].icon,
+            temp = this.main.temp,
+            feels_like = this.main.feels_like,
+            pressure = this.main.pressure,
+            humidity = this.main.humidity,
+            temp_min = this.main.temp_min,
+            temp_max = this.main.temp_max,
+            speed = this.wind.speed,
+            deg = this.wind.deg,
+            all = this.clouds.all,
+            //  type = this.sys.type,
+            type = 0,
+            country = this.sys.country,
+            sunrise = this.sys.sunrise,
+            sunset = this.sys.sunset
+        )
+
+        return currentWeatherTbl
+    }
+
+
+}
+
+
 @Serializable
 data class Coord (
     @SerialName("lon") var lon: Float, //City geo location, longitude
@@ -318,7 +321,36 @@ data class MEMO_WEATHER_TBL(
     @SerialName("sunset")
     var sunset : Long
 
-)
+) {
+    fun toCURRENTWEATHER_TBL(): CURRENTWEATHER_TBL {
+        return CURRENTWEATHER_TBL(
+            dt = this.id,
+            base = this.base,
+            visibility = this.visibility,
+            timezone = this.timezone,
+            name = this.name,
+            latitude = this.latitude,
+            longitude = this.longitude,
+            main = this.main,
+            description = this.description,
+            icon = this.icon,
+            temp = this.temp,
+            feels_like = this.feels_like,
+            pressure = this.pressure,
+            humidity = this.humidity,
+            temp_min = this.temp_min,
+            temp_max = this.temp_max,
+            speed = this.speed,
+            deg = this.deg,
+            all = this.all,
+            //  type = this.sys.type,
+            type = 0,
+            country = this.country,
+            sunrise = this.sunrise,
+            sunset = this.sunset
+        )
+    }
+}
 
 
 @Serializable

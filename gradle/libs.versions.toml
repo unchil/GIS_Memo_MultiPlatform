@@ -13,8 +13,9 @@ foundationLayout = "1.6.0-beta03"
 gradle = "8.2.1"
 gradlePluginLoader = "0.6.1"
 kotlin = "1.9.21"
+v_kotlinMultiplatform = "1.9.22"
 compose = "1.5.4"
-compose-compiler = "1.5.6"
+compose-compiler = "1.5.8-dev-k1.9.22-42b6ec2b037"
 lifecycleViewmodelKtx = "2.7.0-rc02"
 media3Exoplayer = "1.2.0"
 v_ComposeMaterial3 = "1.1.2"
@@ -134,13 +135,18 @@ paging-common = { module = "app.cash.paging:paging-common", version.ref = "pagin
 paging-compose-common = { module = "app.cash.paging:paging-compose-common", version.ref = "pagingCommon" }
 paging-runtime-uikit = { module = "app.cash.paging:paging-runtime-uikit", version.ref = "pagingCommon" }
 
+kotlin-multiplatform-plugin = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "v_kotlinMultiplatform"}
+
+
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "coroutinesVersion" }
 #kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "coroutinesVersion" }
-kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+##kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "v_kotlinMultiplatform" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelightVersion" }

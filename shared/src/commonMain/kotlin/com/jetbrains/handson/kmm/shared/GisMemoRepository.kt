@@ -17,7 +17,6 @@ import com.jetbrains.handson.kmm.shared.entity.MEMO_TAG_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TEXT_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_WEATHER_TBL
-import com.jetbrains.handson.kmm.shared.entity.toCURRENTWEATHER_TBL
 import com.jetbrains.handson.kmm.shared.network.GisMemoApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

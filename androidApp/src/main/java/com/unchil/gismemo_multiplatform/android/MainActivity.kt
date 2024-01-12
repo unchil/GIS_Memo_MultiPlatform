@@ -44,6 +44,8 @@ import com.unchil.gismemo.shared.composables.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
+import com.unchil.gismemo_multiplatform.android.view.DetailMemoCompose
+import com.unchil.gismemo_multiplatform.android.view.GoogleMapView
 import com.unchil.gismemo_multiplatform.android.view.WriteMemoCompose
 
 
@@ -80,17 +82,17 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     CompositionLocalProvider(
-                        (LocalPermissionsManager provides permissionsManager),
-                        (LocalRepository provides repository),
+                        LocalPermissionsManager provides permissionsManager,
+                        LocalRepository provides repository,
                     ){
                  //   CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
 
-
-                        WriteMemoCompose(navController = navController)
+                        DetailMemoCompose(navController = navController, id = 1705031322810L)
+                     //   WriteMemoCompose(navController = navController)
                       //  ExoplayerCompose( uriList = uriList)
                       //  GreetingView(Greeting().greet())
                      //   WeatherContent(isSticky = false)
-                     //   GoogleMapView()
+                      //  GoogleMapView()
 
                       //  CameraCompose(   navController = navController     )
 
