@@ -95,8 +95,7 @@ import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.model.MapTypeMenuData
 
 import com.unchil.gismemo_multiplatform.android.model.SettingMenuData
-import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelType
-import com.unchil.gismemo_multiplatform.android.model.SnackbarChannelList
+import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelObject
 import com.unchil.gismemo_multiplatform.android.model.TagInfoDataObject
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.viewModel.DetailMemoViewModel
@@ -220,8 +219,8 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
         LaunchedEffect(channel) {
 
             channel.receiveAsFlow().collect { index ->
-                val channelData = SnackbarChannelList.first {
-                    it.channel == index
+                val channelData = SnackBarChannelObject.entries.first {channelInfo ->
+                    channelInfo.channel == index
                 }
 
                 val result = snackbarHostState.showSnackbar(
@@ -271,8 +270,8 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
         val checkEnableLocationService: () -> Unit = {
             fusedLocationProviderClient.lastLocation.addOnCompleteListener(context.mainExecutor) { task ->
                 if (!task.isSuccessful || task.result == null) {
-                    channel.trySend(SnackbarChannelList.first {
-                        it.channelType == SnackBarChannelType.LOCATION_SERVICE_DISABLE
+                    channel.trySend(SnackBarChannelObject.entries.first {channelInfo ->
+                        channelInfo.channelType == SnackBarChannelObject.Type.LOCATION_SERVICE_DISABLE
                     }.channel)
                 }
             }
@@ -556,14 +555,14 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
                         )
                     }
 
-                    SettingMenuData.Types.forEach {
+                    SettingMenuData.Types.forEach {menutype ->
                         AnimatedVisibility(
                             visible = isVisibleMenu.value,
                         ) {
                             IconButton(
                                 onClick = {
                                 //    hapticProcessing()
-                                    when (it) {
+                                    when (menutype) {
                                         SettingMenuData.Type.SECRET -> {
                                             isLock.value = !isLock.value
                                             memo.value?.let {
@@ -577,12 +576,12 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
 
                                             val snackBarChannelType =
                                                 if (isLock.value)
-                                                    SnackBarChannelType.LOCK_CHANGE_SET
+                                                    SnackBarChannelObject.Type.LOCK_CHANGE_SET
                                                 else
-                                                    SnackBarChannelType.LOCK_CHANGE_FREE
+                                                    SnackBarChannelObject.Type.LOCK_CHANGE_FREE
 
-                                            channel.trySend(SnackbarChannelList.first {
-                                                it.channelType == snackBarChannelType
+                                            channel.trySend(SnackBarChannelObject.entries.first {channelInfo ->
+                                                channelInfo.channelType == snackBarChannelType
                                             }.channel)
                                         }
 
@@ -599,12 +598,12 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
 
                                             val snackBarChannelType =
                                                 if (isMark.value)
-                                                    SnackBarChannelType.MARKER_CHANGE_SET
+                                                    SnackBarChannelObject.Type.MARKER_CHANGE_SET
                                                 else
-                                                    SnackBarChannelType.MARKER_CHANGE_FREE
+                                                    SnackBarChannelObject.Type.MARKER_CHANGE_FREE
 
-                                            channel.trySend(SnackbarChannelList.first {
-                                                it.channelType == snackBarChannelType
+                                            channel.trySend(SnackBarChannelObject.entries.first {channelInfo ->
+                                                channelInfo.channelType == snackBarChannelType
                                             }.channel)
 
                                         }
@@ -617,24 +616,28 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
 
                                     }
                                 }) {
-                                val icon = when (it) {
+                                val icon = when (menutype) {
                                     SettingMenuData.Type.SECRET -> {
-                                        if (isLock.value) SettingMenuData.desc(it).first else SettingMenuData.desc(it).second
-                                            ?: SettingMenuData.desc(it).first
+                                        if (isLock.value)
+                                            SettingMenuData.desc(menutype).first
+                                        else
+                                            SettingMenuData.desc(menutype).second
+                                                ?:SettingMenuData.desc(menutype).first
                                     }
                                     SettingMenuData.Type.MARKER -> {
-                                        if (isMark.value) SettingMenuData.desc(it).first else SettingMenuData.desc(it).second
-                                            ?: SettingMenuData.desc(it).first
+                                        if (isMark.value) SettingMenuData.desc(menutype).first
+                                        else SettingMenuData.desc(menutype).second
+                                            ?: SettingMenuData.desc(menutype).first
                                     }
                                     else -> {
-                                        SettingMenuData.desc(it).first
+                                        SettingMenuData.desc(menutype).first
                                     }
 
                                 }
 
                                 Icon(
                                     imageVector = icon,
-                                    contentDescription = it.name,
+                                    contentDescription = menutype.name,
                                 )
                             }
                         }

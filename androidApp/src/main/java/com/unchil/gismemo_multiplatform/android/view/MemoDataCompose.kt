@@ -54,8 +54,7 @@ import com.jetbrains.handson.kmm.shared.data.WriteMemoData
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.model.MemoData
 import com.unchil.gismemo_multiplatform.android.model.MemoDataUser
-import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelType
-import com.unchil.gismemo_multiplatform.android.model.SnackbarChannelList
+import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelObject
 import com.unchil.gismemo_multiplatform.android.model.WriteMemoDataDesc
 import com.unchil.gismemo_multiplatform.android.viewModel.MemoDataViewModel
 import com.unchil.gismemo_multiplatform.android.viewModel.WriteMemoViewModel
@@ -341,8 +340,8 @@ fun PagerAudioTextView(
                          //   hapticProcessing()
                             it(pagerState.currentPage)
                             channel?.let { channel ->
-                                channel.trySend(SnackbarChannelList.first { snackBarChannelData ->
-                                    snackBarChannelData.channelType == SnackBarChannelType.ITEM_DELETE
+                                channel.trySend(SnackBarChannelObject.entries.first { channelInfo ->
+                                    channelInfo.channelType == SnackBarChannelObject.Type.ITEM_DELETE
                                 }.channel)
                             }
                         },
@@ -481,8 +480,8 @@ fun PagerPhotoView(
                          //   hapticProcessing()
                             it(pagerState.currentPage)
                             channel?.let { channel ->
-                                channel.trySend(SnackbarChannelList.first { snackBarChannelData ->
-                                    snackBarChannelData.channelType == SnackBarChannelType.ITEM_DELETE
+                                channel.trySend(SnackBarChannelObject.entries.first { channelInfo ->
+                                    channelInfo.channelType == SnackBarChannelObject.Type.ITEM_DELETE
                                 }.channel)
                             }
                         },
@@ -609,8 +608,8 @@ fun PagerSnapShotView(
                    //         hapticProcessing()
                             deleteHandler(pagerState.currentPage)
                             channel?.let { channel ->
-                                channel.trySend(SnackbarChannelList.first { it ->
-                                    it.channelType == SnackBarChannelType.ITEM_DELETE
+                                channel.trySend(SnackBarChannelObject.entries.first { channelInfo->
+                                    channelInfo.channelType == SnackBarChannelObject.Type.ITEM_DELETE
                                 }.channel)
                             }
                         },
@@ -729,8 +728,8 @@ fun PagerVideoView(
                           //  hapticProcessing()
                             deleteHandler(videoTrackIndex)
                             channel?.let { channel ->
-                                channel.trySend(SnackbarChannelList.first { it ->
-                                    it.channelType == SnackBarChannelType.ITEM_DELETE
+                                channel.trySend(SnackBarChannelObject.entries.first { channelInfo ->
+                                    channelInfo.channelType == SnackBarChannelObject.Type.ITEM_DELETE
                                 }.channel)
                             }
                         },
