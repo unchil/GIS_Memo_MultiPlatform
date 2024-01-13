@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.android.gms.maps.model.LatLng
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
-import com.jetbrains.handson.kmm.shared.data.WriteMemoDataType
+import com.jetbrains.handson.kmm.shared.data.WriteMemoData
 import com.jetbrains.handson.kmm.shared.entity.CURRENTLOCATION_TBL
 import com.unchil.gismemo_multiplatform.android.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -127,7 +127,7 @@ class WriteMemoViewModel (val repository: GisMemoRepository) : ViewModel() {
 
     private fun setSnapShot(snapShotList:  List<String>){
         repository.setSnapShot(snapShotList)
-        repository.setSelectedTab(WriteMemoDataType.SNAPSHOT)
+        repository.setSelectedTab(WriteMemoData.Type.SNAPSHOT)
     }
 
 
@@ -161,7 +161,7 @@ class WriteMemoViewModel (val repository: GisMemoRepository) : ViewModel() {
         }
     }
 
-    private fun deleteMemoItem( type:WriteMemoDataType,  index:Int) {
+    private fun deleteMemoItem( type:WriteMemoData.Type,  index:Int) {
         viewModelScope.launch {
             repository.deleteMemoItem(type, index)
         }
@@ -204,7 +204,7 @@ class WriteMemoViewModel (val repository: GisMemoRepository) : ViewModel() {
         data class SetSnapShot(val snapShotList: List<String>): Event()
         data class ToRoute(val navController: NavController, val route:String) :Event()
 
-        data class DeleteMemoItem(val type: WriteMemoDataType, val index:Int): Event()
+        data class DeleteMemoItem(val type: WriteMemoData.Type, val index:Int): Event()
 
         data class UpdateIsDrawing(val isDrawing:Boolean):Event()
         data class UpdateIsEraser(val isEraser:Boolean): Event()

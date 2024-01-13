@@ -1,55 +1,28 @@
 package com.unchil.gismemo_multiplatform.android.model
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountBalance
-import androidx.compose.material.icons.outlined.Apartment
-import androidx.compose.material.icons.outlined.Cabin
 import androidx.compose.material.icons.outlined.Class
-import androidx.compose.material.icons.outlined.DownhillSkiing
 import androidx.compose.material.icons.outlined.Draw
-import androidx.compose.material.icons.outlined.EvStation
-import androidx.compose.material.icons.outlined.FitnessCenter
-import androidx.compose.material.icons.outlined.FlightLand
-import androidx.compose.material.icons.outlined.FlightTakeoff
 import androidx.compose.material.icons.outlined.Forest
-import androidx.compose.material.icons.outlined.Hiking
-import androidx.compose.material.icons.outlined.Hotel
-import androidx.compose.material.icons.outlined.House
-import androidx.compose.material.icons.outlined.Kayaking
-import androidx.compose.material.icons.outlined.LocalCafe
-import androidx.compose.material.icons.outlined.LocalTaxi
 import androidx.compose.material.icons.outlined.LocationOff
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.Park
 import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.PublishedWithChanges
 import androidx.compose.material.icons.outlined.Replay
-import androidx.compose.material.icons.outlined.Restaurant
-import androidx.compose.material.icons.outlined.RollerSkating
-import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.Screenshot
-import androidx.compose.material.icons.outlined.ScubaDiving
-import androidx.compose.material.icons.outlined.ShoppingCart
-import androidx.compose.material.icons.outlined.Skateboarding
-import androidx.compose.material.icons.outlined.Snowboarding
-import androidx.compose.material.icons.outlined.Store
 import androidx.compose.material.icons.outlined.Swipe
-import androidx.compose.material.icons.outlined.Theaters
 import androidx.compose.material.icons.outlined.Toll
 import androidx.compose.material.icons.outlined.Videocam
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.jetbrains.handson.kmm.shared.data.WriteMemoDataType
+import com.jetbrains.handson.kmm.shared.data.WriteMemoData
 import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.navigation.GisMemoDestinations
-import io.ktor.http.Url
 
 
 sealed class MemoData {
@@ -66,141 +39,145 @@ enum class MemoDataUser {
 }
 
 
-fun WriteMemoDataType.getDesc(): Pair<Int, ImageVector>{
-    return  when(this){
-        WriteMemoDataType.PHOTO -> {
-            Pair(R.string.dataContainer_Photo,  Icons.Outlined.Photo)
+
+fun WriteMemoDataDesc(type: WriteMemoData.Type): Pair<Int, ImageVector>{
+    return when(type){
+        WriteMemoData.Type.PHOTO -> {
+            Pair( R.string.dataContainer_Photo,  Icons.Outlined.Photo)
         }
-        WriteMemoDataType.AUDIOTEXT -> {
+        WriteMemoData.Type.AUDIOTEXT -> {
             Pair(R.string.dataContainer_AudioText,  Icons.Outlined.Mic)
         }
-        WriteMemoDataType.VIDEO -> {
+        WriteMemoData.Type.VIDEO -> {
             Pair(R.string.dataContainer_Video,  Icons.Outlined.Videocam)
         }
-        WriteMemoDataType.SNAPSHOT -> {
+        WriteMemoData.Type.SNAPSHOT -> {
             Pair(R.string.dataContainer_Screenshot,  Icons.Outlined.Screenshot)
         }
     }
 }
 
-enum class DrawingMenu {
-    Draw,Swipe,Eraser
-}
-
-val DrawingMenuList = listOf(
-    DrawingMenu.Draw,
-    DrawingMenu.Swipe,
-    DrawingMenu.Eraser
-)
-
-fun DrawingMenu.getDesc():Pair<ImageVector, Color> {
-    return when(this){
-        DrawingMenu.Draw -> {
-            Pair( Icons.Outlined.Draw , Color.Red)
-        }
-        DrawingMenu.Swipe -> {
-            Pair( Icons.Outlined.Swipe ,  Color.Red)
-        }
-        DrawingMenu.Eraser -> {
-            Pair( Icons.Outlined.Toll ,  Color.Red)
-        }
-
+object DrawingMenuData {
+    enum class Type {
+        Draw,Swipe,Eraser
     }
-}
-
-enum class CreateMenu {
-    SNAPSHOT,RECORD,CAMERA
-}
-
-val CreateMenuList = listOf(
-    CreateMenu.SNAPSHOT,
-    CreateMenu.RECORD,
-    CreateMenu.CAMERA,
-)
-
-
-fun CreateMenu.getDesc():Pair<ImageVector, String?>{
-    return  when(this){
-        CreateMenu.SNAPSHOT -> {
-            Pair(Icons.Outlined.Screenshot,  null)
-        }
-        CreateMenu.RECORD -> {
-            Pair(Icons.Outlined.Mic,  GisMemoDestinations.SpeechToText.route)
-        }
-        CreateMenu.CAMERA -> {
-            Pair(Icons.Outlined.Videocam, GisMemoDestinations.CameraCompose.route)
+    val Types = listOf(
+        Type.Draw,
+        Type.Swipe,
+        Type.Eraser
+    )
+    fun desc(type:Type):Pair<ImageVector, Color> {
+        return when(type){
+            Type.Draw -> {
+                Pair( Icons.Outlined.Draw , Color.Red)
+            }
+            Type.Swipe -> {
+                Pair( Icons.Outlined.Swipe ,  Color.Red)
+            }
+            Type.Eraser -> {
+                Pair( Icons.Outlined.Toll ,  Color.Red)
+            }
         }
     }
 }
 
-enum class SaveMenu{
-    CLEAR,SAVE
+object CreateMenuData {
+    enum class Type {
+        SNAPSHOT,RECORD,CAMERA
+    }
+
+    val Types = listOf(
+        Type.SNAPSHOT,
+        Type.RECORD,
+        Type.CAMERA,
+    )
+
+    fun desc(type: Type):Pair<ImageVector, String?>{
+         return  when(type){
+              Type.SNAPSHOT -> {
+                  Pair(Icons.Outlined.Screenshot,  null)
+              }
+              Type.RECORD -> {
+                  Pair(Icons.Outlined.Mic,  GisMemoDestinations.SpeechToText.route)
+              }
+              Type.CAMERA -> {
+                  Pair(Icons.Outlined.Videocam, GisMemoDestinations.CameraCompose.route)
+              }
+          }
+    }
 }
 
-val SaveMenuList = listOf(
-    SaveMenu.CLEAR,
-    SaveMenu.SAVE
-)
 
-fun SaveMenu.getDesc():Pair<ImageVector, ImageVector?> {
-    return when(this){
-        SaveMenu.CLEAR -> {
-            Pair(Icons.Outlined.Replay,  null)
-        }
-        SaveMenu.SAVE -> {
-            Pair(Icons.Outlined.PublishedWithChanges,  null)
+object SaveMenuData {
+    enum class Type{
+        CLEAR,SAVE
+    }
+    val Types = listOf(
+        Type.CLEAR,
+        Type.SAVE
+    )
+    fun desc(type:Type):Pair<ImageVector, ImageVector?> {
+        return when(type){
+            Type.CLEAR -> {
+                Pair(Icons.Outlined.Replay,  null)
+            }
+            Type.SAVE -> {
+                Pair(Icons.Outlined.PublishedWithChanges,  null)
+            }
         }
     }
 }
 
-enum class SettingMenu{
-    SECRET, MARKER,TAG
-}
 
-val SettingMenuList = listOf(
-    SettingMenu.SECRET,
-    SettingMenu.MARKER,
-    SettingMenu.TAG
-)
-
-fun SettingMenu.getDesc():Pair<ImageVector, ImageVector?> {
-    return when(this){
-        SettingMenu.SECRET -> {
-            Pair(Icons.Outlined.Lock,  Icons.Outlined.LockOpen)
+object SettingMenuData{
+    enum class Type {
+        SECRET, MARKER,TAG
+    }
+    val Types = listOf(
+        Type.SECRET,
+        Type.MARKER,
+        Type.TAG
+    )
+    fun desc(type:Type):Pair<ImageVector, ImageVector?> {
+        return when(type){
+            Type.SECRET -> {
+                Pair(Icons.Outlined.Lock,  Icons.Outlined.LockOpen)
+            }
+            Type.MARKER -> {
+                Pair(Icons.Outlined.LocationOn,  Icons.Outlined.LocationOff)
+            }
+            Type.TAG -> {
+                Pair(Icons.Outlined.Class,  null)
+            }
         }
-        SettingMenu.MARKER -> {
-            Pair(Icons.Outlined.LocationOn,  Icons.Outlined.LocationOff)
-        }
-        SettingMenu.TAG -> {
-            Pair(Icons.Outlined.Class,  null)
-        }
-
     }
 }
 
-enum class MapTypeMenu {
-    TERRAIN,NORMAL,HYBRID
-}
-
-val MapTypeMenuList = listOf(
-    MapTypeMenu.TERRAIN,
-    MapTypeMenu.NORMAL,
-    MapTypeMenu.HYBRID,
-)
-
-fun MapTypeMenu.getDesc():Pair<ImageVector, ImageVector?> {
-    return when(this){
-        MapTypeMenu.NORMAL -> {
-            Pair( Icons.Outlined.Map, null)
-        }
-        MapTypeMenu.TERRAIN -> {
-            Pair( Icons.Outlined.Forest, null)
-        }
-        MapTypeMenu.HYBRID -> {
-            Pair( Icons.Outlined.Public, null)
+object MapTypeMenuData {
+    enum class Type {
+        TERRAIN,NORMAL,HYBRID
+    }
+    val Types = listOf(
+        Type.TERRAIN,
+        Type.NORMAL,
+        Type.HYBRID,
+    )
+    fun desc(type:Type):Pair<ImageVector, ImageVector?> {
+        return when(type){
+            Type.TERRAIN -> {
+                Pair( Icons.Outlined.Forest, null)
+            }
+            Type.NORMAL -> {
+                Pair( Icons.Outlined.Map, null)
+            }
+            Type.HYBRID -> {
+                Pair( Icons.Outlined.Public, null)
+            }
         }
     }
 }
+
+
 
 enum class SearchOption {
     TITLE, SECRET, MARKER, TAG, DATE
@@ -215,6 +192,8 @@ fun SearchOption.name():String{
         SearchOption.DATE -> "날짜"
     }
 }
+
+
 
 sealed class SearchQueryDataValue {
     data class radioGroupOption(val index:Int) : SearchQueryDataValue()

@@ -92,13 +92,12 @@ import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredComposeFuncName
-import com.unchil.gismemo_multiplatform.android.model.MapTypeMenuList
-import com.unchil.gismemo_multiplatform.android.model.SettingMenu
-import com.unchil.gismemo_multiplatform.android.model.SettingMenuList
+import com.unchil.gismemo_multiplatform.android.model.MapTypeMenuData
+
+import com.unchil.gismemo_multiplatform.android.model.SettingMenuData
 import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelType
 import com.unchil.gismemo_multiplatform.android.model.SnackbarChannelList
 import com.unchil.gismemo_multiplatform.android.model.TagInfoDataList
-import com.unchil.gismemo_multiplatform.android.model.getDesc
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.viewModel.DetailMemoViewModel
 import kotlinx.coroutines.channels.Channel
@@ -165,7 +164,7 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
             mutableStateOf(
                 MapProperties(
                     mapType =    MapType.entries.first { mapType ->
-                        mapType.name == MapTypeMenuList[mapTypeIndex].name
+                        mapType.name == MapTypeMenuData.Types[mapTypeIndex].name
                     },
                     isMyLocationEnabled = true,
                     /*
@@ -502,7 +501,7 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
                             shape = ShapeDefaults.ExtraSmall
                         )
                 ) {
-                    MapTypeMenuList.forEachIndexed { index, it ->
+                    MapTypeMenuData.Types.forEachIndexed { index, it ->
                         AnimatedVisibility(
                             visible = isVisibleMenu.value,
                         ) {
@@ -518,7 +517,7 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
                                 }) {
 
                                 Icon(
-                                    imageVector = it.getDesc().first,
+                                    imageVector = MapTypeMenuData.desc(it).first,
                                     contentDescription = it.name,
                                 )
                             }
@@ -553,7 +552,7 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
                         )
                     }
 
-                    SettingMenuList.forEach {
+                    SettingMenuData.Types.forEach {
                         AnimatedVisibility(
                             visible = isVisibleMenu.value,
                         ) {
@@ -561,7 +560,7 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
                                 onClick = {
                                 //    hapticProcessing()
                                     when (it) {
-                                        SettingMenu.SECRET -> {
+                                        SettingMenuData.Type.SECRET -> {
                                             isLock.value = !isLock.value
                                             memo.value?.let {
                                                 viewModel.onEvent(
@@ -583,7 +582,7 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
                                             }.channel)
                                         }
 
-                                        SettingMenu.MARKER -> {
+                                        SettingMenuData.Type.MARKER -> {
                                             isMark.value = !isMark.value
                                             memo.value?.let {
                                                 viewModel.onEvent(
@@ -605,7 +604,7 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
                                             }.channel)
 
                                         }
-                                        SettingMenu.TAG -> {
+                                        SettingMenuData.Type.TAG -> {
                                             isTagDialog = !isTagDialog
                                             if(!isTagDialog){
                                                 tagDialogDissmissHandler.invoke()
@@ -615,16 +614,16 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
                                     }
                                 }) {
                                 val icon = when (it) {
-                                    SettingMenu.SECRET -> {
-                                        if (isLock.value) it.getDesc().first else it.getDesc().second
-                                            ?: it.getDesc().first
+                                    SettingMenuData.Type.SECRET -> {
+                                        if (isLock.value) SettingMenuData.desc(it).first else SettingMenuData.desc(it).second
+                                            ?: SettingMenuData.desc(it).first
                                     }
-                                    SettingMenu.MARKER -> {
-                                        if (isMark.value) it.getDesc().first else it.getDesc().second
-                                            ?: it.getDesc().first
+                                    SettingMenuData.Type.MARKER -> {
+                                        if (isMark.value) SettingMenuData.desc(it).first else SettingMenuData.desc(it).second
+                                            ?: SettingMenuData.desc(it).first
                                     }
                                     else -> {
-                                        it.getDesc().first
+                                        SettingMenuData.desc(it).first
                                     }
 
                                 }

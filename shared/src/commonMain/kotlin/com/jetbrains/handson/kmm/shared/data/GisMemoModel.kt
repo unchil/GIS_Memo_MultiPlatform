@@ -3,13 +3,16 @@ package com.jetbrains.handson.kmm.shared.data
 import androidx.compose.ui.graphics.vector.ImageVector
 
 
-enum class WriteMemoDataType {
-    PHOTO,AUDIOTEXT,VIDEO,SNAPSHOT
-}
+object WriteMemoData {
+    enum class Type {
+        PHOTO,AUDIOTEXT,VIDEO,SNAPSHOT
+    }
 
-val WriteMemoDataTypeList = listOf(
-    WriteMemoDataType.SNAPSHOT,
-    WriteMemoDataType.AUDIOTEXT,
-    WriteMemoDataType.PHOTO,
-    WriteMemoDataType.VIDEO
-)
+
+    val Types = listOf(
+        Type.SNAPSHOT,
+        Type.AUDIOTEXT,
+        Type.PHOTO,
+        Type.VIDEO
+    )
+}
