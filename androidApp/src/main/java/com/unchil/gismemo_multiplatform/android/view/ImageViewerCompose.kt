@@ -59,7 +59,12 @@ import com.unchil.gismemo_multiplatform.android.common.dpToSize
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun ImageViewer(data:Any, size: Size, contentScale: ContentScale = ContentScale.FillWidth, isZoomable:Boolean = false){
+fun ImageViewer(
+    data:Any,
+    size: Size,
+    contentScale: ContentScale = ContentScale.FillWidth,
+    isZoomable:Boolean = false
+){
 
     val context = LocalContext.current
     var scale = 1f

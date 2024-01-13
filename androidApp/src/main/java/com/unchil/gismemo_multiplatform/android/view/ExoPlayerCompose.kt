@@ -71,7 +71,11 @@ fun  ExoplayerCompose(
 
     val exoPlayerListener = object : Player.Listener {
 
-        override fun onPositionDiscontinuity(oldPosition: Player.PositionInfo, newPosition: Player.PositionInfo, reason: Int ) {
+        override fun onPositionDiscontinuity(
+            oldPosition: Player.PositionInfo,
+            newPosition: Player.PositionInfo,
+            reason: Int
+        ) {
             super.onPositionDiscontinuity(oldPosition, newPosition, reason)
             if(isVisibleAmplitudes) {
                 waveformProgress = newPosition.positionMs.toFloat() / mediaItemDuration

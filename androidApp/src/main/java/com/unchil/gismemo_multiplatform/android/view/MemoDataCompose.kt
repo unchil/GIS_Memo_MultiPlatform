@@ -142,17 +142,38 @@ fun MemoDataCompose(
                     .height(2.dp)
                     .fillMaxWidth(1f / (WriteMemoDataTypeList.count() - iteration))
                     .clip(CircleShape)
-                    .background(if (currentTabIndex.value == iteration) Color.Red else Color.Transparent))
+                    .background(
+                        if (currentTabIndex.value == iteration)
+                            Color.Red
+                        else Color.Transparent
+                    )
+            )
         }
     }
 
 
     val memoData: MutableState<MemoData?> = mutableStateOf(
         when (currentTabView.value){
-            WriteMemoDataType.PHOTO ->  MemoData.Photo(dataList = viewModel.photoListStateFlow.collectAsState().value.toMutableList())
-            WriteMemoDataType.AUDIOTEXT -> MemoData.AudioText(dataList = viewModel.audioTextStateFlow.collectAsState().value.toMutableList())
-            WriteMemoDataType.VIDEO ->  MemoData.Video(dataList = viewModel.videoListStateFlow.collectAsState().value.toMutableList())
-            WriteMemoDataType.SNAPSHOT ->   MemoData.SnapShot(dataList = viewModel.snapShotListStateFlow.collectAsState().value.toMutableList())
+            WriteMemoDataType.PHOTO ->  {
+                MemoData.Photo(
+                    dataList = viewModel.photoListStateFlow.collectAsState().value.toMutableList()
+                )
+            }
+            WriteMemoDataType.AUDIOTEXT -> {
+                MemoData.AudioText(
+                    dataList = viewModel.audioTextStateFlow.collectAsState().value.toMutableList()
+                )
+            }
+            WriteMemoDataType.VIDEO ->  {
+                MemoData.Video(
+                    dataList = viewModel.videoListStateFlow.collectAsState().value.toMutableList()
+                )
+            }
+            WriteMemoDataType.SNAPSHOT ->  {
+                MemoData.SnapShot(
+                    dataList = viewModel.snapShotListStateFlow.collectAsState().value.toMutableList()
+                )
+            }
 
         }
     )
@@ -173,10 +194,34 @@ fun MemoDataCompose(
     ) {
         memoData.value?.let {
             when (it) {
-                is MemoData.AudioText -> PagerAudioTextView(item = it, onDelete = if(deleteHandle != null) onDelete else null, channel = channel)
-                is MemoData.Photo -> PagerPhotoView(item = it, onDelete = if(deleteHandle != null) onDelete else null, channel = channel)
-                is MemoData.SnapShot ->  PagerSnapShotView(item = it, onDelete = if(deleteHandle != null) onDelete else null, channel = channel)
-                is MemoData.Video -> PagerVideoView(item = it, onDelete = if(deleteHandle != null) onDelete else null, channel = channel)
+                is MemoData.AudioText -> {
+                    PagerAudioTextView(
+                        item = it,
+                        onDelete = if(deleteHandle != null) onDelete else null,
+                        channel = channel
+                    )
+                }
+                is MemoData.Photo -> {
+                    PagerPhotoView(
+                        item = it,
+                        onDelete = if(deleteHandle != null) onDelete else null,
+                        channel = channel
+                    )
+                }
+                is MemoData.SnapShot -> {
+                    PagerSnapShotView(
+                        item = it,
+                        onDelete = if(deleteHandle != null) onDelete else null,
+                        channel = channel
+                    )
+                }
+                is MemoData.Video -> {
+                    PagerVideoView(
+                        item = it,
+                        onDelete = if(deleteHandle != null) onDelete else null,
+                        channel = channel
+                    )
+                }
             }
         }
     }
@@ -245,7 +290,11 @@ fun AudioTextView(data: Pair<String, List<String>>){
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PagerAudioTextView(item: MemoData.AudioText, onDelete:((page:Int) -> Unit)? = null, channel:Channel<Int>? = null){
+fun PagerAudioTextView(
+    item: MemoData.AudioText,
+    onDelete:((page:Int) -> Unit)? = null,
+    channel:Channel<Int>? = null
+){
     val context = LocalContext.current
   //  val isUsableHaptic = LocalUsableHaptic.current
   //  val hapticFeedback = LocalHapticFeedback.current
@@ -382,7 +431,11 @@ fun PagerAudioTextView(item: MemoData.AudioText, onDelete:((page:Int) -> Unit)? 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PagerPhotoView(item: MemoData.Photo, onDelete:((page:Int) -> Unit)? = null, channel:Channel<Int>? = null){
+fun PagerPhotoView(
+    item: MemoData.Photo,
+    onDelete:((page:Int) -> Unit)? = null,
+    channel:Channel<Int>? = null
+){
     val context = LocalContext.current
    // val isUsableHaptic = LocalUsableHaptic.current
  //   val hapticFeedback = LocalHapticFeedback.current
@@ -508,7 +561,11 @@ fun PagerPhotoView(item: MemoData.Photo, onDelete:((page:Int) -> Unit)? = null, 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PagerSnapShotView(item: MemoData.SnapShot, onDelete:((page:Int) -> Unit)? = null, channel:Channel<Int>? = null){
+fun PagerSnapShotView(
+    item: MemoData.SnapShot,
+    onDelete:((page:Int) -> Unit)? = null,
+    channel:Channel<Int>? = null
+){
 
     val context = LocalContext.current
  //   val isUsableHaptic = LocalUsableHaptic.current
@@ -555,16 +612,16 @@ fun PagerSnapShotView(item: MemoData.SnapShot, onDelete:((page:Int) -> Unit)? = 
                 style = MaterialTheme.typography.titleMedium
             )
 
-            onDelete?.let {
+            onDelete?.let { deleteHandler ->
                 if (defaultData.second > 0) {
                     IconButton(
                         modifier = Modifier.align(Alignment.CenterEnd),
                         onClick = {
                    //         hapticProcessing()
-                            it(pagerState.currentPage)
+                            deleteHandler(pagerState.currentPage)
                             channel?.let { channel ->
-                                channel.trySend(SnackbarChannelList.first { snackBarChannelData ->
-                                    snackBarChannelData.channelType == SnackBarChannelType.ITEM_DELETE
+                                channel.trySend(SnackbarChannelList.first { it ->
+                                    it.channelType == SnackBarChannelType.ITEM_DELETE
                                 }.channel)
                             }
                         },
@@ -627,7 +684,11 @@ fun PagerSnapShotView(item: MemoData.SnapShot, onDelete:((page:Int) -> Unit)? = 
 }
 
 @Composable
-fun PagerVideoView(item: MemoData.Video, onDelete:((page:Int) -> Unit)? = null, channel:Channel<Int>? = null){
+fun PagerVideoView(
+    item: MemoData.Video,
+    onDelete:((page:Int) -> Unit)? = null,
+    channel:Channel<Int>? = null
+){
     val context = LocalContext.current
  //   val isUsableHaptic = LocalUsableHaptic.current
  //   val hapticFeedback = LocalHapticFeedback.current
@@ -671,16 +732,16 @@ fun PagerVideoView(item: MemoData.Video, onDelete:((page:Int) -> Unit)? = null, 
                 style = MaterialTheme.typography.titleMedium
             )
 
-            onDelete?.let {
+            onDelete?.let { deleteHandler ->
                 if (defaultData.second > 0) {
                     IconButton(
                         modifier = Modifier.align(Alignment.CenterEnd),
                         onClick = {
                           //  hapticProcessing()
-                            it(videoTrackIndex)
+                            deleteHandler(videoTrackIndex)
                             channel?.let { channel ->
-                                channel.trySend(SnackbarChannelList.first { snackBarChannelData ->
-                                    snackBarChannelData.channelType == SnackBarChannelType.ITEM_DELETE
+                                channel.trySend(SnackbarChannelList.first { it ->
+                                    it.channelType == SnackBarChannelType.ITEM_DELETE
                                 }.channel)
                             }
                         },
@@ -730,11 +791,18 @@ fun PagerVideoView(item: MemoData.Video, onDelete:((page:Int) -> Unit)? = null, 
                         state = draggableState,
                         orientation = Orientation.Horizontal,
                         onDragStopped = {
-                            videoTrackIndex = if (it >= 0F) {
-                                if (videoTrackIndex - 1 > 0) --videoTrackIndex else 0
-                            } else {
-                                if (videoTrackIndex < defaultData.second - 1) ++videoTrackIndex else defaultData.second - 1
-                            }
+                            videoTrackIndex =
+                                if (it >= 0F) {
+                                    if (videoTrackIndex - 1 > 0)
+                                        --videoTrackIndex
+                                    else
+                                        0
+                                } else {
+                                    if (videoTrackIndex < defaultData.second - 1)
+                                        ++videoTrackIndex
+                                    else
+                                        defaultData.second - 1
+                                }
                         }
                     )
                     .fillMaxSize(),
