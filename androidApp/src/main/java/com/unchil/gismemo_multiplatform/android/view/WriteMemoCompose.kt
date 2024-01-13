@@ -124,8 +124,7 @@ import com.unchil.gismemo_multiplatform.android.model.SaveMenuData
 import com.unchil.gismemo_multiplatform.android.model.SettingMenuData
 import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelType
 import com.unchil.gismemo_multiplatform.android.model.SnackbarChannelList
-import com.unchil.gismemo_multiplatform.android.model.TagInfoDataList
-
+import com.unchil.gismemo_multiplatform.android.model.TagInfoDataObject
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.viewModel.WriteMemoViewModel
 import kotlinx.coroutines.channels.Channel
@@ -381,7 +380,7 @@ fun WriteMemoCompose(navController: NavController){
         val tagDialogDissmissHandler:() -> Unit = {
          //   hapticProcessing()
             selectedTagArray.value.clear()
-            TagInfoDataList.forEachIndexed { index, tagInfoData ->
+            TagInfoDataObject.entries.forEachIndexed { index, tagInfoData ->
                 if (tagInfoData.isSet.value) {
                     selectedTagArray.value.add(index)
                 }
@@ -408,7 +407,7 @@ fun WriteMemoCompose(navController: NavController){
 
             var snippets = ""
             selectedTagArray.value.forEach {
-                snippets = "${snippets} #${  context.resources.getString( TagInfoDataList[it].name)}"
+                snippets = "${snippets} #${  context.resources.getString( TagInfoDataObject.entries[it].name)}"
             }
 
 

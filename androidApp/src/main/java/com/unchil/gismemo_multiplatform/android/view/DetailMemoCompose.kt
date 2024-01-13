@@ -97,7 +97,7 @@ import com.unchil.gismemo_multiplatform.android.model.MapTypeMenuData
 import com.unchil.gismemo_multiplatform.android.model.SettingMenuData
 import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelType
 import com.unchil.gismemo_multiplatform.android.model.SnackbarChannelList
-import com.unchil.gismemo_multiplatform.android.model.TagInfoDataList
+import com.unchil.gismemo_multiplatform.android.model.TagInfoDataObject
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.viewModel.DetailMemoViewModel
 import kotlinx.coroutines.channels.Channel
@@ -141,7 +141,10 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
         }
 
         val memo = viewModel.memo.collectAsState()
+
         val selectedTagArray = viewModel.tagArrayList.collectAsState()
+        val selectedTags =  mutableStateOf(selectedTagArray.value)
+
         val weatherData = viewModel.weather.collectAsState()
 
         val coroutineScope = rememberCoroutineScope()
@@ -193,7 +196,7 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
         val isLock = mutableStateOf(memo.value?.isSecret ?: false)
         val isMark = mutableStateOf(memo.value?.isPin ?: false)
         val snippets = mutableStateOf(memo.value?.snippets ?: "")
-        val selectedTags = remember{  mutableStateOf(selectedTagArray.value) }
+
         var isTitleBox by  rememberSaveable{  mutableStateOf(true)}
 
         val fusedLocationProviderClient = remember {
@@ -246,10 +249,11 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
            // hapticProcessing()
             selectedTags.value.clear()
             var snippetsTemp = ""
-            TagInfoDataList.forEachIndexed { index, tagInfoData ->
+            TagInfoDataObject.entries.forEachIndexed { index, tagInfoData ->
                 if (tagInfoData.isSet.value) {
                     snippetsTemp = "${snippetsTemp } #${  context.resources.getString( 
-                        TagInfoDataList[index].name
+                      //  TagInfoDataList[index].name
+                        tagInfoData.name
                     )}"
                     selectedTags.value.add(index)
                 }

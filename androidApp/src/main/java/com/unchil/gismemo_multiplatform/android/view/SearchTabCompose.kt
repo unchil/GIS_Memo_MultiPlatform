@@ -31,13 +31,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
-import com.unchil.gismemo_multiplatform.android.model.TagInfoDataList
-import com.unchil.gismemo_multiplatform.android.model.clear
-import kotlinx.coroutines.launch
+import com.unchil.gismemo_multiplatform.android.model.TagInfoDataObject
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -51,9 +47,9 @@ fun AssistChipGroupView(
 
     val context = LocalContext.current
 
-    TagInfoDataList.clear()
+    TagInfoDataObject.clear()
     setState.value.forEach {
-        TagInfoDataList[it].isSet.value = true
+        TagInfoDataObject.entries[it].isSet.value = true
     }
 
     val  lazyStaggeredGridState = rememberLazyStaggeredGridState()
@@ -88,7 +84,7 @@ fun AssistChipGroupView(
                 horizontalItemSpacing = 6.dp,
                 userScrollEnabled = true,
             ){
-                itemsIndexed(TagInfoDataList) { index, it ->
+                itemsIndexed(TagInfoDataObject.entries) { index, it ->
                     AssistChip(
                         modifier = itemModifier,
                         shape = ShapeDefaults.ExtraSmall,
