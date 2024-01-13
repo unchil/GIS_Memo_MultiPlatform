@@ -337,11 +337,13 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         }
     }
 
-    fun getShareMemoData(   id:Long, completeHandle:(attachments:ArrayList<String>,  comments:ArrayList<String>)->Unit )
-            = CoroutineScope(Dispatchers.IO).launch {
+    fun getShareMemoData(
+        id:Long,
+        completeHandle:( attachments:ArrayList<String>, comments:ArrayList<String> ) -> Unit
+    ) = CoroutineScope(Dispatchers.IO).launch {
+
         val attachments = arrayListOf<String>()
         val comments = arrayListOf<String>()
-
 
         gisMemoDao.selectMemoFile(id).forEach {
             attachments.add(it.filePath)
