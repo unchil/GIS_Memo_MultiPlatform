@@ -12,10 +12,15 @@ dateTimeVersion = "0.4.1"
 foundationLayout = "1.6.0-beta03"
 gradle = "8.2.1"
 gradlePluginLoader = "0.6.1"
+
 kotlin = "1.9.21"
-v_kotlinMultiplatform = "1.9.22"
 compose = "1.5.4"
+
+# v_kotlinMultiplatform compiler-compiler
+# https://androidx.dev/storage/compose-compiler/repository
+v_kotlinMultiplatform = "1.9.22"
 compose-compiler = "1.5.8-dev-k1.9.22-42b6ec2b037"
+
 lifecycleViewmodelKtx = "2.7.0-rc02"
 media3Exoplayer = "1.2.0"
 v_ComposeMaterial3 = "1.1.2"
