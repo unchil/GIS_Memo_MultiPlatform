@@ -3,7 +3,6 @@ package com.unchil.gismemo_multiplatform.android.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.Uri
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.Box
@@ -26,7 +25,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -49,8 +47,8 @@ fun Context.getExoPlayer(exoPlayerListener: Player.Listener): ExoPlayer {
 @SuppressLint("UnsafeOptInUsageError")
 @Composable
 fun  ExoplayerCompose(
-    uri: Uri? = null,
-    uriList: List<Uri> = emptyList(),
+    uri: String? = null,
+    uriList: List<String> = emptyList(),
     isVisibleAmplitudes:Boolean = false,
     setTrackIndex:((ExoPlayer)->Unit)? = null,
     trackInfo:((Int)->Unit)? = null ){
@@ -199,8 +197,8 @@ fun  ExoplayerCompose(
 @Composable
 private fun PrevExoplayerCompose(){
 
-    val uriList = listOf<Uri>(
-        "/data/data/com.unchil.gismemo_multiplatform.android/files/videos/test.mp4".toUri()
+    val uriList = listOf<String>(
+        "/data/data/com.unchil.gismemo_multiplatform.android/files/videos/test.mp4"
     )
 
 

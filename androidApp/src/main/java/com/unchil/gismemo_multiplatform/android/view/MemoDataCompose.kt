@@ -1,7 +1,6 @@
 package com.unchil.gismemo_multiplatform.android.view
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -48,16 +47,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jetbrains.handson.kmm.shared.GisMemoRepository
-import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
+import coil3.size.Size
+import com.jetbrains.handson.kmm.shared.data.WriteMemoDataType
+import com.jetbrains.handson.kmm.shared.data.WriteMemoDataTypeList
+import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.model.MemoData
 import com.unchil.gismemo_multiplatform.android.model.MemoDataUser
 import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelType
@@ -65,14 +63,7 @@ import com.unchil.gismemo_multiplatform.android.model.SnackbarChannelList
 import com.unchil.gismemo_multiplatform.android.model.getDesc
 import com.unchil.gismemo_multiplatform.android.viewModel.MemoDataViewModel
 import com.unchil.gismemo_multiplatform.android.viewModel.WriteMemoViewModel
-import io.ktor.http.Url
 import kotlinx.coroutines.channels.Channel
-import coil3.size.Size
-import com.jetbrains.handson.kmm.shared.data.WriteMemoDataType
-import com.jetbrains.handson.kmm.shared.data.WriteMemoDataTypeList
-import com.unchil.gismemo_multiplatform.android.LocalRepository
-import com.unchil.gismemo_multiplatform.android.viewModel.SpeechRecognizerViewModel
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -372,9 +363,7 @@ fun PagerAudioTextView(item: MemoData.AudioText, onDelete:((page:Int) -> Unit)? 
             ) {
 
                 ExoplayerCompose(
-                    uriList = item.dataList[pagerState.targetPage].second.map {
-                        it.toUri()
-                    }
+                    uriList = item.dataList[pagerState.targetPage].second
                 )
             }
 
@@ -752,7 +741,7 @@ fun PagerVideoView(item: MemoData.Video, onDelete:((page:Int) -> Unit)? = null, 
                 contentAlignment = Alignment.Center
             ){
                 ExoplayerCompose(
-                    uriList = item.dataList.map { it.toUri() },
+                    uriList = item.dataList,
                     setTrackIndex = {exoPlayer ->
                         exoPlayer.seekTo(videoTrackIndex, 0)
                     }
