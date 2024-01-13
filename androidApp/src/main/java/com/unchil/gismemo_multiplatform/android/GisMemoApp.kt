@@ -1,7 +1,6 @@
 package com.unchil.gismemo_multiplatform.android
 
 import android.app.Application
-import android.content.Context
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -14,18 +13,11 @@ import com.unchil.gismemo_multiplatform.PlatformObject
 
 class GisMemoApp: Application(), SingletonImageLoader.Factory {
 
-    init {
-        instance = this
-    }
-
     override fun onCreate() {
         super.onCreate()
-      //  repository = PlatformHandler.Builder(applicationContext).repository
         repository = PlatformObject.getRepository(applicationContext)
     }
-
     companion object {
-        var instance:GisMemoApp? = null
         var repository:GisMemoRepository? = null
     }
 
