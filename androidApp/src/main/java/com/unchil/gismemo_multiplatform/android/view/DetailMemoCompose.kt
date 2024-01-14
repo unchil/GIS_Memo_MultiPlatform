@@ -214,7 +214,7 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
         val defaultCameraPosition = CameraPosition.fromLatLngZoom(currentLocation.value, 16f)
         val cameraPositionState = CameraPositionState(position = defaultCameraPosition)
 
-        val snackbarHostState = remember { SnackbarHostState() }
+        val snackBarHostState = remember { SnackbarHostState() }
         val channel = remember { Channel<Int>(Channel.CONFLATED) }
         LaunchedEffect(channel) {
 
@@ -223,7 +223,7 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
                     channelInfo.channel == index
                 }
 
-                val result = snackbarHostState.showSnackbar(
+                val result = snackBarHostState.showSnackbar(
                     message = context.resources.getString( channelData.message),
                     actionLabel = channelData.actionLabel,
                     withDismissAction = channelData.withDismissAction,
@@ -318,7 +318,7 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
             sheetDragHandle = { SheetDragHandler() },
             sheetPeekHeight = 90.dp,
             snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState)
+                SnackbarHost(hostState = snackBarHostState)
             }
         ) { padding ->
 
@@ -718,7 +718,7 @@ fun PrevDetailMemo(){
                 color = androidx.compose.material.MaterialTheme.colors.onPrimary,
                 contentColor = androidx.compose.material.MaterialTheme.colors.primary
             ) {
-                DetailMemoCompose(navController = navController, id = 1705031322810L)
+                DetailMemoCompose(navController = navController, id = 1705199816840)
             }
         }
 
