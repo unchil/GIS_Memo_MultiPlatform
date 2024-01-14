@@ -62,6 +62,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -133,6 +134,7 @@ import kotlinx.coroutines.launch
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.math.roundToInt
 
 typealias DrawingPolyline = List<LatLng>
 
@@ -184,7 +186,7 @@ fun WriteMemoCompose(navController: NavController){
         val coroutineScope = rememberCoroutineScope()
         var isDarkMode by remember { mutableStateOf(false) }
         var isGoCurrentLocation by remember { mutableStateOf(false) }
-        var mapTypeIndex by rememberSaveable { mutableStateOf(0) }
+        var mapTypeIndex by rememberSaveable { mutableIntStateOf(0) }
         val markerState = MarkerState(position = currentLocation)
         val defaultCameraPosition = CameraPosition.fromLatLngZoom(currentLocation, 16f)
         val cameraPositionState = CameraPositionState(position = defaultCameraPosition)
@@ -192,8 +194,8 @@ fun WriteMemoCompose(navController: NavController){
         var mapProperties by remember {
             mutableStateOf(
                 MapProperties(
-                    mapType = MapType.entries.first { mapType ->
-                        mapType.name == MapTypeMenuData.Types[mapTypeIndex].name
+                    mapType = MapType.entries.first { item ->
+                        item.name == MapTypeMenuData.Types[mapTypeIndex].name
                     },
                     isMyLocationEnabled = true,
                     mapStyleOptions = if(isDarkMode) {
@@ -266,17 +268,17 @@ fun WriteMemoCompose(navController: NavController){
             }
         }
 
-        val snackbarHostState = remember { SnackbarHostState() }
+        val snackBarHostState = remember { SnackbarHostState() }
         val channel = remember { Channel<Int>(Channel.CONFLATED) }
 
         LaunchedEffect(channel) {
             channel.receiveAsFlow().collect { index ->
-                val channelData = SnackBarChannelObject.entries.first {
-                    it.channel == index
+                val channelData = SnackBarChannelObject.entries.first {item ->
+                    item.channel == index
                 }
 
 
-                val result = snackbarHostState.showSnackbar(
+                val result = snackBarHostState.showSnackbar(
                     message = context.resources.getString( channelData.message),
                     actionLabel = channelData.actionLabel,
                     withDismissAction = channelData.withDismissAction,
@@ -295,8 +297,8 @@ fun WriteMemoCompose(navController: NavController){
                                 isMapClear = true
                                 selectedTagArray.value = arrayListOf()
 
-                                channel.trySend(SnackBarChannelObject.entries.first { channelInfo ->
-                                    channelInfo.channelType == SnackBarChannelObject.Type.MEMO_CLEAR_RESULT
+                                channel.trySend(SnackBarChannelObject.entries.first { item ->
+                                    item.channelType == SnackBarChannelObject.Type.MEMO_CLEAR_RESULT
                                 }.channel)
                             }
                             else -> {
@@ -345,7 +347,7 @@ fun WriteMemoCompose(navController: NavController){
                 cameraPositionState.projection?.let {
 
                     val latLng =
-                        it.fromScreenLocation(Point(Math.round(event.x), Math.round(event.y)))
+                        it.fromScreenLocation(Point(event.x.roundToInt(), event.y.roundToInt()))
 
                     when (event.action) {
                         MotionEvent.ACTION_DOWN -> {
@@ -376,7 +378,7 @@ fun WriteMemoCompose(navController: NavController){
             mutableStateOf(false)
         }
 
-        val tagDialogDissmissHandler:() -> Unit = {
+        val tagDialogDismissHandler:() -> Unit = {
          //   hapticProcessing()
             selectedTagArray.value.clear()
             TagInfoDataObject.entries.forEachIndexed { index, tagInfoData ->
@@ -389,8 +391,8 @@ fun WriteMemoCompose(navController: NavController){
         val checkEnableLocationService:()-> Unit = {
             fusedLocationProviderClient.lastLocation.addOnCompleteListener(context.mainExecutor) { task ->
                 if (!task.isSuccessful || task.result == null) {
-                    channel.trySend(SnackBarChannelObject.entries.first {
-                        it.channelType == SnackBarChannelObject.Type.LOCATION_SERVICE_DISABLE
+                    channel.trySend(SnackBarChannelObject.entries.first {item ->
+                        item.channelType == SnackBarChannelObject.Type.LOCATION_SERVICE_DISABLE
                     }.channel)
                 }
             }
@@ -406,7 +408,7 @@ fun WriteMemoCompose(navController: NavController){
 
             var snippets = ""
             selectedTagArray.value.forEach {
-                snippets = "${snippets} #${  context.resources.getString( TagInfoDataObject.entries[it].name)}"
+                snippets = "$snippets #${  context.resources.getString( TagInfoDataObject.entries[it].name)}"
             }
 
 
@@ -430,8 +432,8 @@ fun WriteMemoCompose(navController: NavController){
                 )
             )
 
-            channel.trySend(SnackBarChannelObject.entries.first { channelInfo ->
-                channelInfo.channelType == SnackBarChannelObject.Type.MEMO_SAVE
+            channel.trySend(SnackBarChannelObject.entries.first { item ->
+                item.channelType == SnackBarChannelObject.Type.MEMO_SAVE
             }.channel)
 
             snapShotList.clear()
@@ -491,7 +493,7 @@ fun WriteMemoCompose(navController: NavController){
             sheetContainerColor = MaterialTheme.colorScheme.surface,
             sheetContentColor = MaterialTheme.colorScheme.onSurface,
             snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState)
+                SnackbarHost(hostState = snackBarHostState)
             }
         ) {paddingValues ->
             Box(
@@ -507,7 +509,7 @@ fun WriteMemoCompose(navController: NavController){
                     onMapLongClick = onMapLongClickHandler,
                     onMapClick = {
                         if(isTagDialog) {
-                            tagDialogDissmissHandler.invoke()
+                            tagDialogDismissHandler.invoke()
                             isTagDialog = false
                         }
                     },
@@ -517,7 +519,7 @@ fun WriteMemoCompose(navController: NavController){
                     }
                 ) {
 
-                    MapEffect(key1 = isSnapShot, key2 = isMapClear, key3 = isGoCurrentLocation,) { map ->
+                    MapEffect(key1 = isSnapShot, key2 = isMapClear, key3 = isGoCurrentLocation) { map ->
                         if (isSnapShot) {
 
                                 map.snapshot { bitmap ->
@@ -543,8 +545,8 @@ fun WriteMemoCompose(navController: NavController){
 
 
                                     if (!isDefaultSnapShot) {
-                                        channel.trySend(SnackBarChannelObject.entries.first { channelInfo ->
-                                            channelInfo.channelType == SnackBarChannelObject.Type.SNAPSHOT_RESULT
+                                        channel.trySend(SnackBarChannelObject.entries.first { item ->
+                                            item.channelType == SnackBarChannelObject.Type.SNAPSHOT_RESULT
                                         }.channel)
                                     }
 
@@ -631,7 +633,7 @@ fun WriteMemoCompose(navController: NavController){
                         )
                 ) {
 
-                    SaveMenuData.Types.forEach {menutype ->
+                    SaveMenuData.Types.forEach {menuType ->
                         AnimatedVisibility(
                             visible = isVisibleMenu.value,
                         ) {
@@ -639,10 +641,10 @@ fun WriteMemoCompose(navController: NavController){
                             IconButton(
                                 onClick = {
                                  //   hapticProcessing()
-                                    when (menutype) {
+                                    when (menuType) {
                                         SaveMenuData.Type.CLEAR -> {
-                                            channel.trySend(SnackBarChannelObject.entries.first {channelInfo ->
-                                                channelInfo.channelType == SnackBarChannelObject.Type.MEMO_CLEAR_REQUEST
+                                            channel.trySend(SnackBarChannelObject.entries.first {item ->
+                                                item.channelType == SnackBarChannelObject.Type.MEMO_CLEAR_REQUEST
                                             }.channel)
                                         }
                                         SaveMenuData.Type.SAVE -> {
@@ -666,8 +668,8 @@ fun WriteMemoCompose(navController: NavController){
                                 }
                             ) {
                                 Icon(
-                                    imageVector = SaveMenuData.desc(menutype).first,
-                                    contentDescription = menutype.name,
+                                    imageVector = SaveMenuData.desc(menuType).first,
+                                    contentDescription = menuType.name,
                                 )
                             }
 
@@ -747,36 +749,36 @@ fun WriteMemoCompose(navController: NavController){
                             shape = ShapeDefaults.ExtraSmall
                         )
                 ) {
-                    CreateMenuData.Types.forEach {menutype ->
+                    CreateMenuData.Types.forEach {menuType ->
                         AnimatedVisibility(
                             visible = isVisibleMenu.value,
                         ) {
                             IconButton(
                                 onClick = {
                                   //  hapticProcessing()
-                                    when (menutype) {
+                                    when (menuType) {
                                         CreateMenuData.Type.SNAPSHOT -> {
                                             isSnapShot = true
                                         }
                                         CreateMenuData.Type.RECORD -> {
                                             viewModel.onEvent(
                                                 WriteMemoViewModel.Event.ToRoute(
-                                                    navController, CreateMenuData.desc(menutype).second ?: ""
+                                                    navController, CreateMenuData.desc(menuType).second ?: ""
                                                 )
                                             )
                                         }
                                         CreateMenuData.Type.CAMERA -> {
                                             viewModel.onEvent(
                                                 WriteMemoViewModel.Event.ToRoute(
-                                                    navController, CreateMenuData.desc(menutype).second ?: ""
+                                                    navController, CreateMenuData.desc(menuType).second ?: ""
                                                 )
                                             )
                                         }
                                     }
                                 }) {
                                 Icon(
-                                    imageVector = CreateMenuData.desc(menutype).first,
-                                    contentDescription = menutype.name,
+                                    imageVector = CreateMenuData.desc(menuType).first,
+                                    contentDescription = menuType.name,
                                 )
                             }
                         }
@@ -795,7 +797,7 @@ fun WriteMemoCompose(navController: NavController){
                 ) {
 
 
-                    DrawingMenuData.Types.forEach {menutype ->
+                    DrawingMenuData.Types.forEach {menuType ->
                         AnimatedVisibility(
                             visible = isVisibleMenu.value,
                         ) {
@@ -803,7 +805,7 @@ fun WriteMemoCompose(navController: NavController){
                             IconButton(
                                 onClick = {
                                 //    hapticProcessing()
-                                    when (menutype) {
+                                    when (menuType) {
 
                                         DrawingMenuData.Type.Draw -> {
                                             isDrawing = true
@@ -835,12 +837,12 @@ fun WriteMemoCompose(navController: NavController){
                                 }) {
 
 
-                                val iconColor:Color?  = when (menutype) {
+                                val iconColor:Color?  = when (menuType) {
                                     DrawingMenuData.Type.Draw -> {
-                                        if(isDrawing) DrawingMenuData.desc(menutype).second else null
+                                        if(isDrawing) DrawingMenuData.desc(menuType).second else null
                                     }
                                     DrawingMenuData.Type.Swipe -> {
-                                        if(!isDrawing) DrawingMenuData.desc(menutype).second else null
+                                        if(!isDrawing) DrawingMenuData.desc(menuType).second else null
                                     }
                                     else -> {
                                         null
@@ -850,8 +852,8 @@ fun WriteMemoCompose(navController: NavController){
 
 
                                 Icon(
-                                    imageVector =  DrawingMenuData.desc(menutype).first,
-                                    contentDescription = menutype.name,
+                                    imageVector =  DrawingMenuData.desc(menuType).first,
+                                    contentDescription = menuType.name,
                                     tint = iconColor?: MaterialTheme.colorScheme.secondary
                                 )
                             }
@@ -887,7 +889,7 @@ fun WriteMemoCompose(navController: NavController){
                         )
                     }
 
-                    SettingMenuData.Types.forEach {menutype ->
+                    SettingMenuData.Types.forEach {menuType ->
                         AnimatedVisibility(
                             visible = isVisibleMenu.value,
                         ) {
@@ -895,7 +897,7 @@ fun WriteMemoCompose(navController: NavController){
 
                                 onClick = {
                                  //   hapticProcessing()
-                                    when (menutype) {
+                                    when (menuType) {
                                         SettingMenuData.Type.SECRET -> {
                                             isLock = !isLock
                                             viewModel.onEvent(
@@ -915,30 +917,30 @@ fun WriteMemoCompose(navController: NavController){
                                         SettingMenuData.Type.TAG -> {
                                             isTagDialog = !isTagDialog
                                             if(!isTagDialog) {
-                                                tagDialogDissmissHandler.invoke()
+                                                tagDialogDismissHandler.invoke()
                                             }
 
                                         }
                                     }
                                 }) {
-                                val icon = when (menutype) {
+                                val icon = when (menuType) {
                                     SettingMenuData.Type.SECRET -> {
-                                        if (isLock) SettingMenuData.desc(menutype).first else SettingMenuData.desc(menutype).second
-                                            ?: SettingMenuData.desc(menutype).first
+                                        if (isLock) SettingMenuData.desc(menuType).first else SettingMenuData.desc(menuType).second
+                                            ?: SettingMenuData.desc(menuType).first
                                     }
                                     SettingMenuData.Type.MARKER -> {
-                                        if (isMark) SettingMenuData.desc(menutype).first else SettingMenuData.desc(menutype).second
-                                            ?: SettingMenuData.desc(menutype).first
+                                        if (isMark) SettingMenuData.desc(menuType).first else SettingMenuData.desc(menuType).second
+                                            ?: SettingMenuData.desc(menuType).first
                                     }
                                     else -> {
-                                        SettingMenuData.desc(menutype).first
+                                        SettingMenuData.desc(menuType).first
                                     }
 
                                 }
 
                                 Icon(
                                     imageVector = icon,
-                                    contentDescription = menutype.name,
+                                    contentDescription = menuType.name,
                                 )
                             }
                         }
@@ -982,25 +984,25 @@ fun WriteMemoCompose(navController: NavController){
                         )
                 ) {
                     //MapTypeMenuList.forEach {
-                    MapTypeMenuData.Types.forEachIndexed { index, menutype ->
+                    MapTypeMenuData.Types.forEachIndexed { index, menuType ->
                         AnimatedVisibility(
                             visible = isVisibleMenu.value,
                         ) {
                             IconButton(
                                 onClick = {
                                   //  hapticProcessing()
-                                    val mapType = MapType.entries.first { it ->
-                                        it.name == menutype.name
+                                    val findType = MapType.entries.first { item ->
+                                        item.name == menuType.name
                                     }
-                                    mapProperties = mapProperties.copy(mapType = mapType)
+                                    mapProperties = mapProperties.copy(mapType = findType)
                                     mapTypeIndex = index
 
 
                                 }) {
 
                                 Icon(
-                                    imageVector = MapTypeMenuData.desc(menutype).first,
-                                    contentDescription = menutype.name,
+                                    imageVector = MapTypeMenuData.desc(menuType).first,
+                                    contentDescription = menuType.name,
                                 )
                             }
                         }
