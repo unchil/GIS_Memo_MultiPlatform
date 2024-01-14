@@ -36,34 +36,34 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
     private fun mapCurrentWeatherSelecting(
         dt: Long,
         base: String,
-        visibility: Long,
-        timezone: Long,
+        visibility: String,
+        timezone: String,
         name: String,
-        latitude: Long,
-        longitude: Long,
+        latitude: String,
+        longitude: String,
         main: String,
         description: String,
         icon: String,
-        temp: Long,
-        feels_like: Long,
-        pressure: Long,
-        humidity: Long,
-        temp_min: Long,
-        temp_max: Long,
-        speed: Long,
-        deg: Long,
-        aa: Long,
-        type: Long,
+        temp: String,
+        feels_like: String,
+        pressure: String,
+        humidity: String,
+        temp_min: String,
+        temp_max: String,
+        speed: String,
+        deg: String,
+        aa: String,
+        type: String,
         country: String,
-        sunrise: Long,
-        sunset: Long
+        sunrise: String,
+        sunset: String
     ): CURRENTWEATHER_TBL
     {
         return  CURRENTWEATHER_TBL(
             dt = dt ,
             base = base,
             visibility =  visibility.toInt(),
-            timezone = timezone,
+            timezone = timezone.toLong(),
             name = name,
             latitude = latitude.toFloat(),
             longitude = longitude.toFloat(),
@@ -81,8 +81,8 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
             all = aa.toInt(),
             type =  type.toInt(),
             country = country,
-            sunrise = sunrise,
-            sunset =  sunset
+            sunrise = sunrise.toLong(),
+            sunset =  sunset.toLong()
         )
     }
 
@@ -95,27 +95,27 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
             dbQuery.insert_CURRENTWEATHER_TBL(
                 dt  = it.dt,
                 base   = it.base,
-                visibility  = it.visibility.toLong() ,
-                timezone = it.timezone.toLong(),
+                visibility  = it.visibility.toString() ,
+                timezone = it.timezone.toString(),
                 name  = it.name,
-                latitude =  it.latitude.toLong(),
-                longitude = it.longitude.toLong(),
+                latitude =  it.latitude.toString(),
+                longitude = it.longitude.toString(),
                 main = it.main,
                 description = it.description,
                 icon = it.icon,
-                temp = it.temp.toLong(),
-                feels_like = it.feels_like.toLong(),
-                pressure = it.pressure.toLong(),
-                humidity = it.humidity.toLong(),
-                temp_min = it.temp_min.toLong(),
-                temp_max = it.temp_max.toLong(),
-                speed  = it.speed.toLong(),
-                deg = it.deg.toLong(),
-                aa  = it.all.toLong(),
-                type = it.type.toLong(),
+                temp = it.temp.toString(),
+                feels_like = it.feels_like.toString(),
+                pressure = it.pressure.toString(),
+                humidity = it.humidity.toString(),
+                temp_min = it.temp_min.toString(),
+                temp_max = it.temp_max.toString(),
+                speed  = it.speed.toString(),
+                deg = it.deg.toString(),
+                aa  = it.all.toString(),
+                type = it.type.toString(),
                 country  = it.country,
-                sunrise = it.sunrise,
-                sunset = it.sunset
+                sunrise = it.sunrise.toString(),
+                sunset = it.sunset.toString()
             )
         }
     }
@@ -124,9 +124,9 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
         dbQuery.transaction {
             dbQuery.insert_CURRENTLOCATION_TBL(
                 dt = it.collectTime,
-                latitude = it.latitude.toLong(),
-                longitude =  it.longitude.toLong(),
-                altitude = it.altitude.toLong()
+                latitude = it.latitude.toString(),
+                longitude =  it.longitude.toString(),
+                altitude = it.altitude.toString()
             )
         }
     }
@@ -137,11 +137,11 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
 
             dbQuery.insert_MEMO_TBL(
                 id = it.id,
-                latitude = it.latitude.toLong(),
-                longitude = it.longitude.toLong(),
-                altitude = it.altitude.toLong(),
-                isSecret = it.isSecret,
-                isPin = it.isPin,
+                latitude = it.latitude.toString(),
+                longitude = it.longitude.toString(),
+                altitude = it.altitude.toString(),
+                isSecret = if (it.isSecret) 1 else 0,
+                isPin = if(it.isPin) 1 else 0 ,
                 title = it.title,
                 snippets = it.snippets,
                 desc = it.desc,
@@ -156,13 +156,13 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
 
     internal fun updateMemoMarker(id:Long, isMarker:Boolean){
         dbQuery.transaction {
-            dbQuery.update_MEMO_TBL_Marker(isPin = isMarker, id = id)
+            dbQuery.update_MEMO_TBL_Marker(isPin = if(isMarker) 1 else 0 , id = id)
         }
     }
 
     internal fun updateMemoSecret(id:Long, isSecret: Boolean){
         dbQuery.transaction {
-            dbQuery.update_MEMO_TBL_Secret(isSecret = isSecret, id =  id)
+            dbQuery.update_MEMO_TBL_Secret(isSecret = if(isSecret) 1 else 0, id =  id)
         }
     }
 
@@ -239,34 +239,34 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
     private fun mapMemoWeatherSelecting(
         id: Long,
         base: String,
-        visibility: Long,
-        timezone: Long,
+        visibility: String,
+        timezone: String,
         name: String,
-        latitude: Long,
-        longitude: Long,
+        latitude: String,
+        longitude: String,
         main: String,
         description: String,
         icon: String,
-        temp: Long,
-        feels_like: Long,
-        pressure: Long,
-        humidity: Long,
-        temp_min: Long,
-        temp_max: Long,
-        speed: Long,
-        deg: Long,
-        aa: Long,
-        type: Long,
+        temp: String,
+        feels_like: String,
+        pressure: String,
+        humidity: String,
+        temp_min: String,
+        temp_max: String,
+        speed: String,
+        deg: String,
+        aa: String,
+        type: String,
         country: String,
-        sunrise: Long,
-        sunset: Long
+        sunrise: String,
+        sunset: String
     ): MEMO_WEATHER_TBL
     {
         return  MEMO_WEATHER_TBL(
             id = id ,
             base = base,
             visibility =  visibility.toInt(),
-            timezone = timezone,
+            timezone = timezone.toLong(),
             name = name,
             latitude = latitude.toFloat(),
             longitude = longitude.toFloat(),
@@ -284,8 +284,8 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
             all = aa.toInt(),
             type =  type.toInt(),
             country = country,
-            sunrise = sunrise,
-            sunset =  sunset
+            sunrise = sunrise.toLong(),
+            sunset =  sunset.toLong()
         )
     }
 
@@ -301,28 +301,28 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
         dbQuery.transaction {
             dbQuery.insert_MEMO_WEATHER_TBL(
                 id = it.dt,
-            base = it.base,
-            visibility = it.visibility.toLong(),
-            timezone = it.timezone,
-            name  = it.name,
-            latitude  = it.latitude.toLong(),
-            longitude = it.longitude.toLong(),
-            main  = it.main,
-            description = it.description,
-            icon = it.icon,
-            temp = it.temp.toLong(),
-            feels_like = it.feels_like.toLong(),
-            pressure = it.pressure.toLong(),
-            humidity = it.humidity.toLong(),
-            temp_min = it.temp_min.toLong(),
-            temp_max = it.temp_max.toLong(),
-            speed = it.speed.toLong(),
-            deg = it.deg.toLong(),
-            aa = it.all.toLong(),
-            type = it.type.toLong(),
-            country = it.country,
-            sunrise = it.sunrise,
-            sunset = it.sunset
+                base = it.base,
+                visibility = it.visibility.toString(),
+                timezone = it.timezone.toString(),
+                name  = it.name,
+                latitude  = it.latitude.toString(),
+                longitude = it.longitude.toString(),
+                main  = it.main,
+                description = it.description,
+                icon = it.icon,
+                temp = it.temp.toString(),
+                feels_like = it.feels_like.toString(),
+                pressure = it.pressure.toString(),
+                humidity = it.humidity.toString(),
+                temp_min = it.temp_min.toString(),
+                temp_max = it.temp_max.toString(),
+                speed = it.speed.toString(),
+                deg = it.deg.toString(),
+                aa = it.all.toString(),
+                type = it.type.toString(),
+                country = it.country,
+                sunrise = it.sunrise.toString(),
+                sunset = it.sunset.toString()
             )
         }
     }
@@ -337,11 +337,11 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
 
     private fun mapMemoSelecting(
         id : Long,
-        latitude  : Long,
-        longitude : Long,
-        altitude : Long,
-        isSecret : Boolean?,
-        isPin  : Boolean?,
+        latitude  : String,
+        longitude : String,
+        altitude : String,
+        isSecret : Long,
+        isPin  : Long,
         title : String,
         snippets: String,
         desc : String,
@@ -356,8 +356,8 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
             latitude = latitude.toFloat(),
             longitude = longitude.toFloat(),
             altitude = altitude.toFloat(),
-            isSecret= isSecret?: false,
-            isPin = isPin?: false,
+            isSecret = isSecret.toInt() == 1,
+            isPin = isPin.toInt() == 1,
             title = title,
             snippets = snippets,
             desc = desc,
