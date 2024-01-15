@@ -71,8 +71,7 @@ kotlin {
 
                 implementation(libs.sqldelight.android.driver)
 
-                implementation(libs.androidx.paging.runtime)
-                implementation(libs.androidx.paging.compose)
+
 
                 implementation(libs.ktor.client.okhttp)
            //     implementation(libs.ktor.client.android)

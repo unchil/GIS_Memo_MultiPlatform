@@ -41,8 +41,6 @@ class WeatherViewModel(val repository:GisMemoRepository) : ViewModel() {
     }
 
     private fun searchWeather(location: LatLngAlt) {
-        _currentWeatherStateFlow.value =  AsyncWeatherInfoState.Loading
-
         viewModelScope.launch {
             val result = repository.getWeatherData(
                 location.latitude.toString(),

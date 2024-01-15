@@ -115,6 +115,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
  //   debugImplementation(libs.compose.ui.tooling)
+    
+    //Paging
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
+
 }
 
 fun getApiKey(propertyKey: String):String {

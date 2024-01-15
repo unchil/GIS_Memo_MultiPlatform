@@ -41,6 +41,7 @@ import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.jetbrains.handson.kmm.shared.data.DestinationsLocalDataSource
 import com.unchil.gismemo.shared.composables.LocalPermissionsManager
 import com.unchil.gismemo.shared.composables.PermissionsManager
+import com.unchil.gismemo.view.WeatherContent
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
@@ -87,11 +88,11 @@ class MainActivity : ComponentActivity() {
                     ){
                  //   CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
 
-                        DetailMemoCompose(navController = navController, id = 1705031322810L)
+                      //  DetailMemoCompose(navController = navController, id = 1705031322810L)
                      //   WriteMemoCompose(navController = navController)
                       //  ExoplayerCompose( uriList = uriList)
                       //  GreetingView(Greeting().greet())
-                     //   WeatherContent(isSticky = false)
+                        WeatherContent(isSticky = false)
                       //  GoogleMapView()
 
                       //  CameraCompose(   navController = navController     )

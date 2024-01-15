@@ -7,6 +7,7 @@ import com.unchil.gismemo_multiplatform.android.model.MemoDataUser
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MemoDataViewModel  (val repository: GisMemoRepository, val user:MemoDataUser) : ViewModel() {
@@ -15,27 +16,27 @@ class MemoDataViewModel  (val repository: GisMemoRepository, val user:MemoDataUs
             = MutableStateFlow(emptyList())
 
     val photoListStateFlow: StateFlow<List<String>>
-            = _photoListStateFlow
+            = _photoListStateFlow.asStateFlow()
 
 
     private val _videoListStateFlow: MutableStateFlow<List<String>>
             = MutableStateFlow(emptyList())
 
     val videoListStateFlow:  StateFlow<List<String>>
-            = _videoListStateFlow
+            = _videoListStateFlow.asStateFlow()
 
     private val _audioTextStateFlow: MutableStateFlow<List<Pair<String, List<String>>>>
             = MutableStateFlow(emptyList())
 
     val audioTextStateFlow: StateFlow<List<Pair<String, List<String>>>>
-            = _audioTextStateFlow
+            = _audioTextStateFlow.asStateFlow()
 
 
     private val  _snapShotListStateFlow: MutableStateFlow<List<String>>
             = MutableStateFlow(emptyList())
 
     val snapShotListStateFlow:  StateFlow<List<String>>
-            = _snapShotListStateFlow
+            = _snapShotListStateFlow.asStateFlow()
 
 
     init {
