@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -319,7 +320,8 @@ fun SearchCompose(
     Column(
         modifier = Modifier
             .fillMaxSize(1f)
-            .clip(shape = ShapeDefaults.ExtraSmall),
+            .clip(shape = ShapeDefaults.ExtraSmall)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -408,7 +410,10 @@ fun SearchCompose(
 
         }
 
-        Divider( Modifier.fillMaxWidth().padding(6.dp) )
+        Divider(
+            Modifier
+                .fillMaxWidth()
+                .padding(6.dp) )
 
         RadioButtonGroupCompose(
             state = secretRadioGroupState,
@@ -416,7 +421,10 @@ fun SearchCompose(
             content = secretOption.contents
         )
 
-        Divider( Modifier.fillMaxWidth().padding(6.dp) )
+        Divider(
+            Modifier
+                .fillMaxWidth()
+                .padding(6.dp) )
 
         RadioButtonGroupCompose(
             state = markerRadioGroupState,
@@ -424,7 +432,10 @@ fun SearchCompose(
             content = markerOption.contents
         )
 
-        Divider( Modifier.fillMaxWidth().padding(6.dp) )
+        Divider(
+            Modifier
+                .fillMaxWidth()
+                .padding(6.dp) )
 
         androidx.compose.material.IconButton(
             onClick = {
@@ -440,7 +451,10 @@ fun SearchCompose(
             setState = selectedTagArray,
         )
 
-        Divider( Modifier.fillMaxWidth().padding(6.dp) )
+        Divider(
+            Modifier
+                .fillMaxWidth()
+                .padding(6.dp) )
 
         androidx.compose.material.IconButton(
             onClick = {
