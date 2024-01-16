@@ -24,14 +24,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.LocationServices
 import com.jetbrains.handson.kmm.shared.entity.AsyncWeatherInfoState
 import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
-import com.unchil.gismemo.shared.composables.LocalPermissionsManager
-import com.unchil.gismemo.shared.composables.PermissionsManager
+import com.unchil.gismemo_multiplatform.PlatformObject
+import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
+import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.ChkNetWork
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
@@ -398,22 +400,21 @@ fun WeatherItem(id: ImageVector, desc: String){
 @Composable
 fun PrevViewWeather(){
 
+    val context = LocalContext.current
     val permissionsManager = PermissionsManager()
-
-    MyApplicationTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-
-            CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
-
+    val navController = rememberNavController()
+    val repository = PlatformObject.getRepository(context)
+    CompositionLocalProvider(
+        LocalPermissionsManager provides permissionsManager,
+        LocalRepository provides repository
+    ) {
+        MyApplicationTheme {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {
                 WeatherContent()
-
-
             }
-
-
         }
     }
 }

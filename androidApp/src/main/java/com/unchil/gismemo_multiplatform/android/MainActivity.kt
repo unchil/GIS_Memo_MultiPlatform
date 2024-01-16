@@ -39,16 +39,13 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.jetbrains.handson.kmm.shared.data.DestinationsLocalDataSource
-import com.unchil.gismemo.shared.composables.LocalPermissionsManager
-import com.unchil.gismemo.shared.composables.PermissionsManager
-import com.unchil.gismemo.view.WeatherContent
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
+import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
+import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
-import com.unchil.gismemo_multiplatform.android.view.DetailMemoCompose
 import com.unchil.gismemo_multiplatform.android.view.GoogleMapView
-import com.unchil.gismemo_multiplatform.android.view.WriteMemoCompose
-
+import com.unchil.gismemo_multiplatform.android.view.MemoListScreen
 
 
 val LocalRepository = compositionLocalOf<GisMemoRepository> { error("No repository handler found!") }
@@ -92,8 +89,9 @@ class MainActivity : ComponentActivity() {
                      //   WriteMemoCompose(navController = navController)
                       //  ExoplayerCompose( uriList = uriList)
                       //  GreetingView(Greeting().greet())
-                        WeatherContent(isSticky = false)
-                      //  GoogleMapView()
+                       // WeatherContent(isSticky = false)
+                       MemoListScreen( navController = navController  )
+                 //       GoogleMapView()
 
                       //  CameraCompose(   navController = navController     )
 

@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
@@ -48,8 +49,10 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.jetbrains.handson.kmm.shared.data.DestinationsLocalDataSource
-import com.unchil.gismemo.shared.composables.LocalPermissionsManager
-import com.unchil.gismemo.shared.composables.PermissionsManager
+import com.unchil.gismemo_multiplatform.PlatformObject
+import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
+import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
@@ -261,11 +264,14 @@ private fun PreviewImageViewer(
     val url = DestinationsLocalDataSource.craneDestinations.find {
         it.city == "MADRID"
     }?.imageUrl ?: ""
-
+    val context = LocalContext.current
     val permissionsManager = PermissionsManager()
-
-    CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
-
+    val navController = rememberNavController()
+    val repository = PlatformObject.getRepository(context)
+    CompositionLocalProvider(
+        LocalPermissionsManager provides permissionsManager,
+        LocalRepository provides repository
+    ) {
         val permissions = listOf(
             Manifest.permission.INTERNET,
         )
@@ -274,7 +280,9 @@ private fun PreviewImageViewer(
 
         var isGranted by remember { mutableStateOf(true) }
         permissions.forEach { chkPermission ->
-            isGranted =   isGranted && multiplePermissionsState.permissions.find { it.permission == chkPermission  }?.status?.isGranted ?: false
+            isGranted =   isGranted && multiplePermissionsState.permissions.find {
+                it.permission == chkPermission
+            }?.status?.isGranted ?: false
         }
 
         PermissionRequiredCompose(

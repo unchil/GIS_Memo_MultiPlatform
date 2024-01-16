@@ -1,9 +1,8 @@
 @file:OptIn(ExperimentalPermissionsApi::class)
 
 
-package com.unchil.gismemo.shared.composables
+package com.unchil.gismemo_multiplatform.android.common
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState

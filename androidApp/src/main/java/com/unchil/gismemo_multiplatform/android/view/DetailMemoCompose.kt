@@ -85,8 +85,8 @@ import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.widgets.ScaleBar
-import com.unchil.gismemo.shared.composables.LocalPermissionsManager
-import com.unchil.gismemo.shared.composables.PermissionsManager
+import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
+import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo.view.WeatherView
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
@@ -701,13 +701,10 @@ fun DetailMemoCompose(navController: NavController, id:Long) {
 @Preview
 @Composable
 fun PrevDetailMemo(){
+    val context = LocalContext.current
     val permissionsManager = PermissionsManager()
     val navController = rememberNavController()
-    val context = LocalContext.current
-
-   // val repository = PlatformHandler.Builder(context).repository
     val repository = PlatformObject.getRepository(context)
-
     CompositionLocalProvider(
         LocalPermissionsManager provides permissionsManager,
         LocalRepository provides repository

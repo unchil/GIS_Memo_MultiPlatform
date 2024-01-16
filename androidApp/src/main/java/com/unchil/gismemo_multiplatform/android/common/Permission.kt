@@ -32,11 +32,9 @@ import androidx.compose.ui.window.DialogProperties
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.android.gms.common.images.Size
-import com.unchil.gismemo.shared.composables.LocalPermissionsManager
-import com.unchil.gismemo.shared.composables.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.R
 
+/*
 @SuppressLint("MissingPermission")
 fun biometricPrompt(
     context: Context,
@@ -75,6 +73,8 @@ fun biometricPrompt(
 
 
 }
+
+ */
 
 
 @OptIn(ExperimentalPermissionsApi::class)

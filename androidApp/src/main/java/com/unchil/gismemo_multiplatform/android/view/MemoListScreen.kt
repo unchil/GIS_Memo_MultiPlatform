@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.BackdropValue
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
@@ -39,24 +38,23 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.unchil.gismemo.shared.composables.LocalPermissionsManager
-import com.unchil.gismemo.shared.composables.PermissionsManager
 import com.unchil.gismemo.view.WeatherContent
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
+import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
+import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelObject
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.viewModel.SearchScreenViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun SearchScreen(
+fun MemoListScreen(
     navController: NavHostController
 ){
     val permissions = listOf(
@@ -91,7 +89,7 @@ fun SearchScreen(
         val configuration = LocalConfiguration.current
         val isPortrait = remember { mutableStateOf(false) }
         val peekHeight = remember { mutableStateOf(140.dp) }
-        val headerHeight  = remember { mutableStateOf(60.dp) }
+        val headerHeight  = remember { mutableStateOf(74.dp) }
         when (configuration.orientation) {
             Configuration.ORIENTATION_PORTRAIT -> {
                 isPortrait.value = true
@@ -174,7 +172,7 @@ fun SearchScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.TopCenter,
             ) {
-
+                SearchCompose()
             }
         }
 
@@ -187,6 +185,7 @@ fun SearchScreen(
             backLayerBackgroundColor = Color.Transparent,
             frontLayerShape =  ShapeDefaults.Medium,
             frontLayerBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+            frontLayerScrimColor = Color.Transparent,
             snackbarHost =  snackBarHost,
             appBar = appBar,
             backLayerContent = backLayerContent,
@@ -218,7 +217,7 @@ fun PrevSearchScreen() {
                 contentColor = androidx.compose.material.MaterialTheme.colors.primary
             ) {
 
-                SearchScreen(navController = navController)
+                MemoListScreen(navController = navController)
             }
         }
     }
