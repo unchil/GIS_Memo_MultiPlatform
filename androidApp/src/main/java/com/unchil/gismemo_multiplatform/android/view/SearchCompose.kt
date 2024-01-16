@@ -4,22 +4,31 @@ import android.app.Activity
 import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.NorthWest
+import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material.icons.outlined.ArrowRight
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Class
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,6 +37,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -39,16 +49,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.unchil.gismemo_multiplatform.android.R
+import com.unchil.gismemo_multiplatform.android.model.RadioGroupOption
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchCompose(
     onMessage:(() -> Unit)? = null
 ){
+
+    val context = LocalContext.current
 
     val focusmanager = LocalFocusManager.current
 
@@ -63,7 +79,13 @@ fun SearchCompose(
 
     val isVisibleSearchBar: MutableState<Boolean> = remember { mutableStateOf(false) }
 
+    val dateRangePickerState = rememberDateRangePickerState()
+
     val recognizerIntent = remember { recognizerIntent }
+
+    val isTagBox = rememberSaveable{  mutableStateOf(false)}
+
+    val isDateBox = rememberSaveable{  mutableStateOf(false)}
 
     val startLauncherRecognizerIntent = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -160,8 +182,133 @@ fun SearchCompose(
 
     }
 
+    val hashTagBtn: @Composable() () -> Unit = {
+
+        Row(
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Class,
+                contentDescription = "tag"
+            )
+            Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+            Text(text = context.resources.getString(R.string.search_hashTag),
+                style = MaterialTheme.typography.titleSmall)
+            Icon(
+                modifier = Modifier.scale(1f),
+                imageVector = if (isTagBox.value)
+                    Icons.Outlined.ArrowDropDown
+                else
+                    Icons.Outlined.ArrowRight,
+                contentDescription = "tag"
+            )
+        }
+    }
+
+    val dateBtn: @Composable() () -> Unit = {
+
+        Row(
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.CalendarMonth,
+                contentDescription = "date"
+            )
+            Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+            Text(text = context.resources.getString(R.string.search_period),
+                style = MaterialTheme.typography.titleSmall)
+            Icon(
+                modifier = Modifier.scale(1f),
+                imageVector = if (isDateBox.value)
+                    Icons.Outlined.ArrowDropDown
+                else
+                    Icons.Outlined.ArrowRight,
+                contentDescription = "date "
+            )
+        }
+    }
+
+    val dateRangePickerHeadline: @Composable() () -> Unit = {
+        Text(
+            modifier = Modifier.padding(start = 10.dp),
+            text = context.resources.getString(R.string.search_dateRangePicker_headline),
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+
+    val dateRangePickerTitle: @Composable() () -> Unit = {
+        Text(
+            text = "",
+            style = MaterialTheme.typography.bodySmall
+        )
+    }
+
+    val secretOption = RadioGroupOption(
+        title = context.resources.getString(R.string.search_radioBtGroup_secret),
+        options = listOf(
+            context.resources.getString(R.string.search_radioBt_select),
+            context.resources.getString(R.string.search_radioBt_none),
+            context.resources.getString(R.string.search_radioBt_all)
+        ),
+        contents = {
+            Row(modifier = Modifier) {
+                Icon(
+                    imageVector = Icons.Outlined.Lock,
+                    contentDescription = context.resources.getString(R.string.search_radioBtGroup_secret)
+                )
+                Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+                Text(
+                    modifier = Modifier,
+                    text = context.resources.getString(R.string.search_radioBtGroup_secret),
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+        }
+    )
+
+    val secretRadioGroupState = rememberSaveable {
+        mutableStateOf(secretOption.options.lastIndex )
+    }
+
+    val markerOption = RadioGroupOption(
+        title = context.resources.getString(R.string.search_radioBtGroup_marker),
+        options = listOf(
+            context.resources.getString(R.string.search_radioBt_select),
+            context.resources.getString(R.string.search_radioBt_none),
+            context.resources.getString(R.string.search_radioBt_all)
+        ),
+        contents = {
+            Row(modifier = Modifier) {
+                Icon(
+                    imageVector = Icons.Outlined.Lock,
+                    contentDescription = context.resources.getString(R.string.search_radioBtGroup_marker)
+                )
+                Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+                Text(
+                    modifier = Modifier,
+                    text = context.resources.getString(R.string.search_radioBtGroup_marker),
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+        }
+    )
+
+    val markerRadioGroupState = rememberSaveable{
+        mutableStateOf(markerOption.options.lastIndex )
+    }
+
+
+
+    val selectedTagArray:MutableState<ArrayList<Int>> =
+        rememberSaveable{ mutableStateOf(arrayListOf())  }
+
+
     Column(
-        modifier = Modifier.fillMaxSize(1f)
+        modifier = Modifier
+            .fillMaxSize(1f)
             .clip(shape = ShapeDefaults.ExtraSmall),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -250,6 +397,60 @@ fun SearchCompose(
 
 
         }
+
+        Divider( Modifier.fillMaxWidth().padding(6.dp) )
+
+        RadioButtonGroupCompose(
+            state = secretRadioGroupState,
+            data = secretOption.options,
+            content = secretOption.contents
+        )
+
+        Divider( Modifier.fillMaxWidth().padding(6.dp) )
+
+        RadioButtonGroupCompose(
+            state = markerRadioGroupState,
+            data = markerOption.options,
+            content = markerOption.contents
+        )
+
+        Divider( Modifier.fillMaxWidth().padding(6.dp) )
+
+        androidx.compose.material.IconButton(
+            onClick = {
+         //   hapticProcessing()
+                isTagBox.value = !isTagBox.value
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            content = hashTagBtn
+        )
+
+        AssistChipGroupView(
+            isVisible = isTagBox.value,
+            setState = selectedTagArray,
+        )
+
+        Divider( Modifier.fillMaxWidth().padding(6.dp) )
+
+        androidx.compose.material.IconButton(
+            onClick = {
+                //   hapticProcessing()
+                isDateBox.value = !isDateBox.value
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            content = dateBtn
+        )
+
+        AnimatedVisibility(visible = isDateBox.value) {
+
+            DateRangePicker(
+                state = dateRangePickerState,
+                modifier = Modifier.height(420.dp),
+                title = dateRangePickerTitle,
+                headline = dateRangePickerHeadline
+            )
+        }
+
 
     }
 

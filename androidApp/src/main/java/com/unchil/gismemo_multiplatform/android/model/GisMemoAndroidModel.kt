@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.Screenshot
 import androidx.compose.material.icons.outlined.Swipe
 import androidx.compose.material.icons.outlined.Toll
 import androidx.compose.material.icons.outlined.Videocam
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.jetbrains.handson.kmm.shared.data.WriteMemoData
@@ -203,5 +204,14 @@ sealed class SearchQueryDataValue {
 }
 
 typealias QueryData= Pair< SearchOption, SearchQueryDataValue>
+
+data class RadioGroupOption (
+    val title:String,
+    val options:List<String>,
+    val icon:ImageVector? = null,
+    val iconDesc:String? = null ,
+    val contents:@Composable() (() -> Unit)? = null
+)
+
 
 

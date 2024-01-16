@@ -142,8 +142,9 @@ fun ChkNetWork(
     var isGranted by mutableStateOf(true)
 
     permissions.forEach { chkPermission ->
-        isGranted = isGranted && multiplePermissionsState.permissions.find { it.permission == chkPermission }?.status?.isGranted
-                ?: false
+        isGranted = isGranted && multiplePermissionsState.permissions.find {
+            it.permission == chkPermission
+        }?.status?.isGranted ?: false
     }
 
     PermissionRequiredCompose(

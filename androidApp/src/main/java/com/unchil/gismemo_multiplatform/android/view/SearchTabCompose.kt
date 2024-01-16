@@ -7,15 +7,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckBox
 import androidx.compose.material.icons.outlined.CheckBoxOutlineBlank
@@ -23,15 +29,16 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.unchil.gismemo_multiplatform.android.model.TagInfoDataObject
 
@@ -54,10 +61,11 @@ fun AssistChipGroupView(
 
     val  lazyStaggeredGridState = rememberLazyStaggeredGridState()
     val itemModifier = Modifier.wrapContentSize()
-  //  val isUsableHaptic = LocalUsableHaptic.current
-  //  val hapticFeedback = LocalHapticFeedback.current
-    val coroutineScope = rememberCoroutineScope()
     /*
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
+    val coroutineScope = rememberCoroutineScope()
+
     fun hapticProcessing(){
         if(isUsableHaptic){
             coroutineScope.launch {
@@ -66,7 +74,7 @@ fun AssistChipGroupView(
         }
     }
 
-     */
+ */
 
     AnimatedVisibility(visible = isVisible) {
         Column (
@@ -122,4 +130,113 @@ fun AssistChipGroupView(
         }
     }
 }
+
+
+@Composable
+fun RadioButtonGroupCompose(
+    state:MutableState<Int>,
+    data:List<String>,
+    layoutScopeType:String = "Row",
+    content: @Composable (( ) -> Unit)? = null
+){
+
+    /*
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
+    val coroutineScope = rememberCoroutineScope()
+    fun hapticProcessing(){
+        if(isUsableHaptic){
+            coroutineScope.launch {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            }
+        }
+    }
+
+     */
+
+    val (selectedOption, onOptionSelected) = mutableStateOf(data[state.value])
+
+    if(layoutScopeType == "Column"){
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+
+            itemsIndexed(data){index, it ->
+                Row(
+                    modifier = Modifier
+                        .selectable(
+                            selected = (it == selectedOption),
+                            onClick = {
+                         //       hapticProcessing()
+                                onOptionSelected( it )
+                                state.value = index
+                            },
+                            role = Role.RadioButton
+                        ),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (it == selectedOption),
+                        onClick = null
+                    )
+                    Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+                    Text(
+                        text = it,
+                        modifier = Modifier,
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+
+            }
+
+        }
+
+    } else {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 10.dp)
+                .fillMaxWidth()
+                .selectableGroup(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+
+            content?.let {
+                it()
+            }
+
+            data.forEachIndexed { index, it ->
+                Row(
+                    modifier = Modifier
+                        .selectable(
+                            selected = (it == selectedOption),
+                            onClick = {
+                              //  hapticProcessing()
+                                onOptionSelected( it )
+                                state.value = index
+                            },
+                            role = Role.RadioButton
+                        ),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (it == selectedOption),
+                        onClick = null
+                    )
+                    Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+                    Text(
+                        text = it,
+                        modifier = Modifier,
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+            }
+        }
+    }
+}
+
 
