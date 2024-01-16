@@ -36,9 +36,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.ShapeDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -54,9 +56,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
+import com.unchil.gismemo.view.WeatherContent
+import com.unchil.gismemo_multiplatform.PlatformObject
+import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.R
+import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
+import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.model.RadioGroupOption
+import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -455,4 +465,26 @@ fun SearchCompose(
     }
 
 
+}
+
+@Preview
+@Composable
+fun PrevSearchCompose(){
+    val context = LocalContext.current
+    val permissionsManager = PermissionsManager()
+    val navController = rememberNavController()
+    val repository = PlatformObject.getRepository(context)
+    CompositionLocalProvider(
+        LocalPermissionsManager provides permissionsManager,
+        LocalRepository provides repository
+    ) {
+        MyApplicationTheme {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                SearchCompose()
+            }
+        }
+    }
 }

@@ -1261,27 +1261,20 @@ fun PrevWriteMemo(){
     val permissionsManager = PermissionsManager()
     val navController = rememberNavController()
     val context = LocalContext.current
-
-
-   // val repository = PlatformHandler.Builder(context).repository
     val repository = PlatformObject.getRepository(context)
     CompositionLocalProvider(
         LocalPermissionsManager provides permissionsManager,
         LocalRepository provides repository
     ) {
 
-
         MyApplicationTheme {
             Surface(
                 modifier = Modifier.fillMaxSize(),
-                color = androidx.compose.material.MaterialTheme.colors.onPrimary,
-                contentColor = androidx.compose.material.MaterialTheme.colors.primary
+                color = MaterialTheme.colorScheme.background
             ) {
                 WriteMemoCompose(navController = navController)
             }
         }
 
     }
-
-
 }

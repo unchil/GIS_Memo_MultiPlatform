@@ -713,8 +713,7 @@ fun PrevDetailMemo(){
         MyApplicationTheme {
             Surface(
                 modifier = Modifier.fillMaxSize(),
-                color = androidx.compose.material.MaterialTheme.colors.onPrimary,
-                contentColor = androidx.compose.material.MaterialTheme.colors.primary
+                color = MaterialTheme.colorScheme.background
             ) {
                 DetailMemoCompose(navController = navController, id = 1705199816840)
             }

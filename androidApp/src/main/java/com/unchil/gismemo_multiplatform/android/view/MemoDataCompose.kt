@@ -32,7 +32,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,14 +50,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import coil3.size.Size
 import com.jetbrains.handson.kmm.shared.data.WriteMemoData
+import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
+import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.model.MemoData
 import com.unchil.gismemo_multiplatform.android.model.MemoDataUser
 import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelObject
 import com.unchil.gismemo_multiplatform.android.model.WriteMemoDataDesc
+import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.viewModel.MemoDataViewModel
 import com.unchil.gismemo_multiplatform.android.viewModel.WriteMemoViewModel
 import kotlinx.coroutines.channels.Channel
@@ -819,4 +827,27 @@ fun PagerVideoView(
     } // Column
 
 
+}
+
+
+@Preview
+@Composable
+fun PrevMemoDataCompose(){
+    val context = LocalContext.current
+    val permissionsManager = PermissionsManager()
+    val navController = rememberNavController()
+    val repository = PlatformObject.getRepository(context)
+    CompositionLocalProvider(
+        LocalPermissionsManager provides permissionsManager,
+        LocalRepository provides repository
+    ) {
+        MyApplicationTheme {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                MemoDataCompose()
+            }
+        }
+    }
 }
