@@ -25,7 +25,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -47,7 +46,7 @@ import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelObject
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
-import com.unchil.gismemo_multiplatform.android.viewModel.SearchScreenViewModel
+import com.unchil.gismemo_multiplatform.android.viewModel.MemoListViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
@@ -79,7 +78,7 @@ fun MemoListScreen(
         val context = LocalContext.current
         val repository = LocalRepository.current
         val viewModel = remember {
-            SearchScreenViewModel( repository = repository)
+            MemoListViewModel( repository = repository)
         }
         val result = viewModel.memoPagingStream.collectAsLazyPagingItems()
         val isSearchRefreshing: MutableState<Boolean> = rememberSaveable {
@@ -153,7 +152,6 @@ fun MemoListScreen(
 
 
         val appBar :@Composable () -> Unit = {
-//weather
             WeatherContent(isSticky = false)
         }
 
@@ -167,13 +165,15 @@ fun MemoListScreen(
         }
 
         val frontLayerContent :@Composable () -> Unit = {
-//search
+            /*
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.TopCenter,
             ) {
                 SearchCompose()
             }
+             */
+            SearchCompose()
         }
 
 
@@ -197,6 +197,9 @@ fun MemoListScreen(
 
     }
 }
+
+
+
 
 
 @Preview

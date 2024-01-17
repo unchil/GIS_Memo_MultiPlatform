@@ -2,16 +2,15 @@ package com.unchil.gismemo_multiplatform.android.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
 import com.unchil.gismemo_multiplatform.android.model.QueryData
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
@@ -19,7 +18,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 
-class SearchScreenViewModel (val repository: GisMemoRepository) : ViewModel() {
+@OptIn(ExperimentalCoroutinesApi::class)
+class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
 
     /*
     private val _isRefreshingStateFlow: MutableStateFlow<Boolean>
@@ -31,8 +31,8 @@ class SearchScreenViewModel (val repository: GisMemoRepository) : ViewModel() {
      */
 
     val memoPagingStream : Flow<PagingData<MEMO_TBL>>
-    val searchQueryFlow:Flow<Event.Search>
-    val eventHandler: (Event) -> Unit
+    private val searchQueryFlow:Flow<Event.Search>
+    private val eventHandler: (Event) -> Unit
 
     init {
         val eventStateFlow = MutableSharedFlow<Event>()
@@ -72,8 +72,15 @@ class SearchScreenViewModel (val repository: GisMemoRepository) : ViewModel() {
             is Event.DeleteItem -> {
                 deleteItem(event.id)
             }
+            is Event.ToRoute -> {
+                toRoute(event.navController, event.route)
+            }
             else -> {}
         }
+    }
+
+    private fun toRoute(navController: NavController, route:String){
+        navController.navigate(route = route)
     }
 
     private fun deleteItem(id:Long){
@@ -89,6 +96,7 @@ class SearchScreenViewModel (val repository: GisMemoRepository) : ViewModel() {
     sealed class Event {
         data class Search(val queryDataList:MutableList<QueryData>) : Event()
 
+        data class ToRoute(val navController: NavController, val route:String) : Event()
         data class DeleteItem(val id:Long):Event()
     }
 }

@@ -83,6 +83,19 @@ sealed class GisMemoDestinations(
         }
     }
 
+    object DetailMemoView : GisMemoDestinations(  route = "detailmemoview?${ARG_NAME_ID}={$ARG_NAME_ID}"  ) {
+
+        fun createRoute(id: String) :String {
+            return "detailmemoview?${ARG_NAME_ID}=${id}"
+        }
+
+        fun getIDFromArgs(bundle: Bundle?): String {
+            return bundle?.getString(ARG_NAME_ID) ?: ""
+        }
+
+    }
+
+
     companion object {
         const val ARG_NAME_ID: String = "id"
         const val ARG_NAME_FILE_PATH: String = "url"

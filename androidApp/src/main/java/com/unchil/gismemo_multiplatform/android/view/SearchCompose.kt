@@ -1,5 +1,6 @@
 package com.unchil.gismemo_multiplatform.android.view
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -44,6 +45,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,6 +71,7 @@ import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.model.RadioGroupOption
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
 
+@SuppressLint("MutableCollectionMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchCompose(
@@ -281,7 +284,7 @@ fun SearchCompose(
     )
 
     val secretRadioGroupState = rememberSaveable {
-        mutableStateOf(secretOption.options.lastIndex )
+        mutableIntStateOf(secretOption.options.lastIndex )
     }
 
     val markerOption = RadioGroupOption(
@@ -308,7 +311,7 @@ fun SearchCompose(
     )
 
     val markerRadioGroupState = rememberSaveable{
-        mutableStateOf(markerOption.options.lastIndex )
+        mutableIntStateOf(markerOption.options.lastIndex )
     }
 
 

@@ -7,6 +7,7 @@
     <string name="weather_location_searching"> "위치 검색 중"</string>
     <string name="chkNetWork_msg" >네트웍 연결을 확인해 주세요</string>
     <string name="showGotoSettingsDialog_title" >설정</string>
+
     <string name="biometric_desc"> "보안이 설정된 메모는 인증을 하셔야 합니다."</string>
     <string name="biometric_err_msg"> "인증실패"</string>
     <string name="biometric_prompt_detailview_title"> "메모 보기"</string>

@@ -4,17 +4,24 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.hardware.biometrics.BiometricManager
+import android.hardware.biometrics.BiometricPrompt
 import android.location.Location
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
+import androidx.core.content.FileProvider
 import coil3.size.Size
+import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
 import com.jetbrains.handson.kmm.shared.entity.LatLngAlt
+import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
 import com.unchil.gismemo_multiplatform.android.R
+import com.unchil.gismemo_multiplatform.android.model.BiometricCheckObject
+import java.io.File
 import java.text.SimpleDateFormat
 
 
@@ -146,4 +153,80 @@ fun Location.toLatLngAlt(): LatLngAlt {
         longitude = this.longitude.toFloat() ,
         altitude = this.altitude.toFloat()
     )
+}
+
+fun launchIntent_ShareMemo(context: Context, repository: GisMemoRepository, memo: MEMO_TBL){
+
+    val FILEPROVIDER_AUTHORITY = "com.unchil.gismemo_multiplatform.fileprovider"
+
+    // val repository = RepositoryProvider.getRepository(context.applicationContext)
+    repository.getShareMemoData(id = memo.id) { attachment, comments ->
+
+        val attachmentUri = arrayListOf<Uri>()
+
+        attachment.forEach {
+            attachmentUri.add(
+                FileProvider.getUriForFile(  context,
+                    FILEPROVIDER_AUTHORITY,  File(it)  )
+            )
+        }
+
+        val subject =  memo.title
+        var text = "${memo.desc} \n${memo.snippets} \n\n"
+
+        comments.forEachIndexed { index, comment ->
+            text = text + "[${index}]: ${comment}" + "\n"
+        }
+
+        val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+            type = "*/*"
+
+            putExtra(Intent.EXTRA_TEXT, text)
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+
+            putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachmentUri)
+        }
+        context.startActivity(intent)
+
+    }
+
+}
+
+
+fun biometricPrompt(
+    context: Context,
+    bioMetricCheckType: BiometricCheckObject.Type,
+    onResult: (isSucceeded:Boolean, bioMetricCheckType: BiometricCheckObject.Type, errorMsg:String?  ) ->Unit
+){
+
+
+    val biometricPrompt = BiometricPrompt.Builder(context)
+        .apply {
+            setTitle(BiometricCheckObject.getTitle(bioMetricCheckType, context.resources::getString).first)
+            setSubtitle(BiometricCheckObject.getTitle(bioMetricCheckType, context.resources::getString).second)
+            setDescription(context.resources.getString(R.string.biometric_desc))
+            //BiometricPrompt.PromptInfo.Builder 인스턴스에서는 setNegativeButtonText()와 setAllowedAuthenticators(... or DEVICE_CREDENTIAL)를 동시에 호출할 수 없습니다.
+            setAllowedAuthenticators( BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+            //   setNegativeButton("취소", context.mainExecutor, { _ , _ ->   })
+
+        }.build()
+
+    biometricPrompt.authenticate(android.os.CancellationSignal(), context.mainExecutor,
+        object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                super.onAuthenticationError(errorCode, errString)
+                onResult(false, bioMetricCheckType,  errString.toString())
+            }
+            override fun onAuthenticationFailed() {
+                super.onAuthenticationFailed()
+                onResult(false, bioMetricCheckType, context.resources.getString(R.string.biometric_err_msg))
+            }
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(result)
+                onResult(true, bioMetricCheckType, null)
+            }
+        }
+    )
+
+
 }

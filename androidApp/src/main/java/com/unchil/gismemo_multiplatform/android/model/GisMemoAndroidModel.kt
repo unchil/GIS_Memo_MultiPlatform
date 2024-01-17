@@ -18,6 +18,8 @@ import androidx.compose.material.icons.outlined.Screenshot
 import androidx.compose.material.icons.outlined.Swipe
 import androidx.compose.material.icons.outlined.Toll
 import androidx.compose.material.icons.outlined.Videocam
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -58,6 +60,49 @@ fun WriteMemoDataDesc(type: WriteMemoData.Type): Pair<Int, ImageVector>{
     }
 }
 
+
+object MemoBgObject {
+    enum class Type {
+        SHARE,DELETE
+    }
+    fun desc(type:Type):Pair<String, ImageVector>{
+        return when(type){
+            Type.SHARE -> {
+                Pair(type.name,  Icons.Rounded.Share)
+            }
+            Type.DELETE -> {
+                Pair(type.name,   Icons.Rounded.Delete)
+            }
+        }
+    }
+
+}
+
+object BiometricCheckObject {
+    enum class Type {
+        DETAILVIEW, SHARE, DELETE
+    }
+    fun getTitle(type:Type, getStringFunc:(Int)->String ) : Pair<String, String> {
+         return when(type){
+             Type.DETAILVIEW -> {
+                 Pair(
+                     getStringFunc(R.string.biometric_prompt_detailview_title),
+                     getStringFunc(R.string.biometric_prompt_detailview_msg)
+                 )
+             }
+             Type.SHARE -> {
+                 Pair(getStringFunc(R.string.biometric_prompt_share_title), getStringFunc(R.string.biometric_prompt_share_msg))
+             }
+             Type.DELETE ->  {
+                 Pair(getStringFunc(R.string.biometric_prompt_delete_title), getStringFunc(R.string.biometric_prompt_delete_msg))
+             }
+         }
+    }
+}
+
+
+
+
 object DrawingMenuData {
     enum class Type {
         Draw,Swipe,Eraser
@@ -81,6 +126,7 @@ object DrawingMenuData {
         }
     }
 }
+
 
 object CreateMenuData {
     enum class Type {
