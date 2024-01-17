@@ -156,12 +156,13 @@ fun MemoListScreen(
         }
 
         val backLayerContent :@Composable () -> Unit = {
-//list
+
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
-
+                MemoListCompose()
             }
+
         }
 
         val frontLayerContent :@Composable () -> Unit = {
@@ -204,7 +205,7 @@ fun MemoListScreen(
 
 @Preview
 @Composable
-fun PrevSearchScreen() {
+fun PrevMemoListScreen() {
     val context = LocalContext.current
     val permissionsManager = PermissionsManager()
     val navController = rememberNavController()

@@ -1,9 +1,9 @@
 package com.jetbrains.handson.kmm.shared
 
-
 import app.cash.paging.Pager
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
+import app.cash.sqldelight.paging3.QueryPagingSource
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import com.jetbrains.handson.kmm.shared.cache.GisMemoDao
 import com.jetbrains.handson.kmm.shared.data.WriteMemoData
@@ -337,6 +337,10 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         }
     }
 
+    suspend fun getMemoListFlow() : Flow<List<MEMO_TBL>> {
+        return gisMemoDao.selectMemoListFlow()
+    }
+
     fun getShareMemoData(
         id:Long,
         completeHandle:( attachments:ArrayList<String>, comments:ArrayList<String> ) -> Unit
@@ -491,22 +495,52 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         }
     }
 
+    private fun mapMemoSelecting(
+        id : Long,
+        latitude  : String,
+        longitude : String,
+        altitude : String,
+        isSecret : Long,
+        isPin  : Long,
+        title : String,
+        snippets: String,
+        desc : String,
+        snapshot : String,
+        snapshotCnt  : Long,
+        textCnt   : Long,
+        photoCnt   : Long,
+        videoCnt   : Long,
+    ): MEMO_TBL{
+        return MEMO_TBL(
+            id = id,
+            latitude = latitude.toFloat(),
+            longitude = longitude.toFloat(),
+            altitude = altitude.toFloat(),
+            isSecret = isSecret.toInt() == 1,
+            isPin = isPin.toInt() == 1,
+            title = title,
+            snippets = snippets,
+            desc = desc,
+            snapshot = snapshot,
+            snapshotCnt = snapshotCnt.toInt(),
+            textCnt = textCnt.toInt(),
+            photoCnt = photoCnt.toInt(),
+            videoCnt = videoCnt.toInt()
+        )
+    }
+
 
     val getMemoListPagingFlow: Flow<PagingData<MEMO_TBL>> = flow  {
-          Pager(
+         Pager(
             config = PagingConfig(
                 pageSize = 30,
                 enablePlaceholders =  false
             ),
             pagingSourceFactory = {
-                gisMemoDao.pagingSource
+                gisMemoDao.getPagingSource()
             }
         )
     }
-
-
-
-
 
 
 }

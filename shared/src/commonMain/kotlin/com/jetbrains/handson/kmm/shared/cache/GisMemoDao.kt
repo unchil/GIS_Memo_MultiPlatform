@@ -1,6 +1,8 @@
 package com.jetbrains.handson.kmm.shared.cache
 
 
+
+import app.cash.paging.PagingSource
 import  com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_FILE_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TAG_TBL
@@ -19,7 +21,7 @@ import com.jetbrains.handson.kmm.shared.entity.LatLngAlt
 
 internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
     private val database = GisMemoDatabase(databaseDriverFactory.createDriver())
-    private val dbQuery = database.gisMemoDatabaseQueries
+     val dbQuery = database.gisMemoDatabaseQueries
 
 
     val selectCurrentWeatherFlow:Flow<CURRENTWEATHER_TBL?> = flow {
@@ -327,6 +329,10 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
         }
     }
 
+    internal fun selectMemoListFlow(): Flow<List<MEMO_TBL>> = flow {
+        emit(dbQuery.select_MEMO_TBL_All(::mapMemoSelecting).executeAsList())
+    }.flowOn(Dispatchers.IO)
+
     internal fun selectMemo(it:Long):MEMO_TBL? {
         return dbQuery.select_MEMO_TBL_ID(it, ::mapMemoSelecting).executeAsOneOrNull()
     }
@@ -416,18 +422,24 @@ internal fun selectMemoFile(it:Long):List<MEMO_FILE_TBL>{
     }
 
 
-
-    val pagingSource =
-        QueryPagingSource (
+    fun getPagingSource() : PagingSource<Long, MEMO_TBL> {
+        return QueryPagingSource (
             transacter = dbQuery,
             context = Dispatchers.IO,
             pageBoundariesProvider = { anchor ,  limit ->
-                dbQuery.pageBoundaries_MEMO_TBL(anchor = anchor?: 0, limit = limit)
+                dbQuery.pageBoundaries_MEMO_TBL( limit = limit, anchor = anchor?: 0)
             },
             queryProvider = { beginInclusive:Long, endExclusive ->
-                dbQuery.keyedQuery_MEMO_TBL(beginInclusive = beginInclusive, endExclusive = endExclusive, ::mapMemoSelecting)
+                dbQuery.keyedQuery_MEMO_TBL(
+                    beginInclusive = beginInclusive,
+                    endExclusive = endExclusive,
+                    ::mapMemoSelecting
+                )
             }
         )
+    }
+
+
 
 
 

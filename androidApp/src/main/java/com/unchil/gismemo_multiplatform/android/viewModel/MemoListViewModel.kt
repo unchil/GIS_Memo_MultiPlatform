@@ -11,6 +11,10 @@ import com.unchil.gismemo_multiplatform.android.model.QueryData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
@@ -33,6 +37,15 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
     val memoPagingStream : Flow<PagingData<MEMO_TBL>>
     private val searchQueryFlow:Flow<Event.Search>
     private val eventHandler: (Event) -> Unit
+
+
+    private val _memoListStateFlow: MutableStateFlow<List<MEMO_TBL>>
+            = MutableStateFlow(emptyList())
+
+    val memoListStateFlow: StateFlow<List<MEMO_TBL>>
+            = _memoListStateFlow.asStateFlow()
+
+
 
     init {
         val eventStateFlow = MutableSharedFlow<Event>()
@@ -64,6 +77,15 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
         then new Activity will receive the existing data immediately
         rather than fetching it from scratch.
          */
+
+
+        viewModelScope.launch {
+            repository.getMemoListFlow().collectLatest { it ->
+                _memoListStateFlow.value = it
+            }
+        }
+
+
 
     }
 

@@ -20,9 +20,12 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +40,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
@@ -51,22 +56,25 @@ import kotlinx.coroutines.launch
 fun MemoListCompose(){
 
     val context = LocalContext.current
-    val repository = LocalRepository.current
-    val viewModel = remember { MemoListViewModel( repository = repository ) }
-
     val isRefreshing: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
-
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing.value,
         onRefresh = {
             // Send Refresh Event
         }
     )
-
     val lazyListState = rememberLazyListState()
-
     val upButtonPadding  = remember {  mutableStateOf ( 10.dp ) }
 
+    val repository = LocalRepository.current
+    val viewModel = remember { MemoListViewModel( repository = repository ) }
+    val memoListStream = viewModel.memoPagingStream.collectAsLazyPagingItems()
+
+    LaunchedEffect(key1 = memoListStream.itemCount){
+        val count = memoListStream.itemCount
+    }
+
+    val memoListState = viewModel.memoListStateFlow.collectAsState()
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -83,15 +91,10 @@ fun MemoListCompose(){
                 vertical = 2.dp
             )
         ) {
-
-
+            items(memoListState.value.size) { index ->
+                MemoCompose(item = memoListState.value[index])
+            }
         }
-
-        PullRefreshIndicator(
-            refreshing = isRefreshing.value,
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
 
         UpButton(
             modifier = Modifier
@@ -100,7 +103,73 @@ fun MemoListCompose(){
             listState = lazyListState
         )
 
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing.value,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
     }
+
+    /*
+        val memoListStream = viewModel.memoPagingStream.collectAsLazyPagingItems()
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .pullRefresh(state = pullRefreshState)
+    ) {
+
+        when (memoListStream.loadState.source.refresh) {
+            is LoadState.Error -> {
+                Text(
+                    "Error",
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            LoadState.Loading -> {
+
+            }
+
+            is LoadState.NotLoading -> {
+
+                LazyColumn(
+                    modifier = Modifier,
+                    state = lazyListState,
+                    userScrollEnabled = true,
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    contentPadding = PaddingValues(
+                        horizontal = 2.dp,
+                        vertical = 2.dp
+                    )
+                ) {
+                    items(memoListStream.itemCount) {index ->
+                        memoListStream[index]?.let {
+                            MemoCompose(item = it)
+                        }
+                    }
+                }
+
+                UpButton(
+                    modifier = Modifier
+                        .padding(end = 10.dp, bottom = upButtonPadding.value)
+                        .align(Alignment.BottomEnd),
+                    listState = lazyListState
+                )
+            }
+
+        }
+
+
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing.value,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
+    }
+
+     */
 
 }
 

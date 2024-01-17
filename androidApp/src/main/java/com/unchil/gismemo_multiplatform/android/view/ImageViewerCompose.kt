@@ -2,6 +2,7 @@ package com.unchil.gismemo_multiplatform.android.view
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.compose.rememberNavController
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImagePainter
@@ -264,6 +266,7 @@ private fun PreviewImageViewer(
     val url = DestinationsLocalDataSource.craneDestinations.find {
         it.city == "MADRID"
     }?.imageUrl ?: ""
+
     val context = LocalContext.current
     val permissionsManager = PermissionsManager()
     val navController = rememberNavController()
@@ -291,6 +294,7 @@ private fun PreviewImageViewer(
             viewType = PermissionRequiredComposeFuncName.Weather
         ) {
 
+            val uri = Uri.parse("android.resource://com.unchil.gismemo_multiplatform.android/" + R.drawable.snapshot)
             MyApplicationTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -300,7 +304,7 @@ private fun PreviewImageViewer(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ){
-                        ImageViewer(data = url, size = Size.ORIGINAL)
+                        ImageViewer(data = uri, size = Size.ORIGINAL)
                     //    PhotoPreview(data = url, width = 160.dp, height = 160.dp){   }
                      //  PhotoPreview(data = url, ){   }
                     }

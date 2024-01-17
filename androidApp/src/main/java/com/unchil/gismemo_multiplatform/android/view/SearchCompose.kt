@@ -171,8 +171,6 @@ fun SearchCompose(
                 }
             )
 
-
-
             IconButton(
                 modifier = Modifier,
                 onClick = {
@@ -314,17 +312,16 @@ fun SearchCompose(
         mutableIntStateOf(markerOption.options.lastIndex )
     }
 
-
-
     val selectedTagArray:MutableState<ArrayList<Int>> =
         rememberSaveable{ mutableStateOf(arrayListOf())  }
-
 
     Column(
         modifier = Modifier
             .fillMaxSize(1f)
             .clip(shape = ShapeDefaults.ExtraSmall)
-            .verticalScroll(rememberScrollState()),
+        // Critical Error
+      //      .verticalScroll(rememberScrollState())
+        ,
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

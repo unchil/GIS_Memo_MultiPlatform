@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil3.size.Size
+import coil3.toUri
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -356,7 +357,8 @@ fun MemoCompose(
         )
 
         ImageViewer(data = item.snapshot, size = Size.ORIGINAL, isZoomable = false)
-
+// Testing
+//        ImageViewer(data = item.snapshot.toUri(), size = Size.ORIGINAL, isZoomable = false)
     }
 
 }
@@ -476,14 +478,24 @@ fun PrevMemoCompose() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                val snapshot =  Uri.parse("android.resource://com.unchil.gismemo_multiplatform/" + R.drawable.outline_perm_media_black_48).toString()
-                MemoCompose(
-                    item = MEMO_TBL(
-                        id = 0, latitude = 0f, longitude = 0f, altitude = 0f, isSecret = true, isPin = false,
-                        title = "title", snippets = "snippets", desc = "desc", snapshot = snapshot,
-                        snapshotCnt = 1, textCnt = 0, photoCnt = 0, videoCnt = 0
+                val snapshot =
+                    Uri.parse("android.resource://com.unchil.gismemo_multiplatform.android/" + R.drawable.snapshot)
+                        .toString()
+
+                Box(
+                    modifier = Modifier
+                ) {
+                    MemoCompose(
+                        item = MEMO_TBL(
+                            id = 0, latitude = 0f, longitude = 0f, altitude = 0f, isSecret = true, isPin = false,
+                            title = "2024-01-17 12:46", snippets = "#FitnessCenter #FlightLand #FlightTakeoff",
+                            desc = "screenshot:1 audioText:0 photo:0 video:0", snapshot = snapshot ,
+                            snapshotCnt = 1, textCnt = 0, photoCnt = 0, videoCnt = 0
+                        )
                     )
-                )
+                }
+
+
             }
         }
     }
