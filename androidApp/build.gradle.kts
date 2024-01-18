@@ -119,6 +119,8 @@ dependencies {
     //Paging
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
+    //  implementation(libs.paging.common)
+   // implementation(libs.paging.compose.common)
 
     implementation(libs.androidx.biometric)
 

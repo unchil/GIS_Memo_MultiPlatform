@@ -1,9 +1,13 @@
 package com.jetbrains.handson.kmm.shared.cache
 
-
-
 import app.cash.paging.PagingSource
-import  com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOne
+import app.cash.sqldelight.coroutines.mapToOneOrNull
+import app.cash.sqldelight.paging3.QueryPagingSource
+import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
+import com.jetbrains.handson.kmm.shared.entity.LatLngAlt
 import com.jetbrains.handson.kmm.shared.entity.MEMO_FILE_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TAG_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
@@ -15,27 +19,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-import app.cash.sqldelight.paging3.QueryPagingSource
-import com.jetbrains.handson.kmm.shared.entity.LatLngAlt
-
 
 internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
     private val database = GisMemoDatabase(databaseDriverFactory.createDriver())
      val dbQuery = database.gisMemoDatabaseQueries
 
 
-    val selectCurrentWeatherFlow:Flow<CURRENTWEATHER_TBL?> = flow {
-        emit(
-            selectCurrentWeather()
-        )
-    }.flowOn(Dispatchers.IO)
 
+    internal val currentWeatherFlow:Flow<CURRENTWEATHER_TBL?> =
+        dbQuery.select_CURRENTWEATHER_TBL(::mapCurrentWeatherSelecting)
+            .asFlow()
+            .mapToOneOrNull(Dispatchers.IO)
 
-    internal fun selectCurrentWeather(): CURRENTWEATHER_TBL? {
-        return dbQuery.select_CURRENTWEATHER_TBL(::mapCurrentWeatherSelecting).executeAsOneOrNull()
-    }
-
-    private fun mapCurrentWeatherSelecting(
+        private fun mapCurrentWeatherSelecting(
         dt: Long,
         base: String,
         visibility: String,
@@ -169,28 +165,28 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
     }
 
     internal fun insertMemoTag(tagList:List<MEMO_TAG_TBL>)   {
-    dbQuery.transaction {
-        tagList.forEach {
-            dbQuery.insert_MEMO_TAG_TBL(
-                id = it.id,
-                indexR = it.index.toLong()
-            )
+        dbQuery.transaction {
+            tagList.forEach {
+                dbQuery.insert_MEMO_TAG_TBL(
+                    id = it.id,
+                    indexR = it.index.toLong()
+                )
+            }
         }
-    }
     }
 
     internal fun insertMemoFile(fileList:List<MEMO_FILE_TBL>) {
-    dbQuery.transaction {
-        fileList.forEach {
-            dbQuery.insert_MEMO_FILE_TBL(
-                id = it.id,
-                type = it.type,
-                indexR = it.index.toLong(),
-                subIndex = it.subIndex.toLong(),
-                filePath = it.filePath
-            )
+        dbQuery.transaction {
+            fileList.forEach {
+                dbQuery.insert_MEMO_FILE_TBL(
+                    id = it.id,
+                    type = it.type,
+                    indexR = it.index.toLong(),
+                    subIndex = it.subIndex.toLong(),
+                    filePath = it.filePath
+                )
+            }
         }
-    }
     }
 
     internal fun insertMemoText(commentList:List<MEMO_TEXT_TBL>) {
@@ -329,17 +325,21 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
         }
     }
 
-    internal fun selectMemoListFlow(): Flow<List<MEMO_TBL>> = flow {
-        emit(dbQuery.select_MEMO_TBL_All(::mapMemoSelecting).executeAsList())
-    }.flowOn(Dispatchers.IO)
+
+    internal val memoListFlow : Flow<List<MEMO_TBL>> =
+        dbQuery.select_MEMO_TBL_All(::mapMemoSelecting)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
 
     internal fun selectMemo(it:Long):MEMO_TBL? {
         return dbQuery.select_MEMO_TBL_ID(it, ::mapMemoSelecting).executeAsOneOrNull()
     }
 
-    val selectMarkerMemoListFlow: Flow<List<MEMO_TBL>> = flow {
-            emit(dbQuery.select_MEMO_TBL_Marker(::mapMemoSelecting).executeAsList()   )
-    }.flowOn(Dispatchers.IO)
+    internal val markerListFlow:  Flow<List<MEMO_TBL>> =
+        dbQuery.select_MEMO_TBL_Marker(::mapMemoSelecting)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+
 
     private fun mapMemoSelecting(
         id : Long,
@@ -375,33 +375,46 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
         )
     }
 
-     fun selectMemoFileListFlow(it:Long):Flow<List<MEMO_FILE_TBL>> = flow {
-        emit(
-            selectMemoFile(it)
-        )
-    }.flowOn(Dispatchers.IO)
 
-internal fun selectMemoFile(it:Long):List<MEMO_FILE_TBL>{
-    return dbQuery.select_MEMO_FILE_TBL_ID( it,
-        mapper = {  id, type, indexR, subIndex, filePath ->
-            MEMO_FILE_TBL(
-                id = id,
-                type = type,
-                index = indexR.toInt(),
-                subIndex = subIndex.toInt(),
-                filePath = filePath
-            )
-    }).executeAsList()
-}
+    internal fun memoFileListFlow(id:Long): Flow<List<MEMO_FILE_TBL>> =
+        dbQuery.select_MEMO_FILE_TBL_ID( id,
+            mapper = {  id, type, indexR, subIndex, filePath ->
+                MEMO_FILE_TBL(
+                    id = id,
+                    type = type,
+                    index = indexR.toInt(),
+                    subIndex = subIndex.toInt(),
+                    filePath = filePath
+                )
+            }).asFlow()
+            .mapToList(Dispatchers.IO)
 
-    fun selectMemoTextListFlow(it:Long):Flow<List<MEMO_TEXT_TBL>> = flow {
-        emit(
-            selectMemoText(it)
-        )
-    }.flowOn(Dispatchers.IO)
+    internal fun selectMemoFile(id:Long):List<MEMO_FILE_TBL>{
+        return dbQuery.select_MEMO_FILE_TBL_ID( id,
+            mapper = {  id, type, indexR, subIndex, filePath ->
+                MEMO_FILE_TBL(
+                    id = id,
+                    type = type,
+                    index = indexR.toInt(),
+                    subIndex = subIndex.toInt(),
+                    filePath = filePath
+                )
+        }).executeAsList()
+    }
 
-    internal fun selectMemoText(it:Long):List<MEMO_TEXT_TBL>{
-        return dbQuery.select_MEMO_TEXT_TBL(it,
+    internal fun memoTextListFlow(id:Long):Flow<List<MEMO_TEXT_TBL>> =
+        dbQuery.select_MEMO_TEXT_TBL(id,
+            mapper = { id, indexR, comment ->
+                MEMO_TEXT_TBL(
+                    id = id,
+                    index =  indexR.toInt(),
+                    comment = comment
+                )
+            }).asFlow()
+            .mapToList(Dispatchers.IO)
+
+    internal fun selectMemoText(id:Long):List<MEMO_TEXT_TBL>{
+        return dbQuery.select_MEMO_TEXT_TBL(id,
             mapper = { id, indexR, comment ->
                 MEMO_TEXT_TBL(
                     id = id,
@@ -422,8 +435,8 @@ internal fun selectMemoFile(it:Long):List<MEMO_FILE_TBL>{
     }
 
 
-    fun getPagingSource() : PagingSource<Long, MEMO_TBL> {
-        return QueryPagingSource (
+    internal val keyedQueryPagingSource : PagingSource<Long, MEMO_TBL> =
+         QueryPagingSource (
             transacter = dbQuery,
             context = Dispatchers.IO,
             pageBoundariesProvider = { anchor ,  limit ->
@@ -437,11 +450,18 @@ internal fun selectMemoFile(it:Long):List<MEMO_FILE_TBL>{
                 )
             }
         )
-    }
 
 
 
-
+    internal val  offsetQueryPagingSource: PagingSource<Int, MEMO_TBL>  =
+         QueryPagingSource(
+            countQuery = dbQuery.countMEMO_TBL(),
+            transacter = dbQuery,
+            context = Dispatchers.IO,
+            queryProvider = { limit, offset ->
+                dbQuery.pagingMEMO_TBL(limit, offset, ::mapMemoSelecting)
+            }
+         )
 
 
 

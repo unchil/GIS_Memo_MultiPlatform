@@ -8,7 +8,8 @@ biometric = "1.2.0-alpha05"
 cameraCore = "1.4.0-alpha03"
 coilCompose = "2.5.0"
 coilNetwork = "3.0.0-alpha01"
-coroutinesVersion = "1.8.0-RC2"
+coroutinesPlugInVersion = "1.9.22"
+coroutinesVersion = "1.7.3"
 dateTimeVersion = "0.4.1"
 foundationLayout = "1.6.0-beta03"
 gradle = "8.2.1"
@@ -32,6 +33,8 @@ v_ComposeMaterial = "1.6.0-beta03"
 navigationCompose = "2.7.6"
 pagingCommon = "3.3.0-alpha02-0.4.0"
 pagingRuntime = "3.3.0-alpha02"
+#pagingCommon = "3.1.1-0.3.1"
+#pagingRuntime = "3.1.1"
 playServicesLocation = "21.0.1"
 playServicesMaps = "18.2.0"
 v_ComposeRuntime = "1.6.0-beta03"
@@ -138,6 +141,7 @@ ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorVersi
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingRuntime" }
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingRuntime" }
 androidx-paging-rxjava3 = { module = "androidx.paging:paging-rxjava3", version.ref = "pagingRuntime" }
+
 paging-common = { module = "app.cash.paging:paging-common", version.ref = "pagingCommon" }
 paging-compose-common = { module = "app.cash.paging:paging-compose-common", version.ref = "pagingCommon" }
 paging-runtime-uikit = { module = "app.cash.paging:paging-runtime-uikit", version.ref = "pagingCommon" }
@@ -150,7 +154,7 @@ kotlin-multiplatform-plugin = { module = "org.jetbrains.kotlin.multiplatform:org
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "coroutinesVersion" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "coroutinesPlugInVersion" }
 #kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "coroutinesVersion" }
 ##kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "v_kotlinMultiplatform" }

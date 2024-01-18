@@ -37,7 +37,7 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.paging.common)
-                implementation(libs.paging.compose.common)
+
 
 
                 implementation(libs.sqldelight.runtime)
@@ -71,7 +71,7 @@ kotlin {
 
                 implementation(libs.sqldelight.android.driver)
 
-
+                implementation(libs.paging.compose.common)
 
                 implementation(libs.ktor.client.okhttp)
            //     implementation(libs.ktor.client.android)

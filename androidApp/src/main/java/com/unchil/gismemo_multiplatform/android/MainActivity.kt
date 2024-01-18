@@ -84,9 +84,8 @@ class MainActivity : ComponentActivity() {
                         LocalPermissionsManager provides permissionsManager,
                         LocalRepository provides repository,
                     ){
-                 //   CompositionLocalProvider(LocalPermissionsManager provides permissionsManager) {
-
-                        DetailMemoCompose(navController = navController, id = 1705199816840L)
+                        MemoListScreen(navController = navController)
+                      //  DetailMemoCompose(navController = navController, id = 1705199816840L)
                      //   WriteMemoCompose(navController = navController)
                       //  ExoplayerCompose( uriList = uriList)
                       //  GreetingView(Greeting().greet())

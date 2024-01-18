@@ -132,6 +132,16 @@ SELECT D.*
         AND D.title LIKE ?;
 
 
+
+countMEMO_TBL:
+SELECT count(id) FROM MEMO_TABLE;
+
+pagingMEMO_TBL:
+SELECT * FROM MEMO_TABLE
+  WHERE id > 0
+LIMIT: limit OFFSET :offset;
+
+
 keyedQuery_MEMO_TBL:
 SELECT * FROM MEMO_TABLE
 WHERE id >= :beginInclusive AND (id < :endExclusive OR :endExclusive IS NULL);
@@ -150,6 +160,10 @@ FROM (
   WHERE id > 0
 )
 WHERE page_boundary = 1;
+
+
+
+
 
 select_MEMO_TBL_ID:
 SELECT * FROM MEMO_TABLE WHERE id = ? LIMIT 1;

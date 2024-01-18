@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
+
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
 import com.unchil.gismemo_multiplatform.android.model.QueryData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,15 +39,6 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
     val memoPagingStream : Flow<PagingData<MEMO_TBL>>
     private val searchQueryFlow:Flow<Event.Search>
     private val eventHandler: (Event) -> Unit
-
-
-    private val _memoListStateFlow: MutableStateFlow<List<MEMO_TBL>>
-            = MutableStateFlow(emptyList())
-
-    val memoListStateFlow: StateFlow<List<MEMO_TBL>>
-            = _memoListStateFlow.asStateFlow()
-
-
 
     init {
         val eventStateFlow = MutableSharedFlow<Event>()
@@ -79,14 +72,6 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
          */
 
 
-        viewModelScope.launch {
-            repository.getMemoListFlow().collectLatest { it ->
-                _memoListStateFlow.value = it
-            }
-        }
-
-
-
     }
 
     fun onEvent(event: Event) {
@@ -114,6 +99,8 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
     private fun searchMemo(queryDataList:MutableList<QueryData>): Flow<PagingData<MEMO_TBL>> {
         return  repository.getMemoListPagingFlow
     }
+
+
 
     sealed class Event {
         data class Search(val queryDataList:MutableList<QueryData>) : Event()

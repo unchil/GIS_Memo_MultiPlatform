@@ -34,6 +34,8 @@ class WeatherViewModel(val repository:GisMemoRepository) : ViewModel() {
     private fun connectWeatherInfoStream(){
         viewModelScope.launch {
             repository.setWeatherInfo()
+        }
+        viewModelScope.launch {
             repository._currentWeatherStateFlow.collectLatest {
                 _currentWeatherStateFlow.value = it
             }

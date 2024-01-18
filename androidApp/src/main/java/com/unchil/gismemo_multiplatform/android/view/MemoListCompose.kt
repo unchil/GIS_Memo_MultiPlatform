@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
@@ -68,50 +69,7 @@ fun MemoListCompose(){
 
     val repository = LocalRepository.current
     val viewModel = remember { MemoListViewModel( repository = repository ) }
-    val memoListStream = viewModel.memoPagingStream.collectAsLazyPagingItems()
 
-    LaunchedEffect(key1 = memoListStream.itemCount){
-        val count = memoListStream.itemCount
-    }
-
-    val memoListState = viewModel.memoListStateFlow.collectAsState()
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .pullRefresh(state = pullRefreshState)
-    ) {
-
-        LazyColumn(
-            modifier = Modifier,
-            state = lazyListState,
-            userScrollEnabled = true,
-            verticalArrangement = Arrangement.SpaceBetween,
-            contentPadding = PaddingValues(
-                horizontal = 2.dp,
-                vertical = 2.dp
-            )
-        ) {
-            items(memoListState.value.size) { index ->
-                MemoCompose(item = memoListState.value[index])
-            }
-        }
-
-        UpButton(
-            modifier = Modifier
-                .padding(end = 10.dp, bottom = upButtonPadding.value)
-                .align(Alignment.BottomEnd),
-            listState = lazyListState
-        )
-
-
-        PullRefreshIndicator(
-            refreshing = isRefreshing.value,
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
-    }
-
-    /*
         val memoListStream = viewModel.memoPagingStream.collectAsLazyPagingItems()
 
     Box(
@@ -121,6 +79,7 @@ fun MemoListCompose(){
     ) {
 
         when (memoListStream.loadState.source.refresh) {
+
             is LoadState.Error -> {
                 Text(
                     "Error",
@@ -130,9 +89,7 @@ fun MemoListCompose(){
             LoadState.Loading -> {
 
             }
-
             is LoadState.NotLoading -> {
-
                 LazyColumn(
                     modifier = Modifier,
                     state = lazyListState,
@@ -157,7 +114,6 @@ fun MemoListCompose(){
                     listState = lazyListState
                 )
             }
-
         }
 
 
@@ -168,8 +124,6 @@ fun MemoListCompose(){
             modifier = Modifier.align(Alignment.TopCenter)
         )
     }
-
-     */
 
 }
 

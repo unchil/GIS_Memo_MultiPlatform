@@ -3,7 +3,6 @@ package com.jetbrains.handson.kmm.shared
 import app.cash.paging.Pager
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
-import app.cash.sqldelight.paging3.QueryPagingSource
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import com.jetbrains.handson.kmm.shared.cache.GisMemoDao
 import com.jetbrains.handson.kmm.shared.data.WriteMemoData
@@ -37,7 +36,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
 
 
     val _currentWeatherStateFlow: MutableStateFlow<AsyncWeatherInfoState>
-            = MutableStateFlow( AsyncWeatherInfoState.Empty)
+            = MutableStateFlow( AsyncWeatherInfoState.Loading)
 
 
     val currentAudioText: MutableStateFlow<List<Pair<String, List<String>>>>
@@ -245,7 +244,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         gisMemoDao.insertMemoText(memoTextTblList)
 
 
-        gisMemoDao.selectCurrentWeatherFlow.collectLatest {
+        gisMemoDao.currentWeatherFlow.collectLatest {
             it?.let {
                 it.dt = id
                 gisMemoDao.insertMemoWeather(it)
@@ -332,13 +331,13 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
     }
 
     suspend fun setMarkerMemoList() {
-        gisMemoDao.selectMarkerMemoListFlow.collectLatest {
+        gisMemoDao.memoListFlow.collectLatest {
             _markerMemoList.emit(it)
         }
     }
 
     suspend fun getMemoListFlow() : Flow<List<MEMO_TBL>> {
-        return gisMemoDao.selectMemoListFlow()
+        return gisMemoDao.memoListFlow
     }
 
     fun getShareMemoData(
@@ -382,7 +381,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
 
     suspend fun setFiles(id:Long){
 
-        gisMemoDao.selectMemoFileListFlow(id).collectLatest { it ->
+        gisMemoDao.memoFileListFlow(id).collectLatest { it ->
             val currentSnapShotList = it.filter {
                 it.type ==  WriteMemoData.Type.SNAPSHOT.name
             }.sortedBy {
@@ -413,7 +412,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
 
             detailVideo.emit(  currentVideoList  )
 
-            gisMemoDao.selectMemoTextListFlow(id).collectLatest {memoTextTblList ->
+            gisMemoDao.memoTextListFlow(id).collectLatest {memoTextTblList ->
 
                 val audiTextList = mutableListOf<Pair<String,List<String>>>()
                 val audioTextFileList = it.filter { it.type ==  WriteMemoData.Type.AUDIOTEXT.name}
@@ -486,7 +485,7 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
 
 
     suspend fun setWeatherInfo(){
-        gisMemoDao.selectCurrentWeatherFlow.collectLatest {
+        gisMemoDao.currentWeatherFlow.collectLatest {
             if(it == null){
                 _currentWeatherStateFlow.value = AsyncWeatherInfoState.Empty
             }else {
@@ -529,18 +528,19 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         )
     }
 
-
-    val getMemoListPagingFlow: Flow<PagingData<MEMO_TBL>> = flow  {
+// important issues  flow{ } code block 으로는 compose func 에서 collect 가 일어 나지 않음
+    val getMemoListPagingFlow: Flow<PagingData<MEMO_TBL>> =
          Pager(
             config = PagingConfig(
                 pageSize = 30,
                 enablePlaceholders =  false
             ),
             pagingSourceFactory = {
-                gisMemoDao.getPagingSource()
+                gisMemoDao.keyedQueryPagingSource
             }
-        )
-    }
+        ).flow
+
+
 
 
 }
