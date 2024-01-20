@@ -34,7 +34,7 @@ import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
-import com.unchil.gismemo_multiplatform.android.ChkNetWork
+import com.unchil.gismemo_multiplatform.android.common.ChkNetWork
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
 import com.unchil.gismemo_multiplatform.android.R
