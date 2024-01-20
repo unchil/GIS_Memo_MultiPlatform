@@ -3,7 +3,6 @@ package com.jetbrains.handson.kmm.shared.cache
 import app.cash.paging.PagingSource
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.cash.sqldelight.paging3.QueryPagingSource
 import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
@@ -16,8 +15,6 @@ import com.jetbrains.handson.kmm.shared.entity.MEMO_WEATHER_TBL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 
 
 internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
@@ -25,6 +22,8 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
      val dbQuery = database.gisMemoDatabaseQueries
 
 
+    internal val currentWeather:CURRENTWEATHER_TBL? =
+        dbQuery.select_CURRENTWEATHER_TBL(::mapCurrentWeatherSelecting).executeAsOneOrNull()
 
     internal val currentWeatherFlow:Flow<CURRENTWEATHER_TBL?> =
         dbQuery.select_CURRENTWEATHER_TBL(::mapCurrentWeatherSelecting)
@@ -435,8 +434,8 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
     }
 
 
-    internal val keyedQueryPagingSource : PagingSource<Long, MEMO_TBL> =
-         QueryPagingSource (
+    internal fun memoKeyedQueryPagingSource(): PagingSource<Long, MEMO_TBL> {
+        return  QueryPagingSource (
             transacter = dbQuery,
             context = Dispatchers.IO,
             pageBoundariesProvider = { anchor ,  limit ->
@@ -450,8 +449,15 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
                 )
             }
         )
+    }
 
 
+    /*
+    In your Pager,
+    you are providing a lambda which returns the same instance of PagingSource
+    no matter how many times it is called.
+    As the exception states, you must return a new instance of PagingSource each time.
+    그래서 함수 호출 방식으로 변경
 
     internal val  offsetQueryPagingSource: PagingSource<Int, MEMO_TBL>  =
          QueryPagingSource(
@@ -463,8 +469,19 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
             }
          )
 
+     */
 
 
+    internal fun memoOffsetQueryPagingSource():PagingSource<Int, MEMO_TBL> {
+        return QueryPagingSource(
+            countQuery = dbQuery.countMEMO_TBL(),
+            transacter = dbQuery,
+            context = Dispatchers.IO,
+            queryProvider = { limit, offset ->
+                dbQuery.pagingMEMO_TBL(limit, offset, ::mapMemoSelecting)
+            }
+        )
+    }
 
 
 

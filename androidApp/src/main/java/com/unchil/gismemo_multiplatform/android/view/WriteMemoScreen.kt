@@ -143,7 +143,7 @@ typealias DrawingPolyline = List<LatLng>
     MapsComposeExperimentalApi::class, ExperimentalComposeUiApi::class
 )
 @Composable
-fun WriteMemoCompose(navController: NavController){
+fun WriteMemoScreen(navController: NavController){
 
     val permissions = listOf(
         Manifest.permission.INTERNET,
@@ -1272,7 +1272,7 @@ fun PrevWriteMemo(){
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                WriteMemoCompose(navController = navController)
+                WriteMemoScreen(navController = navController)
             }
         }
 

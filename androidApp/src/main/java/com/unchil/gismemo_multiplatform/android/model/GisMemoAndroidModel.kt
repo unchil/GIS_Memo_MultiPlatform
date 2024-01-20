@@ -28,6 +28,8 @@ import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.navigation.GisMemoDestinations
 
 
+
+
 sealed class MemoData {
     data class Photo(val dataList: MutableList<String>) : MemoData()
     data class SnapShot(val dataList: MutableList<String>) : MemoData()
@@ -77,6 +79,17 @@ object MemoBgObject {
     }
 
 }
+
+
+object MainTabObject {
+    val Types:List<GisMemoDestinations> = listOf(
+        GisMemoDestinations.MemoListScreen,
+        GisMemoDestinations.WriteMemoScreen,
+        GisMemoDestinations.MapScreen,
+        GisMemoDestinations.SettingScreen
+    )
+}
+
 
 object BiometricCheckObject {
     enum class Type {
@@ -145,10 +158,10 @@ object CreateMenuData {
                   Pair(Icons.Outlined.Screenshot,  null)
               }
               Type.RECORD -> {
-                  Pair(Icons.Outlined.Mic,  GisMemoDestinations.SpeechToText.route)
+                  Pair(Icons.Outlined.Mic,  GisMemoDestinations.SpeechRecognizer.route)
               }
               Type.CAMERA -> {
-                  Pair(Icons.Outlined.Videocam, GisMemoDestinations.CameraCompose.route)
+                  Pair(Icons.Outlined.Videocam, GisMemoDestinations.Camera.route)
               }
           }
     }

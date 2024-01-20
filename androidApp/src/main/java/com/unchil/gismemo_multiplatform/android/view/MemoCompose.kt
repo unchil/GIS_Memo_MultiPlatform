@@ -128,7 +128,7 @@ fun MemoCompose(
                                 event(
                                     MemoListViewModel.Event.ToRoute(
                                         navController = it,
-                                        route = GisMemoDestinations.DetailMemoView.createRoute(id = item.id.toString())
+                                        route = GisMemoDestinations.DetailMemo.createRoute(id = item.id.toString())
                                     )
                                 )
                             }
@@ -233,7 +233,7 @@ fun MemoCompose(
                         event(
                             MemoListViewModel.Event.ToRoute(
                                 navController = it,
-                                route = GisMemoDestinations.DetailMemoView.createRoute(id = item.id.toString())
+                                route = GisMemoDestinations.DetailMemo.createRoute(id = item.id.toString())
                             )
                         )
                     }

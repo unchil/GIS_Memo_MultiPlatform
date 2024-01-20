@@ -13,10 +13,6 @@ import com.unchil.gismemo_multiplatform.android.model.QueryData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
@@ -62,7 +58,8 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
         memoPagingStream = searchQueryFlow
             .flatMapLatest {
                 searchMemo(queryDataList = it.queryDataList)
-            }.cachedIn(viewModelScope)
+            }
+            .cachedIn(viewModelScope)
         /*
         cachedIn(viewModelScope)
         A common use case for this caching is to cache PagingData in a ViewModel.
@@ -97,7 +94,8 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
     }
 
     private fun searchMemo(queryDataList:MutableList<QueryData>): Flow<PagingData<MEMO_TBL>> {
-        return  repository.getMemoListPagingFlow
+       // return  repository.getMemoListPagingFlow
+        return repository.memoPagingStream()
     }
 
 

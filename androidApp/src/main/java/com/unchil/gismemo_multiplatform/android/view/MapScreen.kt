@@ -54,7 +54,7 @@ fun Location.toLatLng():LatLng{
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("MissingPermission")
 @Composable
-fun GoogleMapView(){
+fun MapScreen(){
 
     val permissions = listOf(
         Manifest.permission.INTERNET,
@@ -197,7 +197,7 @@ fun PrevViewMap() {
                 color = MaterialTheme.colorScheme.background
             ) {
 
-                GoogleMapView()
+                MapScreen()
             }
         }
     }

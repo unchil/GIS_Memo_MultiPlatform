@@ -86,5 +86,9 @@
     <string name="search_period">검색기간</string>
     <string name="search_dateRangePicker_headline">시작일 - 종료일</string>
 
+    <string name="mainmenu_list">리스트</string>
+    <string name="mainmenu_write" >작성</string>
+    <string name="mainmenu_map" >지도</string>
+    <string name="mainmenu_setting" >설정</string>
 
 </resources>

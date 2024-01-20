@@ -468,18 +468,10 @@ fun CameraCompose( navController: NavController? = null   ) {
 
                                             if(findVideoList.last()) {
                                                 videoList.last().let {videoUri ->
-                                                    navController?.navigate(
-                                                        GisMemoDestinations.ExoPlayerView.createRoute(
-                                                            videoUri
-                                                        )
-                                                    )
+                                                    navController?.navigate( GisMemoDestinations.ExoPlayer.createRoute(videoUri  ))
                                                 }
                                             } else {
-                                                navController?.navigate(
-                                                    GisMemoDestinations.PhotoPreview.createRoute(
-                                                        it
-                                                    )
-                                                )
+                                                navController?.navigate( GisMemoDestinations.ImageViewer.createRoute( it ) )
                                             }
 
                                         }

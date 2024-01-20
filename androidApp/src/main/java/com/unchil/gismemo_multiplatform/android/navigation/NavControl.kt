@@ -2,9 +2,16 @@ package com.unchil.gismemo_multiplatform.android.navigation
 
 import android.net.Uri
 import android.os.Bundle
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.EditNote
+import androidx.compose.material.icons.outlined.FormatListBulleted
+import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.ViewStream
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import com.unchil.gismemo_multiplatform.android.R
 
 fun NavHostController.navigateTo(route: String) =
     this.navigate(route) {
@@ -28,80 +35,88 @@ sealed class GisMemoDestinations(
     val route:String,
     val name:Int = 0,
     val icon: ImageVector? = null,
+){
 
-    ){
+    object MemoListScreen : GisMemoDestinations(
+        route = "list",
+        name = R.string.mainmenu_list,
+        icon = Icons.Outlined.ViewStream
+    )
 
-    object SpeechToText : GisMemoDestinations ( route = "voicerecording")
+    object WriteMemoScreen : GisMemoDestinations(
+        route = "write",
+        name = R.string.mainmenu_write,
+        icon = Icons.Outlined.EditNote
+    )
 
-    object CameraCompose : GisMemoDestinations ( route = "camerapreview")
+    object MapScreen : GisMemoDestinations(
+        route = "map",
+        name = R.string.mainmenu_map,
+        icon = Icons.Outlined.Map
+    )
 
-    object PhotoPreview : GisMemoDestinations( route = "photopreview?${ARG_NAME_FILE_PATH}={$ARG_NAME_FILE_PATH}") {
+    object SettingScreen : GisMemoDestinations(
+        route = "setting",
+        name = R.string.mainmenu_setting,
+        icon = Icons.Outlined.Settings
+    )
 
+    object SpeechRecognizer : GisMemoDestinations (
+        route = "speechrecognizer"
+    )
+
+    object Camera : GisMemoDestinations (
+        route = "camera"
+    )
+
+    object ImageViewer : GisMemoDestinations(
+        route = "imageviewer?$ARG_NAME_FILE_PATH=$ARG_NAME_FILE_PATH"
+    ) {
         fun createRoute(filePath: Any): String {
             val path = when(filePath){
                 is Int -> {
-                    Uri.parse("android.resource://com.unchil.gismemo_multiplatform.android/" + filePath.toString()).toString()
+                    Uri.parse(
+                        "android.resource://com.unchil.gismemo_multiplatform.android/"
+                                + filePath.toString()
+                    ).toString()
                 }
                 else -> {
                     ( filePath as Uri).encodedPath
                 }
             }
-            return "photopreview?${ARG_NAME_FILE_PATH}=${path}"
+            return "imageviewer?$ARG_NAME_FILE_PATH=$path"
         }
-
-        val createRouteNew: (filePath: Any) ->  String  = { filePath ->
-            val path = when(filePath){
-                is Int -> {
-                    Uri.parse("android.resource://com.unchil.gismemo_multiplatform.android/" + filePath.toString()).toString()
-                }
-                else -> {
-                    ( filePath as Uri).encodedPath
-                }
-            }
-            "photopreview?${ARG_NAME_FILE_PATH}=${path}"
-        }
-
-
         fun getUriFromArgs(bundle: Bundle?): String {
             return bundle?.getString(ARG_NAME_FILE_PATH) ?: ""
         }
+
     }
 
-
-    object ExoPlayerView : GisMemoDestinations( route = "exoplayerview?${ARG_NAME_FILE_PATH}={$ARG_NAME_FILE_PATH}&${ARG_NAME_ISVISIBLE_AMPLITUDES}={$ARG_NAME_ISVISIBLE_AMPLITUDES}"  ) {
-
-        fun createRoute(filePath: String, isVisibleAmplitudes:Boolean = false): String {
-            return "exoplayerview?${ARG_NAME_FILE_PATH}=${filePath}&${ARG_NAME_ISVISIBLE_AMPLITUDES}=${isVisibleAmplitudes}"
+    object ExoPlayer : GisMemoDestinations(
+        route = "exoplayer?$ARG_NAME_FILE_PATH=$ARG_NAME_FILE_PATH"
+    ) {
+        fun createRoute(filePath: String): String {
+            return "exoplayer?$ARG_NAME_FILE_PATH=$filePath"
         }
-
         fun getUriFromArgs(bundle: Bundle?): String {
             return  bundle?.getString(ARG_NAME_FILE_PATH) ?: ""
         }
-
-        fun getIsVisibleAmplitudesFromArgs(bundle: Bundle?): Boolean {
-            return  bundle?.getBoolean(ARG_NAME_ISVISIBLE_AMPLITUDES) ?: false
-        }
     }
 
-    object DetailMemoView : GisMemoDestinations(  route = "detailmemoview?${ARG_NAME_ID}={$ARG_NAME_ID}"  ) {
-
+    object DetailMemo : GisMemoDestinations(
+        route = "detailmemo?$ARG_NAME_ID=$ARG_NAME_ID"
+    ){
         fun createRoute(id: String) :String {
-            return "detailmemoview?${ARG_NAME_ID}=${id}"
+            return "detailmemo?$ARG_NAME_ID=$id"
         }
-
         fun getIDFromArgs(bundle: Bundle?): String {
             return bundle?.getString(ARG_NAME_ID) ?: ""
         }
-
     }
-
 
     companion object {
         const val ARG_NAME_ID: String = "id"
         const val ARG_NAME_FILE_PATH: String = "url"
-        const val ARG_NAME_ISVISIBLE_AMPLITUDES:String = "isvisibleamplitudes"
     }
-
-
 
 }

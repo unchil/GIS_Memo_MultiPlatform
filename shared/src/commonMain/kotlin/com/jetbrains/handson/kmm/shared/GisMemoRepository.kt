@@ -22,7 +22,6 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 
@@ -243,14 +242,10 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         gisMemoDao.insertMemoFile(memoFileTblList)
         gisMemoDao.insertMemoText(memoTextTblList)
 
-
-        gisMemoDao.currentWeatherFlow.collectLatest {
-            it?.let {
-                it.dt = id
-                gisMemoDao.insertMemoWeather(it)
-            }
+        gisMemoDao.currentWeather?.let {
+            it.dt = id
+            gisMemoDao.insertMemoWeather(it)
         }
-
 
         initMemoItem()
 
@@ -528,19 +523,41 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
         )
     }
 
+/*
 // important issues  flow{ } code block 으로는 compose func 에서 collect 가 일어 나지 않음
-    val getMemoListPagingFlow: Flow<PagingData<MEMO_TBL>> =
+val getMemoListPagingFlow: Flow<PagingData<MEMO_TBL>> = flow{
          Pager(
             config = PagingConfig(
                 pageSize = 30,
                 enablePlaceholders =  false
             ),
             pagingSourceFactory = {
-                gisMemoDao.keyedQueryPagingSource
+                gisMemoDao.offsetQueryPagingSource
+            }
+        )
+    }
+
+
+*/
+
+/*
+In your Pager,
+you are providing a lambda which returns the same instance of PagingSource
+no matter how many times it is called.
+As the exception states, you must return a new instance of PagingSource each time.
+그래서 함수 호출 방식으로 변경
+*/
+    fun memoPagingStream():Flow<PagingData<MEMO_TBL>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 30,
+                enablePlaceholders =  false
+            ),
+            pagingSourceFactory = {
+                gisMemoDao.memoKeyedQueryPagingSource()
             }
         ).flow
-
-
+    }
 
 
 }
