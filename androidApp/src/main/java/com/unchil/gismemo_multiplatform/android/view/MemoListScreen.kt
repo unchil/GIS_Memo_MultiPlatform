@@ -163,7 +163,7 @@ fun MemoListScreen(
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
-                MemoListCompose()
+                MemoListCompose(navController = navController)
             }
 
         }

@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.unchil.gismemo_multiplatform.android.common.ChkNetWork
@@ -199,7 +200,9 @@ class MainActivity : ComponentActivity() {
 
                                         if(!isPortrait.value){
                                             NavigationRail(
-                                                modifier = Modifier.shadow(elevation = 1.dp ).width(80.dp),
+                                                modifier = Modifier
+                                                    .shadow(elevation = 1.dp)
+                                                    .width(80.dp),
                                                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                                             ) {
 

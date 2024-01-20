@@ -70,7 +70,7 @@ sealed class GisMemoDestinations(
     )
 
     object ImageViewer : GisMemoDestinations(
-        route = "imageviewer?$ARG_NAME_FILE_PATH=$ARG_NAME_FILE_PATH"
+        route = "imageviewer?{url}"
     ) {
         fun createRoute(filePath: Any): String {
             val path = when(filePath){
@@ -84,39 +84,34 @@ sealed class GisMemoDestinations(
                     ( filePath as Uri).encodedPath
                 }
             }
-            return "imageviewer?$ARG_NAME_FILE_PATH=$path"
+            return "imageviewer?$path"
         }
         fun getUriFromArgs(bundle: Bundle?): String {
-            return bundle?.getString(ARG_NAME_FILE_PATH) ?: ""
+            return bundle?.getString("url") ?: ""
         }
 
     }
 
     object ExoPlayer : GisMemoDestinations(
-        route = "exoplayer?$ARG_NAME_FILE_PATH=$ARG_NAME_FILE_PATH"
+        route = "exoplayer?{url}"
     ) {
         fun createRoute(filePath: String): String {
-            return "exoplayer?$ARG_NAME_FILE_PATH=$filePath"
+            return "exoplayer?$filePath"
         }
         fun getUriFromArgs(bundle: Bundle?): String {
-            return  bundle?.getString(ARG_NAME_FILE_PATH) ?: ""
+            return  bundle?.getString("url") ?: ""
         }
     }
 
     object DetailMemo : GisMemoDestinations(
-        route = "detailmemo?$ARG_NAME_ID=$ARG_NAME_ID"
+        route = "detailmemo?{id}"
     ){
-        fun createRoute(id: String) :String {
-            return "detailmemo?$ARG_NAME_ID=$id"
+        fun createRoute(id: Long) :String {
+            return "detailmemo?$id"
         }
-        fun getIDFromArgs(bundle: Bundle?): String {
-            return bundle?.getString(ARG_NAME_ID) ?: ""
+        fun getIDFromArgs(bundle: Bundle?): Long {
+            return bundle?.getLong("id") ?: 0L
         }
-    }
-
-    companion object {
-        const val ARG_NAME_ID: String = "id"
-        const val ARG_NAME_FILE_PATH: String = "url"
     }
 
 }

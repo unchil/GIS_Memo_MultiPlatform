@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -49,7 +50,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MemoListCompose(){
+fun MemoListCompose(navController: NavHostController){
 
     val context = LocalContext.current
     val isRefreshing: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
@@ -97,7 +98,11 @@ fun MemoListCompose(){
                 ) {
                     items(memoListStream.itemCount) {index ->
                         memoListStream[index]?.let {
-                            MemoCompose(item = it)
+                            MemoCompose(
+                                item = it,
+                                event = viewModel::onEvent,
+                                navController = navController
+                            )
                         }
                     }
                 }
@@ -182,7 +187,7 @@ fun PrevMemoListCompose() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                MemoListCompose()
+                MemoListCompose(navController = navController)
             }
         }
     }

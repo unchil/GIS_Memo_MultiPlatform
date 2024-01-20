@@ -3,9 +3,9 @@ package com.unchil.gismemo_multiplatform.android.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
 
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-
+import com.unchil.gismemo_multiplatform.android.navigation.navigateTo
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
@@ -84,7 +84,7 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
     }
 
     private fun toRoute(navController: NavController, route:String){
-        navController.navigate(route = route)
+        navController.navigate( route = route)
     }
 
     private fun deleteItem(id:Long){
@@ -103,7 +103,8 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
     sealed class Event {
         data class Search(val queryDataList:MutableList<QueryData>) : Event()
 
-        data class ToRoute(val navController: NavController, val route:String) : Event()
+        data class ToRoute(val navController: NavHostController, val route:String) : Event()
+
         data class DeleteItem(val id:Long):Event()
     }
 }

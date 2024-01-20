@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil3.size.Size
 import coil3.toUri
@@ -82,7 +83,7 @@ fun MemoCompose(
     item: MEMO_TBL,
     channel:  Channel<Int>? = null,
     event: ((MemoListViewModel.Event)->Unit)? = null,
-    navController: NavController? = null
+    navController: NavHostController? = null
 ){
 
     val context = LocalContext.current
@@ -128,7 +129,7 @@ fun MemoCompose(
                                 event(
                                     MemoListViewModel.Event.ToRoute(
                                         navController = it,
-                                        route = GisMemoDestinations.DetailMemo.createRoute(id = item.id.toString())
+                                        route = GisMemoDestinations.DetailMemo.createRoute(id = item.id)
                                     )
                                 )
                             }
@@ -233,7 +234,7 @@ fun MemoCompose(
                         event(
                             MemoListViewModel.Event.ToRoute(
                                 navController = it,
-                                route = GisMemoDestinations.DetailMemo.createRoute(id = item.id.toString())
+                                route = "detailmemo?${item.id}"
                             )
                         )
                     }

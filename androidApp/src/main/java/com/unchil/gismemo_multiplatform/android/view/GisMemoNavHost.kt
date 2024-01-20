@@ -38,25 +38,27 @@ fun GisMemoNavHost (
         }
 
         composable(
-            route = GisMemoDestinations.SettingScreen.route
-        ){
-
-        }
-
-        composable(
             route = GisMemoDestinations.DetailMemo.route,
             arguments = listOf(
-                navArgument(GisMemoDestinations.ARG_NAME_ID){
+                navArgument("id"){
                     nullable = false
-                    type = NavType.StringType
+                    type = NavType.LongType
                 }
             )
         ){
             DetailMemoCompose(
                 navController = navController,
-                id = GisMemoDestinations.DetailMemo.getIDFromArgs(it.arguments).toLong()
+                id = GisMemoDestinations.DetailMemo.getIDFromArgs(it.arguments)
             )
         }
+
+
+        composable(
+            route = GisMemoDestinations.SettingScreen.route
+        ){
+
+        }
+
 
         composable(
             route = GisMemoDestinations.Camera.route
@@ -73,7 +75,7 @@ fun GisMemoNavHost (
         composable(
             route = GisMemoDestinations.ImageViewer.route,
             arguments = listOf(
-                navArgument(GisMemoDestinations.ARG_NAME_FILE_PATH) {
+                navArgument("url") {
                     nullable = false
                     type = NavType.StringType
                 }
@@ -88,7 +90,7 @@ fun GisMemoNavHost (
         composable(
             route = GisMemoDestinations.ExoPlayer.route,
             arguments = listOf(
-                navArgument(GisMemoDestinations.ARG_NAME_FILE_PATH){
+                navArgument("url"){
                     nullable = false
                     type = NavType.StringType
                 }

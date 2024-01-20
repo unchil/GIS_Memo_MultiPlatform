@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -89,7 +90,7 @@ val recognizerIntent =  {
 @SuppressLint("UnrememberedMutableState", "Recycle")
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun SpeechRecognizerCompose(navController: NavController) {
+fun SpeechRecognizerCompose(navController: NavHostController) {
 
     val coroutineScope = rememberCoroutineScope()
 

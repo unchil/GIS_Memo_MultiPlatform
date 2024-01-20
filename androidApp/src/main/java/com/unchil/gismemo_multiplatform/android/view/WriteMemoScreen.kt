@@ -85,6 +85,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -143,7 +144,7 @@ typealias DrawingPolyline = List<LatLng>
     MapsComposeExperimentalApi::class, ExperimentalComposeUiApi::class
 )
 @Composable
-fun WriteMemoScreen(navController: NavController){
+fun WriteMemoScreen(navController: NavHostController){
 
     val permissions = listOf(
         Manifest.permission.INTERNET,
