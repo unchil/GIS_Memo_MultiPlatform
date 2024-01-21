@@ -44,25 +44,25 @@ class MemoDataViewModel  (val repository: GisMemoRepository, val user:MemoDataUs
             MemoDataUser.DetailMemoView -> {
 
                 viewModelScope.launch {
-                    repository.detailVideo.collect { it ->
+                    repository.detailVideo.collectLatest { it ->
                         _videoListStateFlow.value = it
                     }
                 }
 
                 viewModelScope.launch {
-                    repository.detailAudioText.collect { it ->
+                    repository.detailAudioText.collectLatest { it ->
                         _audioTextStateFlow.value = it
                     }
                 }
 
                 viewModelScope.launch {
-                    repository.detailPhoto.collect { it ->
+                    repository.detailPhoto.collectLatest { it ->
                         _photoListStateFlow.value = it
                     }
                 }
 
                 viewModelScope.launch {
-                    repository.detailSnapShot.collect { it ->
+                    repository.detailSnapShot.collectLatest { it ->
                         _snapShotListStateFlow.value = it
                     }
                 }
@@ -70,25 +70,25 @@ class MemoDataViewModel  (val repository: GisMemoRepository, val user:MemoDataUs
             MemoDataUser.WriteMemoView -> {
 
                 viewModelScope.launch {
-                    repository.currentVideo.collect { it ->
+                    repository.currentVideo.collectLatest { it ->
                         _videoListStateFlow.value = it
                     }
                 }
 
                 viewModelScope.launch {
-                    repository.currentAudioText.collect { it ->
+                    repository.currentAudioText.collectLatest { it ->
                         _audioTextStateFlow.value = it
                     }
                 }
 
                 viewModelScope.launch {
-                    repository.currentPhoto.collect { it ->
+                    repository.currentPhoto.collectLatest { it ->
                         _photoListStateFlow.value = it
                     }
                 }
 
                 viewModelScope.launch {
-                    repository.currentSnapShot.collect { it ->
+                    repository.currentSnapShot.collectLatest { it ->
                         _snapShotListStateFlow.value = it
                     }
                 }

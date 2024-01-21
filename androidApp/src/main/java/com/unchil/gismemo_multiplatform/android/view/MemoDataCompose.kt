@@ -366,7 +366,8 @@ fun PagerAudioTextView(
         }
 
         Row(
-            modifier = Modifier.padding(vertical = 10.dp)
+            modifier = Modifier
+                .padding(vertical = 10.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
@@ -385,7 +386,8 @@ fun PagerAudioTextView(
 
         if (defaultData.second > 0) {
             HorizontalPager(
-                modifier = Modifier.padding(horizontal = 0.dp)
+                modifier = Modifier
+                    .padding(horizontal = 0.dp)
                     .verticalScroll(state = scrollState)
                     .fillMaxSize()
                     .background(color = MaterialTheme.colorScheme.background),
@@ -577,9 +579,10 @@ fun PagerSnapShotView(
     }
 
  */
+
     val pagerState  =   rememberPagerState(
         initialPage = 0,
-        pageCount = { item.dataList.count() }
+        pageCount = { item.dataList.size }
     )
 
     val defaultData:Pair<String, Int> =  Pair(
@@ -634,7 +637,8 @@ fun PagerSnapShotView(
         }
 
         Row(
-            modifier = Modifier.padding(vertical = 10.dp)
+            modifier = Modifier
+                .padding(vertical = 10.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
@@ -653,15 +657,15 @@ fun PagerSnapShotView(
 
         if (defaultData.second > 0) {
             HorizontalPager(
-                modifier = Modifier .padding(10.dp)
+                modifier = Modifier
+                    .padding(10.dp)
                     .verticalScroll(state = scrollState)
                     .fillMaxSize()
                     .background(color = MaterialTheme.colorScheme.background),
-            //    pageCount = defaultData.second,
                 state = pagerState,
             ) { page ->
                 ImageViewer(
-                    data = (item.dataList[page]),
+                    data = item.dataList[page],
                     size = Size.ORIGINAL,
                     isZoomable = false
                 )
@@ -678,6 +682,8 @@ fun PagerSnapShotView(
     } // Column
 
 }
+
+
 
 @Composable
 fun PagerVideoView(

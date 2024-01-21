@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import com.unchil.gismemo_multiplatform.android.navigation.navigateTo
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
@@ -83,7 +82,7 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
         }
     }
 
-    private fun toRoute(navController: NavController, route:String){
+    private fun toRoute(navController: NavHostController, route:String){
         navController.navigate( route = route)
     }
 

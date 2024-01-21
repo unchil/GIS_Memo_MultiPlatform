@@ -108,9 +108,9 @@ fun ImageViewer(
         }
     }
 
-    val model =  remember {
+    val model =
         ImageRequest.Builder(context).data(data).size(size).crossfade(true).build()
-    }
+
 
     val transform: (AsyncImagePainter.State) -> AsyncImagePainter.State = {
         when(it){
