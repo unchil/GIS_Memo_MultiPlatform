@@ -35,17 +35,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
 import com.unchil.gismemo_multiplatform.android.model.TagInfoDataObject
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AssistChipGroupView(
+fun AssistChipGroupCompose(
     modifier: Modifier = Modifier,
     isVisible:Boolean =true,
     @SuppressLint("MutableCollectionMutableState") setState: MutableState<ArrayList<Int>> = mutableStateOf( arrayListOf()),
@@ -61,20 +64,12 @@ fun AssistChipGroupView(
 
     val  lazyStaggeredGridState = rememberLazyStaggeredGridState()
     val itemModifier = Modifier.wrapContentSize()
-    /*
+
     val isUsableHaptic = LocalUsableHaptic.current
     val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
 
-    fun hapticProcessing(){
-        if(isUsableHaptic){
-            coroutineScope.launch {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            }
-        }
-    }
 
- */
 
     AnimatedVisibility(visible = isVisible) {
         Column (
@@ -97,7 +92,7 @@ fun AssistChipGroupView(
                         modifier = itemModifier,
                         shape = ShapeDefaults.ExtraSmall,
                         onClick = {
-                          //  hapticProcessing()
+                            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                             it.isSet.value = !it.isSet.value
                             if (it.isSet.value)  setState.value.add(index) else   setState.value.remove(index)
                         },
@@ -140,19 +135,11 @@ fun RadioButtonGroupCompose(
     content: @Composable (( ) -> Unit)? = null
 ){
 
-    /*
+
     val isUsableHaptic = LocalUsableHaptic.current
     val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
-    fun hapticProcessing(){
-        if(isUsableHaptic){
-            coroutineScope.launch {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            }
-        }
-    }
 
-     */
 
     val (selectedOption, onOptionSelected) = mutableStateOf(data[state.value])
 
@@ -170,7 +157,7 @@ fun RadioButtonGroupCompose(
                         .selectable(
                             selected = (it == selectedOption),
                             onClick = {
-                         //       hapticProcessing()
+                                hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                 onOptionSelected( it )
                                 state.value = index
                             },
@@ -214,7 +201,7 @@ fun RadioButtonGroupCompose(
                         .selectable(
                             selected = (it == selectedOption),
                             onClick = {
-                              //  hapticProcessing()
+                                hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                 onOptionSelected( it )
                                 state.value = index
                             },

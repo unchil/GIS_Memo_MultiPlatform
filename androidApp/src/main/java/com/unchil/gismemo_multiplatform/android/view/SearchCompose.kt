@@ -7,7 +7,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -62,14 +61,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.unchil.gismemo.view.WeatherContent
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.model.RadioGroupOption
-import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
+import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 
 @SuppressLint("MutableCollectionMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -446,7 +444,7 @@ fun SearchCompose(
             content = hashTagBtn
         )
 
-        AssistChipGroupView(
+        AssistChipGroupCompose(
             isVisible = isTagBox.value,
             setState = selectedTagArray,
         )
@@ -492,7 +490,7 @@ fun PrevSearchCompose(){
         LocalPermissionsManager provides permissionsManager,
         LocalRepository provides repository
     ) {
-        MyApplicationTheme {
+        GisMemoTheme {
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background

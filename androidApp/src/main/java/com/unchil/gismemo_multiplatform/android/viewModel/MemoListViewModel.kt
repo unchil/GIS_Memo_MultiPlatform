@@ -93,7 +93,6 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
     }
 
     private fun searchMemo(queryDataList:MutableList<QueryData>): Flow<PagingData<MEMO_TBL>> {
-       // return  repository.getMemoListPagingFlow
         return repository.memoPagingStream()
     }
 

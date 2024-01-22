@@ -30,7 +30,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
+import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -208,7 +208,7 @@ private fun PrevExoplayerCompose(){
 
 
 
-    MyApplicationTheme {
+    GisMemoTheme {
 
         Surface(
             modifier = Modifier.fillMaxSize(),

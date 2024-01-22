@@ -65,6 +65,9 @@ enum class BiometricCheckType {
     DETAILVIEW, SHARE, DELETE
 }
 
+fun Context.getLanguageArray():Array<String>{
+    return resources.getStringArray(R.array.Language_Array)
+}
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalPermissionsApi::class)

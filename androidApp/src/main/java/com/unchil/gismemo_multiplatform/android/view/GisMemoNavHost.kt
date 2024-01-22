@@ -56,7 +56,7 @@ fun GisMemoNavHost (
         composable(
             route = GisMemoDestinations.SettingScreen.route
         ){
-
+            SettingScreen(navController = navController)
         }
 
 

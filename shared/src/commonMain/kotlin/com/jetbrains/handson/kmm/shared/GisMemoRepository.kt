@@ -93,6 +93,45 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
     val currentPolylineList:MutableStateFlow<List<DrawingPolyline>>
         = MutableStateFlow(listOf())
 
+    val isUsableHaptic: MutableStateFlow<Boolean>
+            = MutableStateFlow(true)
+
+    val isFirstSetup:MutableStateFlow<Boolean>
+            = MutableStateFlow(true)
+
+    val isUsableDarkMode: MutableStateFlow<Boolean>
+            = MutableStateFlow(false)
+
+    val isUsableDynamicColor: MutableStateFlow<Boolean>
+            = MutableStateFlow(false)
+
+    val isChangeLocale: MutableStateFlow<Int>
+            = MutableStateFlow(0)
+
+    // locale 실시간 반영을 위한 state
+    val onChangeLocale: MutableStateFlow<Boolean>
+            = MutableStateFlow(false)
+
+    fun updateOnChangeLocale(value:Boolean){
+        onChangeLocale.value = value
+    }
+
+    fun updateIsChangeLocale(value:Int){
+        isChangeLocale.value = value
+    }
+
+
+    fun updateIsUsableHaptic(value:Boolean){
+        isUsableHaptic.value = value
+    }
+
+    fun updateIsUsableDarkMode(value:Boolean){
+        isUsableDarkMode.value = value
+    }
+
+    fun updateIsUsableDynamicColor(value:Boolean){
+        isUsableDynamicColor.value = value
+    }
 
     fun setSelectedTab(data: WriteMemoData.Type){
         currentSelectedTab.value = data

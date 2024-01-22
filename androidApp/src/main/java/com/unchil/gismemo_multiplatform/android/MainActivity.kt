@@ -1,5 +1,6 @@
 package com.unchil.gismemo_multiplatform.android
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -27,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -39,26 +41,36 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.unchil.gismemo_multiplatform.android.common.ChkNetWork
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.checkInternetConnected
+import com.unchil.gismemo_multiplatform.android.common.getLanguageArray
 import com.unchil.gismemo_multiplatform.android.model.MainTabObject
 import com.unchil.gismemo_multiplatform.android.navigation.navigateTo
-import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
+import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 import com.unchil.gismemo_multiplatform.android.view.GisMemoNavHost
+import com.unchil.gismemo_multiplatform.android.view.hapticProcessing
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Locale
 
+// SettingScreen 에서의 locale 변경시 실시간으로 SettingScreen 에 ReCompose 를 유도하기 위해
+val LocalChangeLocale = compositionLocalOf{ false }
 
+val LocalUsableHaptic = compositionLocalOf{ false }
+val LocalUsableDarkMode = compositionLocalOf{ false }
+val LocalUsableDynamicColor = compositionLocalOf{ false }
 val LocalRepository = compositionLocalOf<GisMemoRepository> { error("No GisMemoRepository found!") }
+
 
 
 class MainActivity : ComponentActivity() {
@@ -66,71 +78,111 @@ class MainActivity : ComponentActivity() {
     private val permissionsManager = PermissionsManager()
     private val repository = GisMemoApp.repository!!
 
+    override fun attachBaseContext(context: Context?) {
+
+        if(context != null ){
+            if(repository.isFirstSetup.value){
+                repository.isFirstSetup.value = false
+                val index = context.getLanguageArray().indexOf(Locale.getDefault().language)
+                repository.isChangeLocale.value = if (index == -1 ) 0 else index
+                super.attachBaseContext(context)
+            } else {
+                val locale = Locale( context.getLanguageArray()[repository.isChangeLocale.value] )
+                Locale.setDefault(locale)
+                context.resources.configuration.setLayoutDirection(locale)
+                context.resources.configuration.setLocale(locale)
+                context.createConfigurationContext(context.resources.configuration)
+                super.attachBaseContext(context.createConfigurationContext(context.resources.configuration))
+            }
+        }else {
+            super.attachBaseContext(context)
+        }
+    }
+
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            /*
-            val url = DestinationsLocalDataSource.craneDestinations.find {
-                it.city.equals("GRANADA")
-            }?.imageUrl ?: ""
 
-            val uriList = listOf<Uri>(
-                "/data/data/com.unchil.gismemo_multiplatform.android/files/videos/test.mp4".toUri()
-            )
+            val isUsableHapticState = repository.isUsableHaptic.collectAsState()
+            val isUsableDarkModeState = repository.isUsableDarkMode.collectAsState()
+            val isUsableDynamicColorState = repository.isUsableDynamicColor.collectAsState()
+            val onChangeLocale = repository.onChangeLocale.collectAsState()
 
-             */
-            val context = LocalContext.current
-            val coroutineScope = rememberCoroutineScope()
-            val navController = rememberAnimatedNavController()
-            val currentBackStack by navController.currentBackStackEntryAsState()
-            val configuration = LocalConfiguration.current
+            CompositionLocalProvider(
+                LocalChangeLocale provides onChangeLocale.value,
+                LocalPermissionsManager provides permissionsManager,
+                LocalRepository provides repository,
+                LocalUsableHaptic provides isUsableHapticState.value,
+                LocalUsableDarkMode provides isUsableDarkModeState.value,
+                LocalUsableDynamicColor provides isUsableDynamicColorState.value,
+            ){
 
-            val selectedItem = rememberSaveable { mutableIntStateOf(0) }
-            val isPressed = remember { mutableStateOf(false) }
+                val context = LocalContext.current
+                val configuration = LocalConfiguration.current
+                val hapticFeedback = LocalHapticFeedback.current
+                val isUsableDarkMode = LocalUsableDarkMode.current
+                val isUsableDynamicColor = LocalUsableDynamicColor.current
+                val isUsableHaptic = LocalUsableHaptic.current
 
-            val isPortrait = remember { mutableStateOf(false) }
-            val gridWidth = remember { mutableFloatStateOf(1f) }
+
+    //            val hapticAct = remember { mutableStateOf(false) }
+                val coroutineScope = rememberCoroutineScope()
+                val navController = rememberAnimatedNavController()
+                val currentBackStack by navController.currentBackStackEntryAsState()
+                val selectedItem = rememberSaveable { mutableIntStateOf(0) }
+                val isPortrait = remember { mutableStateOf(false) }
+                val gridWidth = remember { mutableFloatStateOf(1f) }
 
 
 
-            when (configuration.orientation) {
-                Configuration.ORIENTATION_PORTRAIT -> {
-                    isPortrait.value = true
-                    gridWidth.floatValue = 1f
+                when (configuration.orientation) {
+                    Configuration.ORIENTATION_PORTRAIT -> {
+                        isPortrait.value = true
+                        gridWidth.floatValue = 1f
+                    }
+
+                    else -> {
+                        isPortrait.value = false
+                        gridWidth.floatValue = 0.9f
+                    }
                 }
-                else ->{
-                    isPortrait.value = false
-                    gridWidth.floatValue = 0.9f
+
+
+                LaunchedEffect(key1 = currentBackStack) {
+                    val currentScreen = MainTabObject.Types.find {
+                        it.route == currentBackStack?.destination?.route
+                    }
+                    selectedItem.intValue = MainTabObject.Types.indexOf(currentScreen)
                 }
-            }
 
+                val isConnect = remember { mutableStateOf(context.checkInternetConnected()) }
 
-            LaunchedEffect(key1 = currentBackStack){
-                val currentScreen = MainTabObject.Types.find {
-                    it.route ==  currentBackStack?.destination?.route
+                LaunchedEffect(key1 = isConnect.value) {
+                    while (!isConnect.value) {
+                        delay(500)
+                        isConnect.value = context.checkInternetConnected()
+                    }
                 }
-                selectedItem.intValue =  MainTabObject.Types.indexOf(currentScreen)
-            }
-
-            val isConnect  = remember { mutableStateOf(context.checkInternetConnected()) }
-
-            LaunchedEffect(key1 = isConnect.value ){
-                while(!isConnect.value) {
-                    delay(500)
-                    isConnect.value = context.checkInternetConnected()
+/*
+                LaunchedEffect(key1 = hapticAct.value) {
+                    if (hapticAct.value && isUsableHaptic) {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        hapticAct.value = false
+                    }
                 }
-            }
+ */
 
-            MyApplicationTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+
+                GisMemoTheme(
+                    darkTheme = isUsableDarkMode,
+                    dynamicColor = isUsableDynamicColor
                 ) {
-                    CompositionLocalProvider(
-                        LocalPermissionsManager provides permissionsManager,
-                        LocalRepository provides repository,
-                    ){
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+
                         Box(
                             modifier = Modifier.fillMaxSize()
                         ) {
@@ -148,7 +200,7 @@ class MainActivity : ComponentActivity() {
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Top
-                                ){
+                                ) {
                                     if (isPortrait.value) {
                                         BottomNavigation(
                                             modifier = Modifier
@@ -158,37 +210,43 @@ class MainActivity : ComponentActivity() {
                                             backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
                                         ) {
 
-                                            Spacer(Modifier.padding( horizontal = 10.dp ))
+                                            Spacer(Modifier.padding(horizontal = 10.dp))
 
                                             MainTabObject.Types.forEachIndexed { index, gisMemoDestinations ->
                                                 BottomNavigationItem(
                                                     icon = {
                                                         Icon(
-                                                            imageVector = gisMemoDestinations.icon ?: Icons.Outlined.Info,
-                                                            contentDescription = context.resources.getString(gisMemoDestinations.name),
+                                                            imageVector = gisMemoDestinations.icon
+                                                                ?: Icons.Outlined.Info,
+                                                            contentDescription = context.resources.getString(
+                                                                gisMemoDestinations.name
+                                                            ),
                                                             tint = if (selectedItem.intValue == index) MaterialTheme.colorScheme.scrim
-                                                                    else MaterialTheme.colorScheme.outline
+                                                            else MaterialTheme.colorScheme.outline
                                                         )
                                                     },
                                                     label = {
                                                         Text(
-                                                            text = context.resources.getString(gisMemoDestinations.name ),
-                                                            color  = if (selectedItem.intValue == index) MaterialTheme.colorScheme.scrim
-                                                                        else MaterialTheme.colorScheme.outline
+                                                            text = context.resources.getString(
+                                                                gisMemoDestinations.name
+                                                            ),
+                                                            color = if (selectedItem.intValue == index) MaterialTheme.colorScheme.scrim
+                                                            else MaterialTheme.colorScheme.outline
                                                         )
                                                     },
                                                     selected = selectedItem.intValue == index,
                                                     onClick = {
-                                                        isPressed.value = true
+                                                    //    hapticAct.value = true
+                                                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                                         selectedItem.intValue = index
-                                                        navController.navigateTo(MainTabObject.Types[index].route )
+                                                        navController.navigateTo(MainTabObject.Types[index].route)
                                                     },
                                                     selectedContentColor = Color.Red,
                                                     unselectedContentColor = MaterialTheme.colorScheme.secondary
                                                 )
                                             }
 
-                                            Spacer(Modifier.padding( horizontal = 10.dp ))
+                                            Spacer(Modifier.padding(horizontal = 10.dp))
                                         }
                                     }
 
@@ -196,9 +254,9 @@ class MainActivity : ComponentActivity() {
                                         modifier = Modifier,
                                         horizontalArrangement = Arrangement.SpaceEvenly,
                                         verticalAlignment = Alignment.CenterVertically
-                                    ){
+                                    ) {
 
-                                        if(!isPortrait.value){
+                                        if (!isPortrait.value) {
                                             NavigationRail(
                                                 modifier = Modifier
                                                     .shadow(elevation = 1.dp)
@@ -206,37 +264,43 @@ class MainActivity : ComponentActivity() {
                                                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                                             ) {
 
-                                                Spacer(Modifier.padding( vertical = 20.dp) )
+                                                Spacer(Modifier.padding(vertical = 20.dp))
 
                                                 MainTabObject.Types.forEachIndexed { index, gisMemoDestinations ->
                                                     NavigationRailItem(
                                                         icon = {
                                                             Icon(
-                                                                imageVector = gisMemoDestinations.icon ?: Icons.Outlined.Info,
-                                                                contentDescription = context.resources.getString( gisMemoDestinations.name),
+                                                                imageVector = gisMemoDestinations.icon
+                                                                    ?: Icons.Outlined.Info,
+                                                                contentDescription = context.resources.getString(
+                                                                    gisMemoDestinations.name
+                                                                ),
                                                                 tint = if (selectedItem.intValue == index) Color.Red else MaterialTheme.colorScheme.secondary
                                                             )
                                                         },
                                                         label = {
                                                             Text(
-                                                                text = context.resources.getString( gisMemoDestinations.name ),
+                                                                text = context.resources.getString(
+                                                                    gisMemoDestinations.name
+                                                                ),
                                                                 color = if (selectedItem.intValue == index) Color.Red else MaterialTheme.colorScheme.secondary
                                                             )
                                                         },
                                                         selected = selectedItem.intValue == index,
                                                         onClick = {
-                                                            isPressed.value = true
+                                                         //   hapticAct.value = true
+                                                            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                                             selectedItem.intValue = index
-                                                            navController.navigateTo(MainTabObject.Types[index].route )
+                                                            navController.navigateTo(MainTabObject.Types[index].route)
                                                         }
                                                     )
                                                 }
 
-                                                Spacer(Modifier.padding( vertical = 20.dp) )
+                                                Spacer(Modifier.padding(vertical = 20.dp))
                                             }
                                         }
 
-                                        Box( modifier = Modifier.fillMaxWidth(gridWidth.floatValue )) {
+                                        Box(modifier = Modifier.fillMaxWidth(gridWidth.floatValue)) {
                                             GisMemoNavHost(navController = navController)
                                         }
                                     }
@@ -244,9 +308,13 @@ class MainActivity : ComponentActivity() {
                             }
 
                         }
+
                     }
                 }
+
+
             }
+
         }
     }
 }

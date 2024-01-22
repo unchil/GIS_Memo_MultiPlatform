@@ -45,7 +45,7 @@ import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelObject
-import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
+import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 import com.unchil.gismemo_multiplatform.android.viewModel.MemoListViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -77,12 +77,12 @@ fun MemoListScreen(
 
         val context = LocalContext.current
         val repository = LocalRepository.current
-        /*
+
         val viewModel = remember {
             MemoListViewModel( repository = repository)
         }
         val result = viewModel.memoPagingStream.collectAsLazyPagingItems()
-       */
+
         val isSearchRefreshing: MutableState<Boolean> = rememberSaveable {
             mutableStateOf(false)
         }
@@ -110,7 +110,7 @@ fun MemoListScreen(
                 //----------
                 val message = when (channelInfo.channelType) {
                     SnackBarChannelObject.Type.SEARCH_RESULT -> {
-                      //  context.resources.getString( channelInfo.message) + "[${result.itemCount}]"
+                        context.resources.getString( channelInfo.message) + "[${result.itemCount}]"
                         context.resources.getString( channelInfo.message) + "[0]"
                     }
                     else -> {
@@ -159,13 +159,11 @@ fun MemoListScreen(
         }
 
         val backLayerContent :@Composable () -> Unit = {
-
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
                 MemoListCompose(navController = navController)
             }
-
         }
 
         val frontLayerContent :@Composable () -> Unit = {
@@ -217,7 +215,7 @@ fun PrevMemoListScreen() {
         LocalPermissionsManager provides permissionsManager,
         LocalRepository provides repository
     ) {
-        MyApplicationTheme {
+        GisMemoTheme {
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background

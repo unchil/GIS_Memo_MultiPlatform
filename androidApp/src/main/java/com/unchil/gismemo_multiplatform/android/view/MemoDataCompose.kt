@@ -63,7 +63,7 @@ import com.unchil.gismemo_multiplatform.android.model.MemoData
 import com.unchil.gismemo_multiplatform.android.model.MemoDataUser
 import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelObject
 import com.unchil.gismemo_multiplatform.android.model.WriteMemoDataDesc
-import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
+import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 import com.unchil.gismemo_multiplatform.android.viewModel.MemoDataViewModel
 import com.unchil.gismemo_multiplatform.android.viewModel.WriteMemoViewModel
 import kotlinx.coroutines.channels.Channel
@@ -847,7 +847,7 @@ fun PrevMemoDataCompose(){
         LocalPermissionsManager provides permissionsManager,
         LocalRepository provides repository
     ) {
-        MyApplicationTheme {
+        GisMemoTheme {
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background

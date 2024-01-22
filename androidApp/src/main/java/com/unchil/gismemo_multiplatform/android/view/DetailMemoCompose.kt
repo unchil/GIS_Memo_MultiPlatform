@@ -66,7 +66,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -99,7 +98,7 @@ import com.unchil.gismemo_multiplatform.android.model.MapTypeMenuData
 import com.unchil.gismemo_multiplatform.android.model.SettingMenuData
 import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelObject
 import com.unchil.gismemo_multiplatform.android.model.TagInfoDataObject
-import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
+import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 import com.unchil.gismemo_multiplatform.android.viewModel.DetailMemoViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -681,7 +680,7 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
 
 
                     AnimatedVisibility(visible = isTagDialog) {
-                        AssistChipGroupView(
+                        AssistChipGroupCompose(
                             isVisible = isTagDialog,
                             setState = selectedTags,
                         )
@@ -711,7 +710,7 @@ fun PrevDetailMemo(){
         LocalRepository provides repository
     ) {
 
-        MyApplicationTheme {
+        GisMemoTheme {
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background

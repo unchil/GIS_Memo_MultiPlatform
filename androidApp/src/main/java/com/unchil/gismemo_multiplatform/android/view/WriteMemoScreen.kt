@@ -84,7 +84,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -126,7 +125,7 @@ import com.unchil.gismemo_multiplatform.android.model.SaveMenuData
 import com.unchil.gismemo_multiplatform.android.model.SettingMenuData
 import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelObject
 import com.unchil.gismemo_multiplatform.android.model.TagInfoDataObject
-import com.unchil.gismemo_multiplatform.android.theme.MyApplicationTheme
+import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 import com.unchil.gismemo_multiplatform.android.viewModel.WriteMemoViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -1026,7 +1025,7 @@ fun WriteMemoScreen(navController: NavHostController){
                 ) {
 
                     AnimatedVisibility(visible = isTagDialog) {
-                        AssistChipGroupView(
+                        AssistChipGroupCompose(
                             isVisible = isTagDialog,
                             setState = selectedTagArray,
                         ) {
@@ -1268,7 +1267,7 @@ fun PrevWriteMemo(){
         LocalRepository provides repository
     ) {
 
-        MyApplicationTheme {
+        GisMemoTheme {
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
