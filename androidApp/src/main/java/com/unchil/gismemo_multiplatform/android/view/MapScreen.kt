@@ -30,6 +30,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -40,6 +41,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.widgets.ScaleBar
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
@@ -104,8 +106,8 @@ fun MapScreen(){
             MapProperties(
                 isBuildingEnabled =true,
                 isMyLocationEnabled = true,
-             //  mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.mapstyle_night),
-               mapType = MapType.TERRAIN
+               mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.mapstyle_night),
+               mapType = MapType.NORMAL
             )
         )
     }

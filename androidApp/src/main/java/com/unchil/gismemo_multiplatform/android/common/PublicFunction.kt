@@ -13,15 +13,23 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -48,6 +57,8 @@ import com.jetbrains.handson.kmm.shared.entity.LatLngAlt
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
 import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.model.BiometricCheckObject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 
@@ -328,4 +339,33 @@ fun biometricPrompt(
     )
 
 
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SheetDragHandler(coroutineScope: CoroutineScope, scaffoldState: BottomSheetScaffoldState){
+    Box(
+        modifier = Modifier.height(30.dp),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Icon(
+            modifier = Modifier
+                .scale(1f)
+                .clickable {
+                    coroutineScope.launch {
+                        if (scaffoldState.bottomSheetState.currentValue == SheetValue.Hidden
+                            || scaffoldState.bottomSheetState.currentValue == SheetValue.PartiallyExpanded
+                        ) {
+                            scaffoldState.bottomSheetState.expand()
+                        } else {
+                            scaffoldState.bottomSheetState.hide()
+                        }
+                    }
+                },
+            imageVector = if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded)
+                Icons.Outlined.KeyboardArrowDown  else Icons.Outlined.KeyboardArrowUp,
+            contentDescription = "search",
+        )
+    }
 }

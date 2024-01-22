@@ -98,6 +98,7 @@ import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredComposeFuncName
+import com.unchil.gismemo_multiplatform.android.common.SheetDragHandler
 import com.unchil.gismemo_multiplatform.android.model.MapTypeMenuData
 
 import com.unchil.gismemo_multiplatform.android.model.SettingMenuData
@@ -170,14 +171,13 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
                         item.name == MapTypeMenuData.Types[mapTypeIndex].name
                     },
                     isMyLocationEnabled = true,
-                    /*
                     mapStyleOptions = if(isDarkMode) {
                             MapStyleOptions.loadRawResourceStyle(
                                 context,
                                 R.raw.mapstyle_night
                             )
                         } else { null }
-                     */
+
                 )
             )
         }
@@ -278,35 +278,6 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
             }
         }
 
-        @Composable
-        fun SheetDragHandler() {
-            Box(
-                modifier = Modifier.height(30.dp),
-                contentAlignment = Alignment.Center
-            ) {
-
-                Icon(
-                    modifier = Modifier
-                        .scale(1f)
-                        .clickable {
-                            coroutineScope.launch {
-                                if (scaffoldState.bottomSheetState.currentValue == SheetValue.Hidden
-                                    || scaffoldState.bottomSheetState.currentValue == SheetValue.PartiallyExpanded
-                                ) {
-                                    scaffoldState.bottomSheetState.expand()
-                                } else {
-                                    scaffoldState.bottomSheetState.hide()
-                                }
-                            }
-                        },
-                    imageVector = if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded)
-                        Icons.Outlined.KeyboardArrowDown
-                            else
-                        Icons.Outlined.KeyboardArrowUp,
-                    contentDescription = "search",
-                )
-            }
-        }
 
         BottomSheetScaffold(
             modifier = Modifier.statusBarsPadding(),
@@ -316,8 +287,8 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
             sheetContent = {
                 MemoDataCompose()
             },
-            sheetDragHandle = { SheetDragHandler() },
-            sheetPeekHeight = 90.dp,
+            sheetDragHandle = { SheetDragHandler(coroutineScope, scaffoldState) },
+            sheetPeekHeight = 0.dp,
             snackbarHost = {
                 SnackbarHost(hostState = snackBarHostState)
             }
@@ -480,11 +451,11 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
                         ) {
                             Icon(
                                 modifier = Modifier.scale(1f),
-                                imageVector = if (false)
-                               // imageVector = if (isDarkMode)
+                                imageVector = if (isDarkMode) {
                                     Icons.Outlined.BedtimeOff
-                                    else
-                                    Icons.Outlined.DarkMode,
+                                }else {
+                                    Icons.Outlined.DarkMode
+                                },
                                 contentDescription = "DarkMode",
                             )
                         }

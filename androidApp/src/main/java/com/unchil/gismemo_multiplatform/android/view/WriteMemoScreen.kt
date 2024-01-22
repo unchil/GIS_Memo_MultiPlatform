@@ -119,6 +119,7 @@ import com.unchil.gismemo_multiplatform.android.common.ChkNetWork
 import com.unchil.gismemo_multiplatform.android.common.FileManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredComposeFuncName
+import com.unchil.gismemo_multiplatform.android.common.SheetDragHandler
 import com.unchil.gismemo_multiplatform.android.common.checkInternetConnected
 import com.unchil.gismemo_multiplatform.android.model.CreateMenuData
 import com.unchil.gismemo_multiplatform.android.model.DrawingMenuData
@@ -313,7 +314,7 @@ fun WriteMemoScreen(navController: NavHostController){
 
                     }
                     SnackbarResult.Dismissed -> {
-                       // hapticProcessing()
+                       hapticProcessing(coroutineScope,hapticFeedback,isUsableHaptic)
                     }
                 }
             }
@@ -448,35 +449,6 @@ fun WriteMemoScreen(navController: NavHostController){
 
         }
 
-        @Composable
-        fun SheetDragHandle(){
-            Box(
-                modifier = Modifier.height(30.dp),
-                contentAlignment = Alignment.Center
-            ) {
-
-                Icon(
-                    modifier = Modifier
-                        .scale(1f)
-                        .clickable {
-                            coroutineScope.launch {
-                                if (scaffoldState.bottomSheetState.currentValue == SheetValue.Hidden
-                                    || scaffoldState.bottomSheetState.currentValue == SheetValue.PartiallyExpanded
-                                ) {
-                                    scaffoldState.bottomSheetState.expand()
-                                } else {
-                                    scaffoldState.bottomSheetState.hide()
-                                }
-                            }
-                        },
-                    imageVector = if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded)
-                        Icons.Outlined.KeyboardArrowDown  else Icons.Outlined.KeyboardArrowUp,
-                    contentDescription = "search",
-                )
-            }
-        }
-
-
 
         BottomSheetScaffold(
             modifier = Modifier.statusBarsPadding(),
@@ -490,9 +462,9 @@ fun WriteMemoScreen(navController: NavHostController){
                 )
             },
             sheetShape = ShapeDefaults.Small,
-            sheetPeekHeight = 90.dp,
+            sheetPeekHeight = 0.dp,
             sheetDragHandle = {
-                SheetDragHandle()
+                SheetDragHandler(coroutineScope, scaffoldState)
             },
             sheetContainerColor = MaterialTheme.colorScheme.surface,
             sheetContentColor = MaterialTheme.colorScheme.onSurface,

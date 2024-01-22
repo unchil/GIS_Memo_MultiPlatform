@@ -215,11 +215,11 @@ object SettingMenuData{
 
 object MapTypeMenuData {
     enum class Type {
-        TERRAIN,NORMAL,HYBRID
+        NORMAL,TERRAIN, HYBRID
     }
     val Types = listOf(
-        Type.TERRAIN,
         Type.NORMAL,
+        Type.TERRAIN,
         Type.HYBRID,
     )
     fun desc(type:Type):Pair<ImageVector, ImageVector?> {
