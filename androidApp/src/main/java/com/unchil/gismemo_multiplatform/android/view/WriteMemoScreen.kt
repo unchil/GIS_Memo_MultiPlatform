@@ -79,6 +79,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -111,6 +112,7 @@ import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
 import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.ChkNetWork
@@ -184,6 +186,8 @@ fun WriteMemoScreen(navController: NavHostController){
             mutableStateOf(null)
         }
         val coroutineScope = rememberCoroutineScope()
+        val isUsableHaptic = LocalUsableHaptic.current
+        val hapticFeedback = LocalHapticFeedback.current
         var isDarkMode by remember { mutableStateOf(false) }
         var isGoCurrentLocation by remember { mutableStateOf(false) }
         var mapTypeIndex by rememberSaveable { mutableIntStateOf(0) }
@@ -286,7 +290,7 @@ fun WriteMemoScreen(navController: NavHostController){
                 )
                 when (result) {
                     SnackbarResult.ActionPerformed -> {
-                     //   hapticProcessing()
+                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                         when (channelData.channelType) {
                             SnackBarChannelObject.Type.MEMO_CLEAR_REQUEST -> {
 
@@ -337,7 +341,7 @@ fun WriteMemoScreen(navController: NavHostController){
         }
 
         val onMapLongClickHandler: (LatLng) -> Unit = {
-           // hapticProcessing()
+            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
             currentLocation = it
         }
 
@@ -379,7 +383,7 @@ fun WriteMemoScreen(navController: NavHostController){
         }
 
         val tagDialogDismissHandler:() -> Unit = {
-         //   hapticProcessing()
+            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
             selectedTagArray.value.clear()
             TagInfoDataObject.entries.forEachIndexed { index, tagInfoData ->
                 if (tagInfoData.isSet.value) {
@@ -576,7 +580,7 @@ fun WriteMemoScreen(navController: NavHostController){
                             color = Color.Yellow,
                             width = 20F,
                             onClick = { polyline ->
-                              //  hapticProcessing()
+                                hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                 polylineList.remove(polyline.points)
                                 polylineListR.remove(polyline.points)
                             }
@@ -640,7 +644,7 @@ fun WriteMemoScreen(navController: NavHostController){
 
                             IconButton(
                                 onClick = {
-                                 //   hapticProcessing()
+                                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                     when (menuType) {
                                         SaveMenuData.Type.CLEAR -> {
                                             channel.trySend(SnackBarChannelObject.entries.first {item ->
@@ -696,7 +700,7 @@ fun WriteMemoScreen(navController: NavHostController){
 
                         IconButton(
                             onClick = {
-                           //     hapticProcessing()
+                                hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                 isGoCurrentLocation = true
                             }
                         ) {
@@ -714,7 +718,7 @@ fun WriteMemoScreen(navController: NavHostController){
                         IconButton(
                             enabled = mapTypeIndex == 0,
                             onClick = {
-                           //     hapticProcessing()
+                                hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                 isDarkMode = !isDarkMode
 
                                 mapProperties = if (isDarkMode) {
@@ -755,7 +759,7 @@ fun WriteMemoScreen(navController: NavHostController){
                         ) {
                             IconButton(
                                 onClick = {
-                                  //  hapticProcessing()
+                                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                     when (menuType) {
                                         CreateMenuData.Type.SNAPSHOT -> {
                                             isSnapShot = true
@@ -804,7 +808,7 @@ fun WriteMemoScreen(navController: NavHostController){
 
                             IconButton(
                                 onClick = {
-                                //    hapticProcessing()
+                                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                     when (menuType) {
 
                                         DrawingMenuData.Type.Draw -> {
@@ -877,7 +881,7 @@ fun WriteMemoScreen(navController: NavHostController){
 
                     IconButton(
                         onClick = {
-                         //   hapticProcessing()
+                            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                             isVisibleMenu.value = !isVisibleMenu.value
                         }
                     ) {
@@ -896,7 +900,7 @@ fun WriteMemoScreen(navController: NavHostController){
                             IconButton(
 
                                 onClick = {
-                                 //   hapticProcessing()
+                                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                     when (menuType) {
                                         SettingMenuData.Type.SECRET -> {
                                             isLock = !isLock
@@ -983,14 +987,14 @@ fun WriteMemoScreen(navController: NavHostController){
                             shape = ShapeDefaults.ExtraSmall
                         )
                 ) {
-                    //MapTypeMenuList.forEach {
+
                     MapTypeMenuData.Types.forEachIndexed { index, menuType ->
                         AnimatedVisibility(
                             visible = isVisibleMenu.value,
                         ) {
                             IconButton(
                                 onClick = {
-                                  //  hapticProcessing()
+                                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                     val findType = MapType.entries.first { item ->
                                         item.name == menuType.name
                                     }
@@ -1084,21 +1088,9 @@ fun ConfirmDialog(
 ) {
 
     val context = LocalContext.current
-  //  val isUsableHaptic = LocalUsableHaptic.current
-  //  val hapticFeedback = LocalHapticFeedback.current
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
-
-    /*
-    fun hapticProcessing() {
-        if (isUsableHaptic) {
-            coroutineScope.launch {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            }
-        }
-    }
-
-     */
-
 
     val titleTimeStamp = SimpleDateFormat(
         "yyyy-MM-dd HH:mm",
@@ -1164,7 +1156,7 @@ fun ConfirmDialog(
                         IconButton(
                             modifier = Modifier,
                             onClick = {
-                              //  hapticProcessing()
+                                hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                 titleText.value = ""
                                 startLauncherRecognizerIntent.launch(recognizerIntent())
                             },
@@ -1181,7 +1173,7 @@ fun ConfirmDialog(
 
                         IconButton(
                             onClick = {
-                            //    hapticProcessing()
+                                hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                 titleText.value = ""
                             }) {
                             Icon(
@@ -1214,7 +1206,7 @@ fun ConfirmDialog(
                 TextButton(
 
                     onClick = {
-                     //   hapticProcessing()
+                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                         isAlertDialog.value = false
                         cancelSnapShot.invoke()
                     }
@@ -1231,7 +1223,7 @@ fun ConfirmDialog(
                 TextButton(
 
                     onClick = {
-                    //    hapticProcessing()
+                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                         isAlertDialog.value = false
                         onEvent(titleText.value)
                     }

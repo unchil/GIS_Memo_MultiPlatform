@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,6 +58,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
 import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
@@ -87,20 +89,11 @@ fun MemoCompose(
     val context = LocalContext.current
     val repository = LocalRepository.current
     val coroutineScope = rememberCoroutineScope()
-/*
+
     val isUsableHaptic = LocalUsableHaptic.current
     val hapticFeedback = LocalHapticFeedback.current
 
 
-    fun hapticProcessing(){
-        if(isUsableHaptic){
-            coroutineScope.launch {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            }
-        }
-    }
-
- */
 
 
     val permissions = listOf(
@@ -222,7 +215,7 @@ fun MemoCompose(
             .padding(top = 2.dp) ,
         shape = ShapeDefaults.ExtraSmall ,
         onClick = {
-         //   hapticProcessing()
+            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
             if(item.isSecret && isGranted ) {
                 checkBiometricSupport.invoke()
                 biometricPrompt(context, BiometricCheckObject.Type.DETAILVIEW, onResult)
@@ -384,21 +377,11 @@ private fun BackgroundContent(
     )
 
 
-/*
+
     val isUsableHaptic = LocalUsableHaptic.current
     val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
 
-    fun hapticProcessing(){
-        if(isUsableHaptic){
-            coroutineScope.launch {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            }
-        }
-    }
-
-
- */
 
 
     Row(
@@ -420,7 +403,7 @@ private fun BackgroundContent(
 
                 IconButton(
                     onClick = {
-                   //     hapticProcessing()
+                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                         onClick(MemoBgObject.Type.SHARE)
                     }
                 ) {
@@ -442,7 +425,7 @@ private fun BackgroundContent(
             Row {
                 IconButton(
                     onClick = {
-                     //   hapticProcessing()
+                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                         onClick(MemoBgObject.Type.DELETE)
                     }
                 ) {

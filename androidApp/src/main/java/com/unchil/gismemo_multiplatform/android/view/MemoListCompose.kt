@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -42,6 +43,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
@@ -139,17 +141,9 @@ fun UpButton(
     }
 
     val coroutineScope = rememberCoroutineScope()
-    /*
-        val isUsableHaptic = LocalUsableHaptic.current
-        val hapticFeedback = LocalHapticFeedback.current
-        fun hapticProcessing(){
-            if(isUsableHaptic){
-                coroutineScope.launch {
-                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                }
-            }
-        }
-     */
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
+
     if( showButton) {
         FloatingActionButton(
             modifier = Modifier.then(modifier),
@@ -157,7 +151,7 @@ fun UpButton(
             onClick = {
                 coroutineScope.launch {
                     listState.animateScrollToItem(0)
-                    //      hapticProcessing()
+                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                 }
             }
         ) {

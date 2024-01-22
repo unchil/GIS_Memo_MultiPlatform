@@ -125,8 +125,6 @@ class MainActivity : ComponentActivity() {
                 val isUsableDynamicColor = LocalUsableDynamicColor.current
                 val isUsableHaptic = LocalUsableHaptic.current
 
-
-    //            val hapticAct = remember { mutableStateOf(false) }
                 val coroutineScope = rememberCoroutineScope()
                 val navController = rememberAnimatedNavController()
                 val currentBackStack by navController.currentBackStackEntryAsState()
@@ -164,14 +162,6 @@ class MainActivity : ComponentActivity() {
                         isConnect.value = context.checkInternetConnected()
                     }
                 }
-/*
-                LaunchedEffect(key1 = hapticAct.value) {
-                    if (hapticAct.value && isUsableHaptic) {
-                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        hapticAct.value = false
-                    }
-                }
- */
 
 
                 GisMemoTheme(
@@ -236,7 +226,6 @@ class MainActivity : ComponentActivity() {
                                                     },
                                                     selected = selectedItem.intValue == index,
                                                     onClick = {
-                                                    //    hapticAct.value = true
                                                         hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                                         selectedItem.intValue = index
                                                         navController.navigateTo(MainTabObject.Types[index].route)
@@ -288,7 +277,6 @@ class MainActivity : ComponentActivity() {
                                                         },
                                                         selected = selectedItem.intValue == index,
                                                         onClick = {
-                                                         //   hapticAct.value = true
                                                             hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                                             selectedItem.intValue = index
                                                             navController.navigateTo(MainTabObject.Types[index].route)

@@ -48,6 +48,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,6 +57,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,6 +65,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
 import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
@@ -77,6 +80,10 @@ fun SearchCompose(
 ){
 
     val context = LocalContext.current
+
+    val coroutineScope = rememberCoroutineScope()
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
 
     val focusmanager = LocalFocusManager.current
 
@@ -130,7 +137,7 @@ fun SearchCompose(
             IconButton(
                 modifier = Modifier,
                 onClick = {
-                  //  isHapticProcessing = true
+                  hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                     query_title = ""
                     onMessage?.let {
                         it()
@@ -157,7 +164,7 @@ fun SearchCompose(
             IconButton(
                 modifier = Modifier,
                 onClick = {
-                //    isHapticProcessing = true
+                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                     startLauncherRecognizerIntent.launch(recognizerIntent())
                 },
                 content = {
@@ -437,7 +444,7 @@ fun SearchCompose(
 
         androidx.compose.material.IconButton(
             onClick = {
-         //   hapticProcessing()
+                hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                 isTagBox.value = !isTagBox.value
             },
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -456,7 +463,7 @@ fun SearchCompose(
 
         androidx.compose.material.IconButton(
             onClick = {
-                //   hapticProcessing()
+                hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                 isDateBox.value = !isDateBox.value
             },
             modifier = Modifier.align(Alignment.CenterHorizontally),

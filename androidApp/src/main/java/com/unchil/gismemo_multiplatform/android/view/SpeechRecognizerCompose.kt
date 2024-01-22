@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -54,6 +55,7 @@ import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
 import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.FileManager
@@ -90,7 +92,10 @@ val recognizerIntent =  {
 @Composable
 fun SpeechRecognizerCompose(navController: NavHostController) {
 
+
     val coroutineScope = rememberCoroutineScope()
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
 
     val permissions =  remember { listOf(Manifest.permission.RECORD_AUDIO) }
     val multiplePermissionsState = rememberMultiplePermissionsState(permissions)
@@ -209,6 +214,7 @@ fun SpeechRecognizerCompose(navController: NavHostController) {
                     IconButton(
                         onClick = {
                             audioTextData.first.value  = ""
+                            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                         }
                     ) {
                         Icon(
@@ -231,6 +237,7 @@ fun SpeechRecognizerCompose(navController: NavHostController) {
                     modifier = Modifier.scale(1.5f),
                     onClick = {
                         startLauncherRecognizerIntent.launch(recognizerIntent)
+                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                     },
                     content = {
                         Icon(

@@ -23,12 +23,14 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -40,6 +42,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.unchil.gismemo.view.WeatherContent
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
@@ -77,6 +80,10 @@ fun MemoListScreen(
 
         val context = LocalContext.current
         val repository = LocalRepository.current
+
+        val coroutineScope = rememberCoroutineScope()
+        val isUsableHaptic = LocalUsableHaptic.current
+        val hapticFeedback = LocalHapticFeedback.current
 
         val viewModel = remember {
             MemoListViewModel( repository = repository)
@@ -126,7 +133,7 @@ fun MemoListScreen(
                 )
                 when (snackBar) {
                     SnackbarResult.ActionPerformed -> {
-                       // hapticProcessing()
+                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                         //----------
                         when (channelInfo.channelType) {
                             else -> {}
@@ -134,7 +141,7 @@ fun MemoListScreen(
                         //----------
                     }
                     SnackbarResult.Dismissed -> {
-                     //   hapticProcessing()
+                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                     }
                 }
             }

@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,6 +58,7 @@ import coil3.size.Size
 import com.jetbrains.handson.kmm.shared.data.WriteMemoData
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.model.MemoData
@@ -78,6 +80,8 @@ fun MemoDataCompose(
 
     val context = LocalContext.current
     val repository = LocalRepository.current
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
 
 
     val viewModel = remember {
@@ -117,7 +121,7 @@ fun MemoDataCompose(
                 label = { Text( context.resources.getString(   WriteMemoDataDesc(type).first) ) },
                 selected = currentTabView.value ==  type,
                 onClick = {
-                    //    hapticProcessing()
+                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                     currentTabView.value = type
                     currentTabIndex.value = index
                 },
@@ -229,19 +233,10 @@ fun MemoDataCompose(
 @Composable
 fun AudioTextView(data: Pair<String, List<String>>){
 
-   // val isUsableHaptic = LocalUsableHaptic.current
-  //  val hapticFeedback = LocalHapticFeedback.current
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
-/*
-    fun hapticProcessing(){
-        if(isUsableHaptic){
-            coroutineScope.launch {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            }
-        }
-    }
 
- */
 
     var speechInput =  rememberSaveable { data.first }
 
@@ -262,7 +257,7 @@ fun AudioTextView(data: Pair<String, List<String>>){
             trailingIcon = {
                 IconButton(
                     onClick = {
-                  //      hapticProcessing()
+                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                         speechInput = ""
                     }) {
                     Icon(
@@ -292,20 +287,10 @@ fun PagerAudioTextView(
     channel:Channel<Int>? = null
 ){
     val context = LocalContext.current
-  //  val isUsableHaptic = LocalUsableHaptic.current
-  //  val hapticFeedback = LocalHapticFeedback.current
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
 
-    /*
-    fun hapticProcessing(){
-        if(isUsableHaptic){
-            coroutineScope.launch {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            }
-        }
-    }
-
-     */
 
 
     val defaultData:Pair<String, Int> = Pair(
@@ -345,7 +330,7 @@ fun PagerAudioTextView(
                     IconButton(
                         modifier = Modifier.align(Alignment.CenterEnd),
                         onClick = {
-                         //   hapticProcessing()
+                            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                             it(pagerState.currentPage)
                             channel?.let { channel ->
                                 channel.trySend(SnackBarChannelObject.entries.first { channelInfo ->
@@ -435,20 +420,10 @@ fun PagerPhotoView(
     channel:Channel<Int>? = null
 ){
     val context = LocalContext.current
-   // val isUsableHaptic = LocalUsableHaptic.current
- //   val hapticFeedback = LocalHapticFeedback.current
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
 
-    /*
-    fun hapticProcessing(){
-        if(isUsableHaptic){
-            coroutineScope.launch {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            }
-        }
-    }
-
-     */
 
     val pagerState  =   rememberPagerState(
         initialPage = 0,
@@ -487,7 +462,7 @@ fun PagerPhotoView(
                     IconButton(
                         modifier = Modifier.align(Alignment.CenterEnd),
                         onClick = {
-                         //   hapticProcessing()
+                            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                             it(pagerState.currentPage)
                             channel?.let { channel ->
                                 channel.trySend(SnackBarChannelObject.entries.first { channelInfo ->
@@ -566,19 +541,10 @@ fun PagerSnapShotView(
 ){
 
     val context = LocalContext.current
- //   val isUsableHaptic = LocalUsableHaptic.current
- //   val hapticFeedback = LocalHapticFeedback.current
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
-/*
-    fun hapticProcessing(){
-        if(isUsableHaptic){
-            coroutineScope.launch {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            }
-        }
-    }
 
- */
 
     val pagerState  =   rememberPagerState(
         initialPage = 0,
@@ -616,7 +582,7 @@ fun PagerSnapShotView(
                     IconButton(
                         modifier = Modifier.align(Alignment.CenterEnd),
                         onClick = {
-                   //         hapticProcessing()
+                            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                             deleteHandler(pagerState.currentPage)
                             channel?.let { channel ->
                                 channel.trySend(SnackBarChannelObject.entries.first { channelInfo->
@@ -692,20 +658,9 @@ fun PagerVideoView(
     channel:Channel<Int>? = null
 ){
     val context = LocalContext.current
- //   val isUsableHaptic = LocalUsableHaptic.current
- //   val hapticFeedback = LocalHapticFeedback.current
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
-
-    /*
-    fun hapticProcessing(){
-        if(isUsableHaptic){
-            coroutineScope.launch {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            }
-        }
-    }
-
-     */
 
     var videoTrackIndex by remember { mutableIntStateOf(0) }
     val defaultData:Pair<String, Int> = Pair(
@@ -739,7 +694,7 @@ fun PagerVideoView(
                     IconButton(
                         modifier = Modifier.align(Alignment.CenterEnd),
                         onClick = {
-                          //  hapticProcessing()
+                            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                             deleteHandler(videoTrackIndex)
                             channel?.let { channel ->
                                 channel.trySend(SnackBarChannelObject.entries.first { channelInfo ->

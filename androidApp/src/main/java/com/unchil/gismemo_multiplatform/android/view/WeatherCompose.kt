@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +37,7 @@ import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.ChkNetWork
 import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
 import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
@@ -49,6 +51,7 @@ import com.unchil.gismemo_multiplatform.android.common.toTextTemp
 import com.unchil.gismemo_multiplatform.android.common.toTextWeather
 import com.unchil.gismemo_multiplatform.android.common.toTextWeatherDesc
 import com.unchil.gismemo_multiplatform.android.common.toTextWind
+import com.unchil.gismemo_multiplatform.android.view.hapticProcessing
 import com.unchil.gismemo_multiplatform.android.viewModel.WeatherViewModel
 import kotlinx.coroutines.launch
 
@@ -108,6 +111,8 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
         val context = LocalContext.current
         val configuration = LocalConfiguration.current
         val coroutineScope = rememberCoroutineScope()
+        val isUsableHaptic = LocalUsableHaptic.current
+        val hapticFeedback = LocalHapticFeedback.current
         val repository = LocalRepository.current
         val viewModel = remember {  WeatherViewModel(repository = repository ) }
 
@@ -230,7 +235,10 @@ fun WeatherContent(isSticky:Boolean = false , onCheckLocationService:((Boolean)-
 
             if(!isSetLocation) {
                 IconButton(
-                    onClick = { isSetLocation = false },
+                    onClick = {
+                        isSetLocation = false
+                        hapticProcessing(coroutineScope ,hapticFeedback, isUsableHaptic)
+                    },
                     content = {
                         Row(
                             modifier = Modifier,

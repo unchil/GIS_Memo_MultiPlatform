@@ -67,6 +67,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -85,6 +86,7 @@ import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
 import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
@@ -171,7 +173,10 @@ sealed class RecordingStatus {
 @Composable
 fun CameraCompose( navController: NavController? = null   ) {
 
+    val isUsableHaptic = LocalUsableHaptic.current
+    val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
+
     val configuration = LocalConfiguration.current
 
     val prevViewBottomPaddingValue: Dp
@@ -382,7 +387,7 @@ fun CameraCompose( navController: NavController? = null   ) {
                         contentColor = Color.Black
                     ),
                     onClick = {
-                     //   hapticProcessing()
+                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                         torchState.value = when (torchState.value) {
                             TorchState.OFF -> TorchState.ON
                             else -> TorchState.OFF
@@ -459,7 +464,7 @@ fun CameraCompose( navController: NavController? = null   ) {
                                 data = photoPreviewData,
                                 onPhotoPreviewTapped = { it:Any ->
 
-                              //      hapticProcessing()
+                                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
 
                                     when (it) {
                                         is Int -> {}
@@ -542,27 +547,27 @@ fun CameraCompose( navController: NavController? = null   ) {
                 recordingStatus = recordingStatus.value,
                 showFlipIcon = isDualCamera.value,
                 onRecordTapped = {
-              //      hapticProcessing()
+                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                     takeVideo()
                 },
                 onPauseTapped = {
-             //       hapticProcessing()
+                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                     videoRecording?.pause()
                     recordingStatus.value = RecordingStatus.Paused
                 },
                 onResumeTapped = {
-              //      hapticProcessing()
+                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                     videoRecording?.resume()
                     recordingStatus.value = RecordingStatus.InProgress
                 },
                 onStopTapped = {
-            //        hapticProcessing()
+                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                     videoRecording?.stop()
                     recordingStarted.value = false
                     recordingStatus.value = RecordingStatus.Idle
                 },
                 onFlipTapped = {
-             //       hapticProcessing()
+                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                     if(videoRecording == null ) {
                         cameraSelector.value = when (cameraSelector.value) {
                             CameraSelector.DEFAULT_BACK_CAMERA -> CameraSelector.DEFAULT_FRONT_CAMERA
@@ -571,7 +576,7 @@ fun CameraCompose( navController: NavController? = null   ) {
                     }
                 },
                 onCaptureTapped = {
-                 //   hapticProcessing()
+                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
 
                     isVideoRecording.value = false
                     takePicture()

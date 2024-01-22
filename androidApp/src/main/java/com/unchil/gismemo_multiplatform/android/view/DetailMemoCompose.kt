@@ -64,6 +64,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -75,6 +76,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapEffect
@@ -90,6 +92,9 @@ import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo.view.WeatherView
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
+import com.unchil.gismemo_multiplatform.android.LocalUsableDarkMode
+import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
+import com.unchil.gismemo_multiplatform.android.R
 import com.unchil.gismemo_multiplatform.android.common.CheckPermission
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredCompose
 import com.unchil.gismemo_multiplatform.android.common.PermissionRequiredComposeFuncName
@@ -132,6 +137,8 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
         val repository = LocalRepository.current
         val density = LocalDensity.current
 
+
+
         val viewModel = remember { DetailMemoViewModel(repository = repository)}
 
         val memoID by rememberSaveable { mutableLongStateOf(id) }
@@ -148,19 +155,12 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
         val weatherData = viewModel.weather.collectAsState()
 
         val coroutineScope = rememberCoroutineScope()
-        /*
+
         val isUsableHaptic = LocalUsableHaptic.current
         val hapticFeedback = LocalHapticFeedback.current
-        fun hapticProcessing() {
-            if (isUsableHaptic) {
-                coroutineScope.launch {
-                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                }
-            }
-        }
         val isUsableDarkMode = LocalUsableDarkMode.current
         var isDarkMode by remember{ mutableStateOf(isUsableDarkMode) }
-         */
+
 
         var mapTypeIndex by rememberSaveable { mutableIntStateOf(0) }
         var mapProperties by remember {
@@ -232,13 +232,13 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
                 )
                 when (result) {
                     SnackbarResult.ActionPerformed -> {
-                  //      hapticProcessing()
+                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                         when (channelData.channelType) {
                             else -> {}
                         }
                     }
                     SnackbarResult.Dismissed -> {
-                   //     hapticProcessing()
+                        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                     }
                 }
             }
@@ -246,7 +246,7 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
 
 
         val tagDialogDismissHandler:() -> Unit = {
-           // hapticProcessing()
+            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
             selectedTags.value.clear()
             var snippetsTemp = ""
             TagInfoDataObject.entries.forEachIndexed { index, item ->
@@ -445,7 +445,7 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
 
                         IconButton(
                             onClick = {
-                             //   hapticProcessing()
+                                hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                 isGoCurrentLocation = true
                             }
                         ) {
@@ -463,8 +463,7 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
                         IconButton(
                             enabled = mapTypeIndex == 0,
                             onClick = {
-                                /*
-                                hapticProcessing()
+                                hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                 isDarkMode = !isDarkMode
 
                                 if (isDarkMode) {
@@ -477,8 +476,6 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
                                 } else {
                                     mapProperties = mapProperties.copy(mapStyleOptions = null)
                                 }
-
-                                 */
                             }
                         ) {
                             Icon(
@@ -511,7 +508,7 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
                         ) {
                             IconButton(
                                 onClick = {
-                                  //  hapticProcessing()
+                                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                     val findType = MapType.entries.first { item ->
                                         mapType.name == item.name
                                     }
@@ -541,7 +538,7 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
 
                     IconButton(
                         onClick = {
-                         //   hapticProcessing()
+                            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                             isVisibleMenu.value = !isVisibleMenu.value
                             isTitleBox = !isTitleBox
                         }
@@ -562,7 +559,7 @@ fun DetailMemoCompose(navController: NavHostController, id:Long) {
                         ) {
                             IconButton(
                                 onClick = {
-                                //    hapticProcessing()
+                                    hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
                                     when (menuType) {
                                         SettingMenuData.Type.SECRET -> {
                                             isLock.value = !isLock.value
