@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -180,17 +182,18 @@ fun MemoCompose(
         }
     )
 
-    val dismissContentOffset by  remember {
-        mutableStateOf(
-            if (isAnchor.value) {
-                if (isToStart.value) - anchorOffset else anchorOffset
-            } else {
-                0.dp
-            }
-        )
+    val dismissContentOffset = remember { mutableStateOf(0.dp) }
+
+    LaunchedEffect(key1 = isAnchor.value ){
+        dismissContentOffset.value = if (isAnchor.value) {
+            if (isToStart.value) -anchorOffset else anchorOffset
+        } else {
+            0.dp
+        }
     }
 
-    val checkBiometricSupport: (() -> Unit) = {
+
+    val checkBiometricSupport: () -> Unit = {
         val biometricManager = BiometricManager.from(context)
         when (  biometricManager.canAuthenticate(
             BiometricManager.Authenticators.BIOMETRIC_STRONG
@@ -209,148 +212,146 @@ fun MemoCompose(
 
     }
 
+    val backGroundContent:@Composable RowScope.() -> Unit = {
+        BackgroundContent(dismissState) {
+            when(it){
+                MemoBgObject.Type.SHARE -> {
+
+                    if(item.isSecret && isGranted ) {
+                        checkBiometricSupport.invoke()
+                        biometricPrompt(context, BiometricCheckObject.Type.SHARE, onResult)
+                    }else {
+                        coroutineScope.launch {
+                            launchIntent_ShareMemo(context = context, memo = item, repository = repository )
+                        }
+                    }
+
+                }
+                MemoBgObject.Type.DELETE -> {
+
+                    if(item.isSecret && isGranted ) {
+                        checkBiometricSupport.invoke()
+                        biometricPrompt(context, BiometricCheckObject.Type.DELETE, onResult)
+                    }else {
+                        if (event != null) {
+                            event(  MemoListViewModel.Event.DeleteItem(id = item.id) )
+                        }
+                        channel?.let {channel ->
+                            channel.trySend(SnackBarChannelObject.entries.first {item ->
+                                item.channelType == SnackBarChannelObject.Type.MEMO_DELETE
+                            }.channel)
+                        }
+                    }
+                }
+            }
+
+            isAnchor.value = false
+        }
+    }
+
+    val dismissContent:@Composable RowScope.() -> Unit = {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(SwipeBoxHeight)
+                .offset(x = dismissContentOffset.value)
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+            contentAlignment = Alignment.Center
+        ) {
+
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 6.dp)
+                    .clickable(false, null, null) {}
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+
+
+                Icon(
+                    modifier = Modifier.scale(1f),
+                    imageVector = if (item.isSecret) Icons.Outlined.Lock else Icons.Outlined.LockOpen,
+                    contentDescription = "Lock",
+                )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f),
+                    verticalArrangement = Arrangement.SpaceAround,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text =  item.title,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        minLines =  1,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text =   item.desc,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        minLines =  1,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text =   item.snippets,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        minLines =  1,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                Icon(
+                    modifier = Modifier.scale(1f),
+                    imageVector = if (item.isPin) Icons.Outlined.LocationOn else Icons.Outlined.LocationOff,
+                    contentDescription = "Mark",
+                )
+
+
+            }
+        }
+
+    }
+
+    val onClick: () -> Unit = {
+        hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
+        if(item.isSecret && isGranted ) {
+            checkBiometricSupport.invoke()
+            biometricPrompt(context, BiometricCheckObject.Type.DETAILVIEW, onResult)
+        }else {
+            navController?.let {
+                if (event != null) {
+                    event(
+                        MemoListViewModel.Event.ToRoute(
+                            navController = it,
+                            route = "detailmemo?${item.id}"
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     Card(
         modifier = Modifier
             .height(260.dp)
             .padding(top = 2.dp) ,
         shape = ShapeDefaults.ExtraSmall ,
-        onClick = {
-            hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
-            if(item.isSecret && isGranted ) {
-                checkBiometricSupport.invoke()
-                biometricPrompt(context, BiometricCheckObject.Type.DETAILVIEW, onResult)
-            }else {
-                navController?.let {
-                    if (event != null) {
-                        event(
-                            MemoListViewModel.Event.ToRoute(
-                                navController = it,
-                                route = "detailmemo?${item.id}"
-                            )
-                        )
-                    }
-                }
-            }
-
-        }
-
+        onClick = onClick
     ) {
 
         SwipeToDismiss(
-            modifier = Modifier
-            ,
+            modifier = Modifier ,
             state = dismissState,
-            background = {
-                BackgroundContent(dismissState) {
-                    when(it){
-                        MemoBgObject.Type.SHARE -> {
-
-                            if(item.isSecret && isGranted ) {
-                                checkBiometricSupport.invoke()
-                                biometricPrompt(context, BiometricCheckObject.Type.SHARE, onResult)
-                            }else {
-                                coroutineScope.launch {
-                                    launchIntent_ShareMemo(context = context, memo = item, repository = repository )
-                                }
-                            }
-
-                        }
-                        MemoBgObject.Type.DELETE -> {
-
-                            if(item.isSecret && isGranted ) {
-                                checkBiometricSupport.invoke()
-                                biometricPrompt(context, BiometricCheckObject.Type.DELETE, onResult)
-                            }else {
-                                if (event != null) {
-                                    event(  MemoListViewModel.Event.DeleteItem(id = item.id) )
-                                }
-                                channel?.let {channel ->
-                                    channel.trySend(SnackBarChannelObject.entries.first {item ->
-                                        item.channelType == SnackBarChannelObject.Type.MEMO_DELETE
-                                    }.channel)
-                                }
-                            }
-                        }
-                    }
-
-                    isAnchor.value = false
-                }
-            },
-            dismissContent = {
-
-                Box(
-
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(SwipeBoxHeight)
-                        .offset(x = dismissContentOffset)
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                    ,
-
-                    contentAlignment = Alignment.Center
-                ) {
-
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 6.dp)
-                            .clickable(false, null, null) {}
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-
-
-                        Icon(
-                            modifier = Modifier.scale(1f),
-                            imageVector = if (item.isSecret) Icons.Outlined.Lock else Icons.Outlined.LockOpen,
-                            contentDescription = "Lock",
-                        )
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(0.8f),
-                            verticalArrangement = Arrangement.SpaceAround,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text =  item.title,
-                                overflow = TextOverflow.Ellipsis,
-                                maxLines = 1,
-                                minLines =  1,
-                                style = MaterialTheme.typography.titleSmall
-                            )
-                            Text(
-                                text =   item.desc,
-                                overflow = TextOverflow.Ellipsis,
-                                maxLines = 1,
-                                minLines =  1,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text =   item.snippets,
-                                overflow = TextOverflow.Ellipsis,
-                                maxLines = 1,
-                                minLines =  1,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-
-                        Icon(
-                            modifier = Modifier.scale(1f),
-                            imageVector = if (item.isPin) Icons.Outlined.LocationOn else Icons.Outlined.LocationOff,
-                            contentDescription = "Mark",
-                        )
-
-
-                    }
-                }
-
-            }
+            background = backGroundContent,
+            dismissContent = dismissContent
         )
 
         ImageViewer(data = item.snapshot, size = Size.ORIGINAL, isZoomable = false)
-// Testing
-//        ImageViewer(data = item.snapshot.toUri(), size = Size.ORIGINAL, isZoomable = false)
+
     }
 
 }

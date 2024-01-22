@@ -48,11 +48,15 @@ import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 import com.unchil.gismemo_multiplatform.android.viewModel.MemoListViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MemoListCompose(navController: NavHostController){
+fun MemoListCompose(
+    navController: NavHostController,
+    channel:  Channel<Int>? = null,
+){
 
     val context = LocalContext.current
     val isRefreshing: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
@@ -102,6 +106,7 @@ fun MemoListCompose(navController: NavHostController){
                         memoListStream[index]?.let {
                             MemoCompose(
                                 item = it,
+                                channel = channel,
                                 event = viewModel::onEvent,
                                 navController = navController
                             )
