@@ -369,14 +369,11 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
     }
 
     suspend fun setMarkerMemoList() {
-        gisMemoDao.memoListFlow.collectLatest {
-            _markerMemoList.emit(it)
+        gisMemoDao.markerListFlow.collectLatest {
+            _markerMemoList.value = it
         }
     }
 
-    suspend fun getMemoListFlow() : Flow<List<MEMO_TBL>> {
-        return gisMemoDao.memoListFlow
-    }
 
     fun getShareMemoData(
         id:Long,
