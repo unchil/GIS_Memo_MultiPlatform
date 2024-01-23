@@ -41,7 +41,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -59,6 +58,7 @@ import com.unchil.gismemo_multiplatform.android.navigation.navigateTo
 import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 import com.unchil.gismemo_multiplatform.android.view.GisMemoNavHost
 import com.unchil.gismemo_multiplatform.android.view.hapticProcessing
+import com.unchil.gismemo_multiplatform.android.viewModel.MainViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -77,17 +77,18 @@ class MainActivity : ComponentActivity() {
 
     private val permissionsManager = PermissionsManager()
     private val repository = GisMemoApp.repository!!
+    val viewModel =  MainViewModel( repository = repository )
 
     override fun attachBaseContext(context: Context?) {
 
         if(context != null ){
-            if(repository.isFirstSetup.value){
-                repository.isFirstSetup.value = false
+            if(viewModel.isFirstSetup.value){
+                viewModel.onEvent(MainViewModel.Event.UpdateIsFirstSetup(false))
                 val index = context.getLanguageArray().indexOf(Locale.getDefault().language)
-                repository.isChangeLocale.value = if (index == -1 ) 0 else index
+                viewModel.onEvent(MainViewModel.Event.UpdateIsChangeLocale(if (index == -1 ) 0 else index))
                 super.attachBaseContext(context)
             } else {
-                val locale = Locale( context.getLanguageArray()[repository.isChangeLocale.value] )
+                val locale = Locale( context.getLanguageArray()[viewModel.isChangeLocale.value] )
                 Locale.setDefault(locale)
                 context.resources.configuration.setLayoutDirection(locale)
                 context.resources.configuration.setLocale(locale)
@@ -104,13 +105,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
-            val isUsableHapticState = repository.isUsableHaptic.collectAsState()
-            val isUsableDarkModeState = repository.isUsableDarkMode.collectAsState()
-            val isUsableDynamicColorState = repository.isUsableDynamicColor.collectAsState()
-            val onChangeLocale = repository.onChangeLocale.collectAsState()
+            val isUsableHapticState = viewModel.isUsableHaptic.collectAsState()
+            val isUsableDarkModeState = viewModel.isUsableDarkMode.collectAsState()
+            val isUsableDynamicColorState = viewModel.isUsableDynamicColor.collectAsState()
+            val realTimeChangeLocale = viewModel.realTimeChangeLocale.collectAsState()
 
             CompositionLocalProvider(
-                LocalChangeLocale provides onChangeLocale.value,
+                LocalChangeLocale provides realTimeChangeLocale.value,
                 LocalPermissionsManager provides permissionsManager,
                 LocalRepository provides repository,
                 LocalUsableHaptic provides isUsableHapticState.value,

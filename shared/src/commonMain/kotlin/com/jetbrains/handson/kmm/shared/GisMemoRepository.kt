@@ -109,11 +109,15 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
             = MutableStateFlow(0)
 
     // locale 실시간 반영을 위한 state
-    val onChangeLocale: MutableStateFlow<Boolean>
+    val realTimeChangeLocale: MutableStateFlow<Boolean>
             = MutableStateFlow(false)
 
-    fun updateOnChangeLocale(value:Boolean){
-        onChangeLocale.value = value
+    fun updateIsFirstSetup(value:Boolean){
+        isFirstSetup.value = value
+    }
+
+    fun updateRealTimeChangeLocale(value:Boolean){
+        realTimeChangeLocale.value = value
     }
 
     fun updateIsChangeLocale(value:Int){
