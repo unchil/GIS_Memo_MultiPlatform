@@ -2,14 +2,12 @@ package com.unchil.gismemo_multiplatform.android.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
-
+import com.jetbrains.handson.kmm.shared.data.SearchQueryData
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
-import com.unchil.gismemo_multiplatform.android.model.QueryData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,7 +31,7 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
 
     val memoPagingStream : Flow<PagingData<MEMO_TBL>>
     private val searchQueryFlow:Flow<Event.Search>
-    private val eventHandler: (Event) -> Unit
+    val eventHandler: (Event) -> Unit
 
     init {
         val eventStateFlow = MutableSharedFlow<Event>()
@@ -50,13 +48,13 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
             .filterIsInstance<Event.Search>()
             .distinctUntilChanged()
             .onStart {
-                emit( Event.Search(queryDataList = mutableListOf()) )
+                emit( Event.Search(queryData = SearchQueryData) )
             }
 
         //  3.  viewModelScope.launch { searchMemo() }
         memoPagingStream = searchQueryFlow
             .flatMapLatest {
-                searchMemo(queryDataList = it.queryDataList)
+                searchMemo(queryData = it.queryData)
             }
             .cachedIn(viewModelScope)
         /*
@@ -78,6 +76,7 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
             is Event.ToRoute -> {
                 toRoute(event.navController, event.route)
             }
+
             else -> {}
         }
     }
@@ -92,14 +91,14 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
         }
     }
 
-    private fun searchMemo(queryDataList:MutableList<QueryData>): Flow<PagingData<MEMO_TBL>> {
-        return repository.memoPagingStream()
+    private fun searchMemo(queryData: SearchQueryData): Flow<PagingData<MEMO_TBL>> {
+        return repository.memoPagingStream(queryData = SearchQueryData)
     }
 
 
 
     sealed class Event {
-        data class Search(val queryDataList:MutableList<QueryData>) : Event()
+        data class Search(val queryData:SearchQueryData) : Event()
 
         data class ToRoute(val navController: NavHostController, val route:String) : Event()
 

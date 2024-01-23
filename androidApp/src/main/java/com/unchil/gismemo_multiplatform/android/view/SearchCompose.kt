@@ -43,14 +43,12 @@ import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,6 +61,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.jetbrains.handson.kmm.shared.data.SearchQueryData
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
@@ -71,11 +70,13 @@ import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
 import com.unchil.gismemo_multiplatform.android.model.RadioGroupOption
 import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
+import com.unchil.gismemo_multiplatform.android.viewModel.MemoListViewModel
 
 @SuppressLint("MutableCollectionMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchCompose(
+    onEvent: ((MemoListViewModel.Event) -> Unit)? = null,
     onMessage:(() -> Unit)? = null
 ){
 
@@ -87,7 +88,7 @@ fun SearchCompose(
 
     val focusmanager = LocalFocusManager.current
 
-    var query_title by rememberSaveable {
+    val query_title = rememberSaveable {
         mutableStateOf("")
     }
 
@@ -102,6 +103,9 @@ fun SearchCompose(
 
     val recognizerIntent = remember { recognizerIntent }
 
+
+
+
     val isTagBox = rememberSaveable{  mutableStateOf(false)}
 
     val isDateBox = rememberSaveable{  mutableStateOf(false)}
@@ -112,18 +116,11 @@ fun SearchCompose(
         if (it.resultCode == Activity.RESULT_OK) {
             val result =
                 it.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-            query_title = query_title + result?.get(0).toString() + " "
+            query_title.value = query_title.value + result?.get(0).toString() + " "
         }
     }
 
-    val onSearch : (String) -> Unit = {
-        // call EventHandle
-        if (it.isNotEmpty()) {
-            historyItems.add(it)
-        }
-        isVisibleSearchBar.value = false
-        focusmanager.clearFocus(true)
-    }
+
 
     val placeholder: @Composable() (() -> Unit)? = {
         Text(
@@ -133,12 +130,12 @@ fun SearchCompose(
     }
 
     val leadingIcon: @Composable() (() -> Unit)? = {
-        if (query_title.isNotEmpty()) {
+        if (query_title.value.isNotEmpty()) {
             IconButton(
                 modifier = Modifier,
                 onClick = {
                   hapticProcessing(coroutineScope, hapticFeedback, isUsableHaptic)
-                    query_title = ""
+                    query_title.value = ""
                     onMessage?.let {
                         it()
                     }
@@ -180,8 +177,8 @@ fun SearchCompose(
                 modifier = Modifier,
                 onClick = {
                     // OnSearchEventHandler
-                    if (query_title.isNotEmpty()) {
-                        historyItems.add(query_title)
+                    if (query_title.value.isNotEmpty()) {
+                        historyItems.add(query_title.value)
                     }
                     isVisibleSearchBar.value = false
                     focusmanager.clearFocus(true)
@@ -265,7 +262,7 @@ fun SearchCompose(
 
     val secretOption = RadioGroupOption(
         title = context.resources.getString(R.string.search_radioBtGroup_secret),
-        options = listOf(
+        entries = listOf(
             context.resources.getString(R.string.search_radioBt_select),
             context.resources.getString(R.string.search_radioBt_none),
             context.resources.getString(R.string.search_radioBt_all)
@@ -287,12 +284,12 @@ fun SearchCompose(
     )
 
     val secretRadioGroupState = rememberSaveable {
-        mutableIntStateOf(secretOption.options.lastIndex )
+        mutableIntStateOf(secretOption.entries.lastIndex )
     }
 
     val markerOption = RadioGroupOption(
         title = context.resources.getString(R.string.search_radioBtGroup_marker),
-        options = listOf(
+        entries = listOf(
             context.resources.getString(R.string.search_radioBt_select),
             context.resources.getString(R.string.search_radioBt_none),
             context.resources.getString(R.string.search_radioBt_all)
@@ -314,11 +311,86 @@ fun SearchCompose(
     )
 
     val markerRadioGroupState = rememberSaveable{
-        mutableIntStateOf(markerOption.options.lastIndex )
+        mutableIntStateOf(markerOption.entries.lastIndex )
     }
 
     val selectedTagArray:MutableState<ArrayList<Int>> =
         rememberSaveable{ mutableStateOf(arrayListOf())  }
+
+
+
+
+    val initStateValue = {
+        query_title.value = ""
+        dateRangePickerState.setSelection(null, null)
+        secretRadioGroupState.value =   secretOption.entries.lastIndex
+        markerRadioGroupState.value = markerOption.entries.lastIndex
+        selectedTagArray.value = arrayListOf()
+    }
+
+
+
+    val onSearch : (String) -> Unit = {searchTitle ->
+
+        SearchQueryData.Types.forEach {
+            when(it){
+                SearchQueryData.Type.TITLE -> {
+                    searchTitle.trim().let { queryString ->
+                        if (queryString.isNotEmpty()) {
+                            SearchQueryData.value[SearchQueryData.Type.TITLE] = queryString
+                        }
+                    }
+                }
+                SearchQueryData.Type.SECRET -> {
+                    if( secretRadioGroupState.intValue  <  secretOption.entries.lastIndex){
+                        SearchQueryData.value[SearchQueryData.Type.SECRET] =
+                            secretRadioGroupState.intValue
+                    }
+                }
+                SearchQueryData.Type.MARKER -> {
+                    if( markerRadioGroupState.intValue  <  markerOption.entries.lastIndex){
+                        SearchQueryData.value[SearchQueryData.Type.MARKER] =
+                            markerRadioGroupState.intValue
+                    }
+                }
+                SearchQueryData.Type.TAG -> {
+                    if( selectedTagArray.value.isNotEmpty()){
+                        SearchQueryData.value[SearchQueryData.Type.TAG] =
+                            selectedTagArray.value
+                    }
+                }
+                SearchQueryData.Type.DATE -> {
+                    dateRangePickerState.selectedStartDateMillis?.let {
+                        if(it != 0L){
+                            SearchQueryData.value[SearchQueryData.Type.DATE]  = Pair(
+                                dateRangePickerState.selectedStartDateMillis ?: 0,
+                                dateRangePickerState.selectedEndDateMillis ?: 0)
+                        }
+                    }
+
+                }
+            }
+        }
+
+
+        onEvent?.let {
+            it(MemoListViewModel.Event.Search(SearchQueryData))
+        }
+
+
+
+
+        // call EventHandle
+        if ( searchTitle.isNotEmpty()) {
+            historyItems.add(searchTitle)
+        }
+        isVisibleSearchBar.value = false
+        focusmanager.clearFocus(true)
+
+        initStateValue.invoke()
+    }
+
+
 
     Column(
         modifier = Modifier
@@ -335,9 +407,9 @@ fun SearchCompose(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = if (isVisibleSearchBar.value) 0.dp else 8.dp),
-            query = query_title,
+            query = query_title.value,
             onQueryChange = {
-                query_title = it
+                query_title.value = it
             },
             onSearch = onSearch,
             active = isVisibleSearchBar.value,
@@ -387,7 +459,7 @@ fun SearchCompose(
 
                         Icon(
                             modifier = Modifier
-                                .clickable {  query_title = historyItem },
+                                .clickable {  query_title.value = historyItem },
                             imageVector = Icons.Default.NorthWest,
                             contentDescription = null
                         )
@@ -422,7 +494,7 @@ fun SearchCompose(
 
         RadioButtonGroupCompose(
             state = secretRadioGroupState,
-            data = secretOption.options,
+            data = secretOption.entries,
             content = secretOption.contents
         )
 
@@ -433,7 +505,7 @@ fun SearchCompose(
 
         RadioButtonGroupCompose(
             state = markerRadioGroupState,
-            data = markerOption.options,
+            data = markerOption.entries,
             content = markerOption.contents
         )
 

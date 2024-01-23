@@ -16,3 +16,24 @@ object WriteMemoData {
         Type.VIDEO
     )
 }
+
+
+object SearchQueryData {
+    enum class Type {
+        TITLE, SECRET, MARKER, TAG, DATE
+    }
+    val Types = listOf(
+        Type.TITLE,
+        Type.SECRET,
+        Type.MARKER,
+        Type.TAG,
+        Type.DATE
+    )
+
+    val value = mutableMapOf<Type, Any>()
+
+    fun clear(){
+        value.clear()
+    }
+}
+

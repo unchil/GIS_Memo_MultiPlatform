@@ -238,19 +238,8 @@ object MapTypeMenuData {
 }
 
 
-
 enum class SearchOption {
     TITLE, SECRET, MARKER, TAG, DATE
-}
-
-fun SearchOption.name():String{
-    return when(this){
-        SearchOption.TITLE ->  "제목"
-        SearchOption.SECRET -> "보안"
-        SearchOption.MARKER -> "마커"
-        SearchOption.TAG -> "태그"
-        SearchOption.DATE -> "날짜"
-    }
 }
 
 
@@ -264,9 +253,13 @@ sealed class SearchQueryDataValue {
 
 typealias QueryData= Pair< SearchOption, SearchQueryDataValue>
 
+
+
+
+
 data class RadioGroupOption (
     val title:String,
-    val options:List<String>,
+    val entries:List<String>,
     val icon:ImageVector? = null,
     val iconDesc:String? = null ,
     val contents:@Composable() (() -> Unit)? = null

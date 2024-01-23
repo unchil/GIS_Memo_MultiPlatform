@@ -5,6 +5,7 @@ import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import com.jetbrains.handson.kmm.shared.cache.GisMemoDao
+import com.jetbrains.handson.kmm.shared.data.SearchQueryData
 import com.jetbrains.handson.kmm.shared.data.WriteMemoData
 import com.jetbrains.handson.kmm.shared.entity.AsyncWeatherInfoState
 import com.jetbrains.handson.kmm.shared.entity.CURRENTLOCATION_TBL
@@ -587,7 +588,7 @@ no matter how many times it is called.
 As the exception states, you must return a new instance of PagingSource each time.
 그래서 함수 호출 방식으로 변경
 */
-    fun memoPagingStream():Flow<PagingData<MEMO_TBL>> {
+    fun memoPagingStream(queryData: SearchQueryData):Flow<PagingData<MEMO_TBL>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 30,

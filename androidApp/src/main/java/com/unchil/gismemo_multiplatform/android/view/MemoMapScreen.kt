@@ -85,6 +85,7 @@ import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.MarkerState
@@ -110,7 +111,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState", "MissingPermission")
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class,
+    MapsComposeExperimentalApi::class
+)
 @Composable
 fun MemoMapScreen(navController: NavHostController){
     val permissions = listOf(
@@ -221,7 +224,7 @@ fun MemoMapScreen(navController: NavHostController){
         var mapProperties by remember {
             mutableStateOf(
                 MapProperties(
-                    mapType = MapType.values().first { mapType ->
+                    mapType = MapType.entries.first { mapType ->
                         mapType.name == MapTypeMenuData.Types[mapTypeIndex].name },
                     isMyLocationEnabled = true,
                     mapStyleOptions = if(isDarkMode) {
@@ -286,7 +289,7 @@ fun MemoMapScreen(navController: NavHostController){
                     .horizontalScroll(state = ScrollState(0)),
                 horizontalArrangement = Arrangement.Center
             ) {
-                MapType.values().filter {
+                MapType.entries.filter {
                     it.name == "NORMAL" || it.name == "TERRAIN" || it.name == "HYBRID"
                 }.forEach {
                     MapButton(it.toString()){
@@ -436,15 +439,15 @@ fun MemoMapScreen(navController: NavHostController){
                                 hapticProcessing(coroutineScope , hapticFeedback, isUsableHaptic)
                                 isDarkMode = !isDarkMode
 
-                                if (isDarkMode) {
-                                    mapProperties = mapProperties.copy(
+                                mapProperties = if (isDarkMode) {
+                                    mapProperties.copy(
                                         mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
                                             context,
                                             R.raw.mapstyle_night
                                         )
                                     )
                                 } else {
-                                    mapProperties = mapProperties.copy(mapStyleOptions = null)
+                                    mapProperties.copy(mapStyleOptions = null)
                                 }
                             }
                         ) {
@@ -508,14 +511,13 @@ fun MemoMapScreen(navController: NavHostController){
                         ) {
                             IconButton(onClick = {
                                 hapticProcessing(coroutineScope , hapticFeedback, isUsableHaptic)
-                                val mapType = MapType.values().first { mapType ->
+                                val mapType = MapType.entries.first { mapType ->
                                     mapType.name == it.name
                                 }
                                 mapProperties = mapProperties.copy(mapType = mapType)
                                 mapTypeIndex = index
 
                             }) {
-
                                 Icon(
                                     imageVector = MapTypeMenuData.desc(it).first,
                                     contentDescription = it.name,
@@ -579,16 +581,15 @@ fun MemoView(
     val onResult:(
         isSucceeded:Boolean,
         bioMetricCheckType: BiometricCheckObject.Type,
-        errorMsg:String? ) -> Unit
-    = { result, bioMetricCheckType, msg ->
+        errorMsg:String? ) -> Unit = { result, bioMetricCheckType, msg ->
             if(result){
                 when(bioMetricCheckType){
                     BiometricCheckObject.Type.DETAILVIEW -> {
-                        navController?.let {
-                            if (event != null) {
-                                event(
+                        navController?.let {navHostController ->
+                            event?.let {
+                                it(
                                     MemoMapViewModel.Event.ToRoute(
-                                        navController = it,
+                                        navController = navHostController,
                                         route = GisMemoDestinations.DetailMemo.createRoute( id= item.id )
                                     )
                                 )
@@ -597,7 +598,7 @@ fun MemoView(
                     }
                     else -> {}
                 }
-            }else { }
+            }
         }
 
 

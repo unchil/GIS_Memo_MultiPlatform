@@ -185,7 +185,7 @@ fun MemoListScreen(
                 SearchCompose()
             }
              */
-            SearchCompose()
+            SearchCompose(onEvent = viewModel.eventHandler)
         }
 
 
