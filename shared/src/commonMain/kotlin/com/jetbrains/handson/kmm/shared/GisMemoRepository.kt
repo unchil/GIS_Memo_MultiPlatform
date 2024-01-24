@@ -304,26 +304,22 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
                 WriteMemoData.Type.PHOTO -> {
                     val newMemoItem = currentPhoto.value.toMutableList()
                     newMemoItem.clear()
-                 //   currentPhoto.emit(newMemoItem)
                     currentPhoto.value = newMemoItem
                 }
 
                 WriteMemoData.Type.AUDIOTEXT -> {
                     val newMemoItem = currentAudioText.value.toMutableList()
                     newMemoItem.clear()
-                  //  currentAudioText.emit(newMemoItem)
                     currentAudioText.value = newMemoItem
                 }
                 WriteMemoData.Type.VIDEO -> {
                     val newMemoItem = currentVideo.value.toMutableList()
                     newMemoItem.clear()
-                  //  currentVideo.emit(newMemoItem)
                     currentVideo.value = newMemoItem
                 }
                 WriteMemoData.Type.SNAPSHOT -> {
                     val newMemoItem = currentSnapShot.value.toMutableList()
                     newMemoItem.clear()
-                 //   currentSnapShot.emit(newMemoItem)
                     currentSnapShot.value = newMemoItem
                 }
 
@@ -337,25 +333,21 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
             WriteMemoData.Type.PHOTO -> {
                 val newMemoItem = currentPhoto.value.toMutableList()
                 newMemoItem.removeAt(index)
-               // currentPhoto.emit(newMemoItem)
                 currentPhoto.value = newMemoItem
             }
             WriteMemoData.Type.AUDIOTEXT -> {
                 val newMemoItem = currentAudioText.value.toMutableList()
                 newMemoItem.removeAt(index)
-               // currentAudioText.emit(newMemoItem)
                 currentAudioText.value = newMemoItem
             }
             WriteMemoData.Type.VIDEO -> {
                 val newMemoItem = currentVideo.value.toMutableList()
                 newMemoItem.removeAt(index)
-                //currentVideo.emit(newMemoItem)
                 currentVideo.value = newMemoItem
             }
             WriteMemoData.Type.SNAPSHOT -> {
                 val newMemoItem = currentSnapShot.value.toMutableList()
                 newMemoItem.removeAt(index)
-                //currentSnapShot.emit(newMemoItem)
                 currentSnapShot.value = newMemoItem
             }
         }
@@ -604,7 +596,6 @@ As the exception states, you must return a new instance of PagingSource each tim
                 enablePlaceholders =  false
             ),
             pagingSourceFactory = {
-             //   gisMemoDao.memoKeyedQueryPagingSource()
                 gisMemoDao.memoOffsetQueryPagingSource()
             }
         ).flow
@@ -617,7 +608,6 @@ As the exception states, you must return a new instance of PagingSource each tim
                 enablePlaceholders =  false
             ),
             pagingSourceFactory = {
-               // gisMemoDao.memoSearchKeyedQueryPagingSource(queryData = SearchQueryData)
                 gisMemoDao.memoSearchOffsetQueryPagingSource(queryData = SearchQueryData)
             }
         ).flow
