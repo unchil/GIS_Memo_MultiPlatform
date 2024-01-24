@@ -9,12 +9,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.BackdropScaffoldState
+import androidx.compose.material.BackdropValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Publish
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -24,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -49,6 +53,7 @@ import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
 import com.unchil.gismemo_multiplatform.android.common.PermissionsManager
+import com.unchil.gismemo_multiplatform.android.model.SnackBarChannelObject
 import com.unchil.gismemo_multiplatform.android.theme.GisMemoTheme
 import com.unchil.gismemo_multiplatform.android.viewModel.MemoListViewModel
 import kotlinx.coroutines.channels.Channel
@@ -59,6 +64,7 @@ import kotlinx.coroutines.launch
 fun MemoListCompose(
     navController: NavHostController,
     viewModel: MemoListViewModel,
+    scaffoldState: BackdropScaffoldState,
     channel:  Channel<Int>? = null,
 ){
 
@@ -66,10 +72,6 @@ fun MemoListCompose(
 
     val lazyListState = rememberLazyListState()
     val upButtonPadding  = remember {  mutableStateOf ( 10.dp ) }
-
-   // val repository = LocalRepository.current
-  //  val viewModel = remember { MemoListViewModel( repository = repository ) }
-
     val memoListStream = viewModel.memoPagingStream.collectAsLazyPagingItems()
 
     val isRefreshing = viewModel.isRefreshingStateFlow.collectAsState()
@@ -84,6 +86,23 @@ fun MemoListCompose(
         }
     )
 
+    LaunchedEffect(key1 = memoListStream.loadState.source.refresh,) {
+        channel?.let {
+            when (memoListStream.loadState.source.refresh) {
+                is LoadState.NotLoading -> {
+                    channel.trySend(SnackBarChannelObject.entries.first { item ->
+                        item.channelType == SnackBarChannelObject.Type.SEARCH_RESULT
+                    }.channel)
+                }
+                else -> {}
+            }
+        }
+
+        if(memoListStream.itemCount > 0) {
+            scaffoldState.reveal()
+        }
+    }
+
 
     Box(
         modifier = Modifier
@@ -94,16 +113,6 @@ fun MemoListCompose(
         when (memoListStream.loadState.source.refresh) {
 
             is LoadState.Error -> {
-                /*
-                Text(
-                    "Error Occurred",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.Center)
-                )
-
-                 */
-
                 TextButton(
                     modifier = Modifier.align(alignment = Alignment.Center),
                     onClick = {
@@ -113,9 +122,6 @@ fun MemoListCompose(
                 ) {
                     Text("Error Occurred: Search ReFresh")
                 }
-
-
-
             }
             LoadState.Loading -> {
 
@@ -151,8 +157,6 @@ fun MemoListCompose(
                 )
             }
         }
-
-
 
         PullRefreshIndicator(
             refreshing = isRefreshing.value,
@@ -199,6 +203,7 @@ fun UpButton(
 }
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Preview
 @Composable
 fun PrevMemoListCompose() {
@@ -217,7 +222,8 @@ fun PrevMemoListCompose() {
             ) {
                 MemoListCompose(
                     navController = navController,
-                    MemoListViewModel( repository = repository )
+                    MemoListViewModel( repository = repository ),
+                    scaffoldState =  rememberBackdropScaffoldState(BackdropValue.Concealed)
                 )
             }
         }

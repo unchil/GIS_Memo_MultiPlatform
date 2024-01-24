@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -174,20 +175,13 @@ fun MemoListScreen(
                 MemoListCompose(
                     navController = navController,
                     viewModel = viewModel,
+                    scaffoldState = scaffoldState,
                     channel = channel
                 )
             }
         }
 
         val frontLayerContent :@Composable () -> Unit = {
-            /*
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopCenter,
-            ) {
-                SearchCompose()
-            }
-             */
             SearchCompose(onEvent = viewModel.eventHandler)
         }
 
