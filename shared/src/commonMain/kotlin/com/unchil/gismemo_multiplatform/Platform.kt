@@ -10,6 +10,9 @@ interface Platform {
 
     fun getRepository(context: PlatformContext):GisMemoRepository?
 
+    fun getCurrentTime():Long
+
 }
 
 expect fun getPlatform(): Platform
+

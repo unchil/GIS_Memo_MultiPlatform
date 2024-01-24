@@ -121,6 +121,129 @@ fun SearchCompose(
     }
 
 
+    val secretOption = RadioGroupOption(
+        title = context.resources.getString(R.string.search_radioBtGroup_secret),
+        entries = listOf(
+            context.resources.getString(R.string.search_radioBt_select),
+            context.resources.getString(R.string.search_radioBt_none),
+            context.resources.getString(R.string.search_radioBt_all)
+        ),
+        contents = {
+            Row(modifier = Modifier) {
+                Icon(
+                    imageVector = Icons.Outlined.Lock,
+                    contentDescription = context.resources.getString(R.string.search_radioBtGroup_secret)
+                )
+                Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+                Text(
+                    modifier = Modifier,
+                    text = context.resources.getString(R.string.search_radioBtGroup_secret),
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+        }
+    )
+
+    val secretRadioGroupState = rememberSaveable {
+        mutableStateOf(secretOption.entries.lastIndex )
+    }
+
+    val markerOption = RadioGroupOption(
+        title = context.resources.getString(R.string.search_radioBtGroup_marker),
+        entries = listOf(
+            context.resources.getString(R.string.search_radioBt_select),
+            context.resources.getString(R.string.search_radioBt_none),
+            context.resources.getString(R.string.search_radioBt_all)
+        ),
+        contents = {
+            Row(modifier = Modifier) {
+                Icon(
+                    imageVector = Icons.Outlined.Lock,
+                    contentDescription = context.resources.getString(R.string.search_radioBtGroup_marker)
+                )
+                Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+                Text(
+                    modifier = Modifier,
+                    text = context.resources.getString(R.string.search_radioBtGroup_marker),
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+        }
+    )
+
+    val markerRadioGroupState = rememberSaveable{
+        mutableStateOf(markerOption.entries.lastIndex )
+    }
+
+    val selectedTagArray:MutableState<ArrayList<Int>> =
+        rememberSaveable{ mutableStateOf(arrayListOf())  }
+
+    val initStateValue = {
+        query_title.value = ""
+        dateRangePickerState.setSelection(null, null)
+        secretRadioGroupState.value =   secretOption.entries.lastIndex
+        markerRadioGroupState.value = markerOption.entries.lastIndex
+        selectedTagArray.value = arrayListOf()
+    }
+
+
+
+    val onSearch : (String) -> Unit = {searchTitle ->
+
+        onEvent?.let {
+            SearchQueryData.value.clear()
+            SearchQueryData.Types.forEach {
+                when(it){
+                    SearchQueryData.Type.TITLE -> {
+                        if(searchTitle.isNotEmpty()) {
+                            SearchQueryData.value[SearchQueryData.Type.TITLE] =
+                                searchTitle.trim()
+                        }
+                    }
+                    SearchQueryData.Type.SECRET -> {
+                        if(secretRadioGroupState.value < secretOption.entries.lastIndex){
+                            SearchQueryData.value[SearchQueryData.Type.SECRET] =
+                                secretRadioGroupState.value.toLong()
+                        }
+                    }
+                    SearchQueryData.Type.MARKER -> {
+                        if(markerRadioGroupState.value < markerOption.entries.lastIndex) {
+                            SearchQueryData.value[SearchQueryData.Type.MARKER] =
+                                markerRadioGroupState.value.toLong()
+                        }
+                    }
+                    SearchQueryData.Type.TAG -> {
+                        if(selectedTagArray.value.size > 0 ) {
+                            SearchQueryData.value[SearchQueryData.Type.TAG] =
+                                selectedTagArray.value.toList()
+                        }
+                    }
+                    SearchQueryData.Type.DATE -> {
+                        dateRangePickerState.selectedStartDateMillis?.let {
+                            if(it != 0L){
+                                SearchQueryData.value[SearchQueryData.Type.DATE]  = Pair(
+                                    dateRangePickerState.selectedStartDateMillis ?: 0,
+                                    dateRangePickerState.selectedEndDateMillis ?: 0)
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            it(MemoListViewModel.Event.Search(SearchQueryData))
+        }
+
+        if ( searchTitle.isNotEmpty()) {
+            historyItems.add(searchTitle)
+        }
+        isVisibleSearchBar.value = false
+        focusmanager.clearFocus(true)
+
+        initStateValue.invoke()
+    }
+
+
 
     val placeholder: @Composable() (() -> Unit)? = {
         Text(
@@ -176,7 +299,7 @@ fun SearchCompose(
             IconButton(
                 modifier = Modifier,
                 onClick = {
-                    // OnSearchEventHandler
+                    onSearch.invoke(query_title.value)
                     if (query_title.value.isNotEmpty()) {
                         historyItems.add(query_title.value)
                     }
@@ -260,135 +383,9 @@ fun SearchCompose(
         )
     }
 
-    val secretOption = RadioGroupOption(
-        title = context.resources.getString(R.string.search_radioBtGroup_secret),
-        entries = listOf(
-            context.resources.getString(R.string.search_radioBt_select),
-            context.resources.getString(R.string.search_radioBt_none),
-            context.resources.getString(R.string.search_radioBt_all)
-        ),
-        contents = {
-            Row(modifier = Modifier) {
-                Icon(
-                    imageVector = Icons.Outlined.Lock,
-                    contentDescription = context.resources.getString(R.string.search_radioBtGroup_secret)
-                )
-                Spacer(modifier = Modifier.padding(horizontal = 2.dp))
-                Text(
-                    modifier = Modifier,
-                    text = context.resources.getString(R.string.search_radioBtGroup_secret),
-                    style = MaterialTheme.typography.titleSmall
-                )
-            }
-        }
-    )
-
-    val secretRadioGroupState = rememberSaveable {
-        mutableIntStateOf(secretOption.entries.lastIndex )
-    }
-
-    val markerOption = RadioGroupOption(
-        title = context.resources.getString(R.string.search_radioBtGroup_marker),
-        entries = listOf(
-            context.resources.getString(R.string.search_radioBt_select),
-            context.resources.getString(R.string.search_radioBt_none),
-            context.resources.getString(R.string.search_radioBt_all)
-        ),
-        contents = {
-            Row(modifier = Modifier) {
-                Icon(
-                    imageVector = Icons.Outlined.Lock,
-                    contentDescription = context.resources.getString(R.string.search_radioBtGroup_marker)
-                )
-                Spacer(modifier = Modifier.padding(horizontal = 2.dp))
-                Text(
-                    modifier = Modifier,
-                    text = context.resources.getString(R.string.search_radioBtGroup_marker),
-                    style = MaterialTheme.typography.titleSmall
-                )
-            }
-        }
-    )
-
-    val markerRadioGroupState = rememberSaveable{
-        mutableIntStateOf(markerOption.entries.lastIndex )
-    }
-
-    val selectedTagArray:MutableState<ArrayList<Int>> =
-        rememberSaveable{ mutableStateOf(arrayListOf())  }
 
 
 
-
-    val initStateValue = {
-        query_title.value = ""
-        dateRangePickerState.setSelection(null, null)
-        secretRadioGroupState.value =   secretOption.entries.lastIndex
-        markerRadioGroupState.value = markerOption.entries.lastIndex
-        selectedTagArray.value = arrayListOf()
-    }
-
-
-
-    val onSearch : (String) -> Unit = {searchTitle ->
-
-        SearchQueryData.Types.forEach {
-            when(it){
-                SearchQueryData.Type.TITLE -> {
-                    searchTitle.trim().let { queryString ->
-                        if (queryString.isNotEmpty()) {
-                            SearchQueryData.value[SearchQueryData.Type.TITLE] = queryString
-                        }
-                    }
-                }
-                SearchQueryData.Type.SECRET -> {
-                    if( secretRadioGroupState.intValue  <  secretOption.entries.lastIndex){
-                        SearchQueryData.value[SearchQueryData.Type.SECRET] =
-                            secretRadioGroupState.intValue
-                    }
-                }
-                SearchQueryData.Type.MARKER -> {
-                    if( markerRadioGroupState.intValue  <  markerOption.entries.lastIndex){
-                        SearchQueryData.value[SearchQueryData.Type.MARKER] =
-                            markerRadioGroupState.intValue
-                    }
-                }
-                SearchQueryData.Type.TAG -> {
-                    if( selectedTagArray.value.isNotEmpty()){
-                        SearchQueryData.value[SearchQueryData.Type.TAG] =
-                            selectedTagArray.value
-                    }
-                }
-                SearchQueryData.Type.DATE -> {
-                    dateRangePickerState.selectedStartDateMillis?.let {
-                        if(it != 0L){
-                            SearchQueryData.value[SearchQueryData.Type.DATE]  = Pair(
-                                dateRangePickerState.selectedStartDateMillis ?: 0,
-                                dateRangePickerState.selectedEndDateMillis ?: 0)
-                        }
-                    }
-
-                }
-            }
-        }
-
-
-        onEvent?.let {
-            it(MemoListViewModel.Event.Search(SearchQueryData))
-        }
-
-
-
-
-        // call EventHandle
-        if ( searchTitle.isNotEmpty()) {
-            historyItems.add(searchTitle)
-        }
-        isVisibleSearchBar.value = false
-        focusmanager.clearFocus(true)
-
-        initStateValue.invoke()
-    }
 
 
 

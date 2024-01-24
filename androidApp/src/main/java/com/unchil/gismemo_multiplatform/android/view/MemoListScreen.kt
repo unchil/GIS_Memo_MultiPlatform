@@ -85,10 +85,13 @@ fun MemoListScreen(
         val isUsableHaptic = LocalUsableHaptic.current
         val hapticFeedback = LocalHapticFeedback.current
 
+
         val viewModel = remember {
             MemoListViewModel( repository = repository)
         }
         val result = viewModel.memoPagingStream.collectAsLazyPagingItems()
+
+
 
         val isSearchRefreshing: MutableState<Boolean> = rememberSaveable {
             mutableStateOf(false)
@@ -118,7 +121,6 @@ fun MemoListScreen(
                 val message = when (channelInfo.channelType) {
                     SnackBarChannelObject.Type.SEARCH_RESULT -> {
                         context.resources.getString( channelInfo.message) + "[${result.itemCount}]"
-                        context.resources.getString( channelInfo.message) + "[0]"
                     }
                     else -> {
                         context.resources.getString( channelInfo.message)
@@ -171,6 +173,7 @@ fun MemoListScreen(
             ) {
                 MemoListCompose(
                     navController = navController,
+                    viewModel = viewModel,
                     channel = channel
                 )
             }

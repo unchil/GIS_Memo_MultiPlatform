@@ -589,13 +589,36 @@ As the exception states, you must return a new instance of PagingSource each tim
 그래서 함수 호출 방식으로 변경
 */
     fun memoPagingStream(queryData: SearchQueryData):Flow<PagingData<MEMO_TBL>> {
+        return if (SearchQueryData.value.isEmpty() ){
+            memoFullPagingStream()
+        } else {
+            memoSearchPagingStream(queryData = SearchQueryData)
+        }
+    }
+
+
+    fun memoFullPagingStream():Flow<PagingData<MEMO_TBL>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 30,
                 enablePlaceholders =  false
             ),
             pagingSourceFactory = {
-                gisMemoDao.memoKeyedQueryPagingSource()
+             //   gisMemoDao.memoKeyedQueryPagingSource()
+                gisMemoDao.memoOffsetQueryPagingSource()
+            }
+        ).flow
+    }
+
+    fun memoSearchPagingStream(queryData: SearchQueryData):Flow<PagingData<MEMO_TBL>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 30,
+                enablePlaceholders =  false
+            ),
+            pagingSourceFactory = {
+               // gisMemoDao.memoSearchKeyedQueryPagingSource(queryData = SearchQueryData)
+                gisMemoDao.memoSearchOffsetQueryPagingSource(queryData = SearchQueryData)
             }
         ).flow
     }

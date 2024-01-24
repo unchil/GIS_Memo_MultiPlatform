@@ -3,6 +3,8 @@ package com.unchil.gismemo_multiplatform
 import coil3.PlatformContext
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
+import platform.Foundation.NSDate
+import platform.Foundation.timeIntervalSince1970
 import platform.UIKit.UIDevice
 
 class IOSPlatform: Platform {
@@ -15,6 +17,9 @@ class IOSPlatform: Platform {
         return repository
     }
 
+    override fun getCurrentTime(): Long {
+        return (NSDate().timeIntervalSince1970 * 1000).toLong()
+    }
 
 }
 

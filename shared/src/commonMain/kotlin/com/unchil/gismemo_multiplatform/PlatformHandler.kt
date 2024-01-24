@@ -9,6 +9,8 @@ object PlatformObject {
         return platform.getRepository(context)!!
     }
 
+    val currentTime:Long = platform.getCurrentTime()
+
 }
 
 

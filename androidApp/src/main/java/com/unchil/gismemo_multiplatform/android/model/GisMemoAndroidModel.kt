@@ -237,7 +237,7 @@ object MapTypeMenuData {
     }
 }
 
-
+/*
 enum class SearchOption {
     TITLE, SECRET, MARKER, TAG, DATE
 }
@@ -251,9 +251,9 @@ sealed class SearchQueryDataValue {
     data class titleOption(val title: String): SearchQueryDataValue()
 }
 
-typealias QueryData= Pair< SearchOption, SearchQueryDataValue>
+//typealias QueryData= Pair< SearchOption, SearchQueryDataValue>
 
-
+*/
 
 
 

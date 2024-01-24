@@ -11,6 +11,9 @@ class AndroidPlatform : Platform {
     override var context: Context? = null
 
     override var repository: GisMemoRepository? = null
+    override fun getCurrentTime(): Long {
+        return System.currentTimeMillis()
+    }
 
 
     override fun getRepository(context: Context): GisMemoRepository? {

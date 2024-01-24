@@ -11,6 +11,9 @@ import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
@@ -20,16 +23,15 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
 
-    /*
+
     private val _isRefreshingStateFlow: MutableStateFlow<Boolean>
         = MutableStateFlow(false)
 
     val isRefreshingStateFlow: StateFlow<Boolean>
         = _isRefreshingStateFlow.asStateFlow()
 
-     */
 
-    val memoPagingStream : Flow<PagingData<MEMO_TBL>>
+    var memoPagingStream : Flow<PagingData<MEMO_TBL>>
     private val searchQueryFlow:Flow<Event.Search>
     val eventHandler: (Event) -> Unit
 
@@ -46,8 +48,9 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
         //  2.   when (event) { is Event.Search ->   }
         searchQueryFlow = eventStateFlow
             .filterIsInstance<Event.Search>()
-            .distinctUntilChanged()
+    //        .distinctUntilChanged()
             .onStart {
+                SearchQueryData.value.clear()
                 emit( Event.Search(queryData = SearchQueryData) )
             }
 
@@ -76,6 +79,9 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
             is Event.ToRoute -> {
                 toRoute(event.navController, event.route)
             }
+            is Event.Search -> {
+                searchMemoRefresh(queryData = event.queryData)
+            }
 
             else -> {}
         }
@@ -92,9 +98,18 @@ class MemoListViewModel (val repository: GisMemoRepository) : ViewModel() {
     }
 
     private fun searchMemo(queryData: SearchQueryData): Flow<PagingData<MEMO_TBL>> {
-        return repository.memoPagingStream(queryData = SearchQueryData)
+        _isRefreshingStateFlow.value = true
+        val result = repository.memoPagingStream(queryData = SearchQueryData)
+        _isRefreshingStateFlow.value = false
+        return result
     }
 
+    private fun searchMemoRefresh(queryData: SearchQueryData) {
+        _isRefreshingStateFlow.value = true
+        memoPagingStream = repository.memoPagingStream(queryData = SearchQueryData)
+        _isRefreshingStateFlow.value = false
+
+    }
 
 
     sealed class Event {

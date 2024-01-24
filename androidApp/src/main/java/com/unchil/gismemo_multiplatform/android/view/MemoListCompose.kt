@@ -21,9 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +43,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.jetbrains.handson.kmm.shared.data.SearchQueryData
 import com.unchil.gismemo_multiplatform.PlatformObject
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
@@ -55,38 +58,64 @@ import kotlinx.coroutines.launch
 @Composable
 fun MemoListCompose(
     navController: NavHostController,
+    viewModel: MemoListViewModel,
     channel:  Channel<Int>? = null,
 ){
 
     val context = LocalContext.current
-    val isRefreshing: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = isRefreshing.value,
-        onRefresh = {
-            // Send Refresh Event
-        }
-    )
+
     val lazyListState = rememberLazyListState()
     val upButtonPadding  = remember {  mutableStateOf ( 10.dp ) }
 
-    val repository = LocalRepository.current
-    val viewModel = remember { MemoListViewModel( repository = repository ) }
+   // val repository = LocalRepository.current
+  //  val viewModel = remember { MemoListViewModel( repository = repository ) }
 
     val memoListStream = viewModel.memoPagingStream.collectAsLazyPagingItems()
 
+    val isRefreshing = viewModel.isRefreshingStateFlow.collectAsState()
+
+   // val isSearchRefreshing: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing.value,
+        onRefresh = {
+            SearchQueryData.value.clear()
+            viewModel.eventHandler(MemoListViewModel.Event.Search(SearchQueryData))
+        }
+    )
+
+
     Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .pullRefresh(state = pullRefreshState)
     ) {
 
         when (memoListStream.loadState.source.refresh) {
 
             is LoadState.Error -> {
+                /*
                 Text(
-                    "Error",
-                    modifier = Modifier.align(Alignment.Center)
+                    "Error Occurred",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center)
                 )
+
+                 */
+
+                TextButton(
+                    modifier = Modifier.align(alignment = Alignment.Center),
+                    onClick = {
+                        SearchQueryData.value.clear()
+                        viewModel.onEvent(MemoListViewModel.Event.Search(SearchQueryData))
+                    }
+                ) {
+                    Text("Error Occurred: Search ReFresh")
+                }
+
+
+
             }
             LoadState.Loading -> {
 
@@ -186,7 +215,10 @@ fun PrevMemoListCompose() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                MemoListCompose(navController = navController)
+                MemoListCompose(
+                    navController = navController,
+                    MemoListViewModel( repository = repository )
+                )
             }
         }
     }

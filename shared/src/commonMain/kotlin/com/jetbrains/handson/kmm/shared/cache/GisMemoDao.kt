@@ -5,6 +5,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.cash.sqldelight.paging3.QueryPagingSource
+import com.jetbrains.handson.kmm.shared.data.SearchQueryData
 import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
 import com.jetbrains.handson.kmm.shared.entity.LatLngAlt
 import com.jetbrains.handson.kmm.shared.entity.MEMO_FILE_TBL
@@ -12,6 +13,7 @@ import com.jetbrains.handson.kmm.shared.entity.MEMO_TAG_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TEXT_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_WEATHER_TBL
+import com.unchil.gismemo_multiplatform.PlatformObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -451,6 +453,84 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
         )
     }
 
+    internal fun memoSearchKeyedQueryPagingSource(queryData: SearchQueryData): PagingSource<Long, MEMO_TBL> {
+        var title = "% %"
+        var tagArray = listOf(10000L)
+        var secretArray  = listOf(0L,1L)
+        var markerArray = listOf(0L,1L)
+        var fromDate = 0L
+        var toDate = PlatformObject.currentTime
+
+        SearchQueryData.Types.forEach {
+            when(it){
+                SearchQueryData.Type.TITLE -> {
+                    if (SearchQueryData.value.containsKey(SearchQueryData.Type.TITLE)) {
+                        val tempTitle = SearchQueryData.value[SearchQueryData.Type.TITLE].toString()
+                        if(tempTitle.isNotEmpty()) {
+                            title = "%" + tempTitle.replace(' ','%' )  + "%"
+                        }
+                    }
+                }
+                SearchQueryData.Type.SECRET -> {
+                    if (SearchQueryData.value.containsKey(SearchQueryData.Type.SECRET)) {
+                        secretArray = listOf( SearchQueryData.value[SearchQueryData.Type.SECRET] as Long )
+                    }
+
+                }
+                SearchQueryData.Type.MARKER -> {
+                    if ( SearchQueryData.value.containsKey(SearchQueryData.Type.MARKER)){
+                        markerArray = listOf( SearchQueryData.value[SearchQueryData.Type.MARKER] as Long)
+                    }
+
+                }
+                SearchQueryData.Type.TAG -> {
+                    if (SearchQueryData.value.containsKey(SearchQueryData.Type.TAG)) {
+                        (SearchQueryData.value[SearchQueryData.Type.TAG] as List<Long>).also {
+                            tagArray = it
+                        }
+                    }
+                }
+                SearchQueryData.Type.DATE -> {
+                    if ( SearchQueryData.value.containsKey(SearchQueryData.Type.DATE)) {
+                        val tempDate = SearchQueryData.value[SearchQueryData.Type.DATE] as Pair<*, *>
+                        fromDate = (tempDate.first as Long)
+                        toDate = (tempDate.second as Long)
+                    }
+                }
+            }
+        }
+
+        return  QueryPagingSource (
+            transacter = dbQuery,
+            context = Dispatchers.IO,
+            pageBoundariesProvider = { anchor ,  limit ->
+                dbQuery.pageBoundaries_Search_MEMO_TBL(
+                    limit = limit,
+                    anchor = anchor?: 0,
+                    tagArray = tagArray,
+                    fromDate = fromDate,
+                    toDate = toDate,
+                    secretArray = secretArray,
+                    markerArray = markerArray,
+                    title = title
+                    )
+            },
+            queryProvider = { beginInclusive:Long, endExclusive ->
+                dbQuery.keyedQuery_Search_MEMO_TBL(
+                    tagArray = tagArray,
+                    fromDate = fromDate,
+                    toDate = toDate,
+                    secretArray = secretArray,
+                    markerArray = markerArray,
+                    title = title,
+                    beginInclusive = beginInclusive,
+                    endExclusive = endExclusive,
+                    ::mapMemoSelecting
+                )
+            }
+        )
+    }
+
 
     /*
     In your Pager,
@@ -483,6 +563,73 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
         )
     }
 
+    internal fun memoSearchOffsetQueryPagingSource(queryData: SearchQueryData):PagingSource<Int, MEMO_TBL> {
+        var title = "% %"
+        var tagArray = listOf(10000L)
+        var secretArray  = listOf(0L,1L)
+        var markerArray = listOf(0L,1L)
+        var fromDate = 0L
+        var toDate = PlatformObject.currentTime
+
+        SearchQueryData.Types.forEach {
+            when(it){
+                SearchQueryData.Type.TITLE -> {
+                    if (SearchQueryData.value.containsKey(SearchQueryData.Type.TITLE)) {
+                        val tempTitle = SearchQueryData.value[SearchQueryData.Type.TITLE].toString()
+                        title = "%" + tempTitle.replace(' ','%' )  + "%"
+                    }
+                }
+                SearchQueryData.Type.SECRET -> {
+                    if (SearchQueryData.value.containsKey(SearchQueryData.Type.SECRET)) {
+                        val secretIndex = SearchQueryData.value[SearchQueryData.Type.SECRET] as Long
+                        secretArray =  if(secretIndex == 0L) listOf(1L) else listOf(0L)
+                    }
+                }
+                SearchQueryData.Type.MARKER -> {
+                    if ( SearchQueryData.value.containsKey(SearchQueryData.Type.MARKER)){
+                        val markerIndex = SearchQueryData.value[SearchQueryData.Type.MARKER] as Long
+                        markerArray = if(markerIndex == 0L) listOf(1L) else listOf(0L)
+                    }
+
+                }
+                SearchQueryData.Type.TAG -> {
+                    if (SearchQueryData.value.containsKey(SearchQueryData.Type.TAG)) {
+                        tagArray = SearchQueryData.value[SearchQueryData.Type.TAG] as List<Long>
+                    }
+                }
+                SearchQueryData.Type.DATE -> {
+                    if ( SearchQueryData.value.containsKey(SearchQueryData.Type.DATE)) {
+                        val tempDate = SearchQueryData.value[SearchQueryData.Type.DATE] as Pair<Long, Long>
+                        fromDate = tempDate.first
+                        toDate = tempDate.second
+                    }
+                }
+            }
+        }
+
+        return QueryPagingSource(
+            countQuery = dbQuery.count_MEMO_TBL_Search(
+                tagArray = tagArray,
+                fromDate = fromDate,
+                toDate = toDate,
+                secretArray = secretArray,
+                markerArray = markerArray,
+                title = title
+            ),
+            transacter = dbQuery,
+            context = Dispatchers.IO,
+            queryProvider = { limit, offset ->
+                dbQuery.paging_MEMO_TBL_Search(
+                    tagArray = tagArray,
+                    fromDate = fromDate,
+                    toDate = toDate,
+                    secretArray = secretArray,
+                    markerArray = markerArray,
+                    title = title,
+                    limit, offset, ::mapMemoSelecting)
+            }
+        )
+    }
 
 
 

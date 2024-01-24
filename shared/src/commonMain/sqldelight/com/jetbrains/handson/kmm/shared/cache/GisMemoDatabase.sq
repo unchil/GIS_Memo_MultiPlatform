@@ -115,31 +115,55 @@ SELECT * FROM MEMO_TABLE WHERE id  > 0;
 select_MEMO_TBL_Marker:
 SELECT * FROM MEMO_TABLE  WHERE  id  > 0 AND isPin = 1;
 
-select_MEMO_TBL_Search:
-SELECT D.*
-        FROM
-        (
-           SELECT A.id
-            FROM MEMO_TABLE A, MEMO_TAG_TABLE B
-            WHERE A.id = B.id
-            AND B.indexR IN ?
-            GROUP BY A.id
-        ) C , MEMO_TABLE  D
-        WHERE D.id = C.id
-        AND D.id  BETWEEN  ? AND ?
-        AND D.isSecret IN ?
-        AND D.isPin IN ?
-        AND D.title LIKE ?;
-
-
 
 countMEMO_TBL:
 SELECT count(id) FROM MEMO_TABLE;
+
+
 
 pagingMEMO_TBL:
 SELECT * FROM MEMO_TABLE
   WHERE id > 0
 LIMIT: limit OFFSET :offset;
+
+count_MEMO_TBL_Search:
+SELECT count(id) FROM (
+                          SELECT D.*
+                                  FROM
+                                  (
+                                     SELECT A.id
+                                      FROM MEMO_TABLE A, MEMO_TAG_TABLE B
+                                      WHERE A.id = B.id
+                                      AND B.indexR IN :tagArray
+                                      GROUP BY A.id
+                                  ) C , MEMO_TABLE  D
+                                  WHERE D.id = C.id
+                                  AND D.id >= :fromDate AND D.id <= :toDate
+                                  AND D.isSecret IN :secretArray
+                                  AND D.isPin IN :markerArray
+                                  AND D.title LIKE (:title)
+                      );
+
+
+paging_MEMO_TBL_Search:
+SELECT * FROM (
+                  SELECT D.*
+                          FROM
+                          (
+                             SELECT A.id
+                              FROM MEMO_TABLE A, MEMO_TAG_TABLE B
+                              WHERE A.id = B.id
+                              AND B.indexR IN :tagArray
+                              GROUP BY A.id
+                          ) C , MEMO_TABLE  D
+                          WHERE D.id = C.id
+                          AND D.id >= :fromDate AND D.id <= :toDate
+                          AND D.isSecret IN :secretArray
+                          AND D.isPin IN :markerArray
+                          AND D.title LIKE (:title)
+              )
+LIMIT: limit OFFSET :offset;
+
 
 
 keyedQuery_MEMO_TBL:
@@ -162,7 +186,72 @@ FROM (
 WHERE page_boundary = 1;
 
 
+select_MEMO_TBL_Search:
+SELECT D.*
+        FROM
+        (
+           SELECT A.id
+            FROM MEMO_TABLE A, MEMO_TAG_TABLE B
+            WHERE A.id = B.id
+            AND B.indexR IN :tagArray
+            GROUP BY A.id
+        ) C , MEMO_TABLE  D
+        WHERE D.id = C.id
+        AND D.id  BETWEEN  :fromDate AND :toDate
+        AND D.isSecret IN :secretArray
+        AND D.isPin IN :markerArray
+        AND D.title LIKE (:title);
 
+
+keyedQuery_Search_MEMO_TBL:
+SELECT *
+FROM (
+    SELECT D.*
+            FROM
+            (
+               SELECT A.id
+                FROM MEMO_TABLE A, MEMO_TAG_TABLE B
+                WHERE A.id = B.id
+                AND B.indexR IN :tagArray
+                GROUP BY A.id
+            ) C , MEMO_TABLE  D
+            WHERE D.id = C.id
+            AND D.id >= :fromDate AND D.id <= :toDate
+            AND D.isSecret IN :secretArray
+            AND D.isPin IN :markerArray
+            AND D.title LIKE (:title)
+)
+WHERE
+id >= :beginInclusive AND (id < :endExclusive OR :endExclusive IS NULL);
+
+pageBoundaries_Search_MEMO_TBL:
+SELECT id
+FROM (
+  SELECT
+    id,
+    CASE
+      WHEN  ( ( rownum - 1) % :limit  )  = 0 THEN 1
+      WHEN id = :anchor THEN 1
+      ELSE 0
+    END page_boundary
+  FROM (
+      SELECT rowid rownum , D.*
+              FROM
+              (
+                 SELECT A.id
+                  FROM MEMO_TABLE A, MEMO_TAG_TABLE B
+                  WHERE A.id = B.id
+                  AND B.indexR IN :tagArray
+                  GROUP BY A.id
+              ) C , MEMO_TABLE  D
+              WHERE D.id = C.id
+              AND D.id >= :fromDate AND D.id <= :toDate
+              AND D.isSecret IN :secretArray
+              AND D.isPin IN :markerArray
+              AND D.title LIKE (:title)
+  )
+)
+WHERE page_boundary = 1;
 
 
 select_MEMO_TBL_ID:
