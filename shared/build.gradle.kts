@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.skieGradle)
 }
 
 kotlin {
@@ -32,19 +31,10 @@ kotlin {
         commonMain {
             dependencies {
 
-              //  implementation(libs.gradle.plugin.loader)
-
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.datetime)
-                implementation(libs.paging.common)
-
-
-
                 implementation(libs.sqldelight.runtime)
                 implementation(libs.sqldelight.android.paging3.extensions)
                 implementation(libs.sqldelight.primitive.adapters)
                 implementation(libs.sqldelight.coroutines.extensions)
-
 
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.cio)
@@ -68,20 +58,13 @@ kotlin {
 
         androidMain {
             dependencies {
-
                 implementation(libs.sqldelight.android.driver)
-
                 implementation(libs.paging.compose.common)
-
                 implementation(libs.ktor.client.okhttp)
-           //     implementation(libs.ktor.client.android)
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.coil.core.android)
                 implementation(libs.coil.compose.core.android)
                 implementation(libs.coil.network)
-
-            //    implementation(libs.compose.material3)
-
             }
         }
 
@@ -89,7 +72,6 @@ kotlin {
             dependencies {
                 implementation(libs.sqldelight.native.driver)
                 implementation(libs.paging.runtime.uikit)
-
                 implementation(libs.ktor.client.darwin)
 
             }

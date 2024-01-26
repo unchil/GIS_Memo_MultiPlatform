@@ -1,7 +1,7 @@
 [versions]
 accompanistNavigationAnimation = "0.31.2-alpha"
 accompanistPermissions = "0.31.0-alpha"
-agp = "8.2.1"
+agp = "8.2.2"
 androidMapsUtils = "3.5.2"
 animation = "1.6.0-beta03"
 biometric = "1.2.0-alpha05"
@@ -11,9 +11,9 @@ coilNetwork = "3.0.0-alpha01"
 coroutinesPlugInVersion = "1.9.22"
 coroutinesVersion = "1.7.3"
 dateTimeVersion = "0.4.1"
-foundationLayout = "1.6.0-beta03"
-gradle = "8.2.1"
-gradlePluginLoader = "0.6.1"
+foundationLayout = "1.6.0"
+gradle = "8.2.2"
+#gradlePluginLoader = "0.6.1"
 
 kotlin = "1.9.21"
 compose = "1.5.4"
@@ -76,7 +76,7 @@ coil-core-android = { module = "io.coil-kt.coil3:coil-core-android", version.ref
 
 coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coilNetwork" }
 coil-compose-core-android = { module = "io.coil-kt.coil3:coil-compose-core-android", version.ref = "coilNetwork" }
-gradle-plugin-loader = { module = "co.touchlab.skie:gradle-plugin-loader", version.ref = "gradlePluginLoader" }
+#gradle-plugin-loader = { module = "co.touchlab.skie:gradle-plugin-loader", version.ref = "gradlePluginLoader" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
@@ -162,6 +162,6 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelightVersion" }
 secretsGradle = { id ="com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
-skieGradle = { id = "co.touchlab.skie", version.ref = "gradlePluginLoader"}
+#skieGradle = { id = "co.touchlab.skie", version.ref = "gradlePluginLoader"}
 
 

@@ -6,9 +6,6 @@ pluginManagement {
         mavenCentral()
 
         maven {
-            url = uri("https://github.com/touchlab/SKIE/releases")
-        }
-        maven {
             url = uri("https://androidx.dev/storage/compose-compiler/repository/")
         }
 
@@ -17,16 +14,12 @@ pluginManagement {
 
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
-
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+ //   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
     repositories {
         google()
         mavenCentral()
 
-        maven {
-            url = uri("https://github.com/touchlab/SKIE/releases")
-        }
         maven {
             url = uri("https://androidx.dev/storage/compose-compiler/repository/")
         }
