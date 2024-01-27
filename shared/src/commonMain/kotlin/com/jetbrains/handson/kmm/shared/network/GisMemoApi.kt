@@ -16,7 +16,7 @@ import kotlinx.serialization.json.Json
 
 class GisMemoApi {
 
-    private val httpClient = HttpClient(CIO) {
+    private val httpClient = HttpClient() {
 
         install(ContentNegotiation) {
             json(Json {

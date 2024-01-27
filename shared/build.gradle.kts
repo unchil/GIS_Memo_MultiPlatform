@@ -31,6 +31,8 @@ kotlin {
         commonMain {
             dependencies {
 
+                implementation(libs.kotlinx.coroutines.core)
+
                 implementation(libs.sqldelight.runtime)
                 implementation(libs.sqldelight.android.paging3.extensions)
                 implementation(libs.sqldelight.primitive.adapters)

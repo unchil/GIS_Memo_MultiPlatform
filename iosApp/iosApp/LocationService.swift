@@ -28,7 +28,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
 
     func getCurrentLocation( completion: @escaping (CLLocation) -> ()?)  {
 
-        let sleepTime:TimeInterval = 0.1
+        let sleepTime:TimeInterval = 0.5
         var location:CLLocation?
 
         while( location == nil ) {
@@ -40,31 +40,26 @@ class LocationService: NSObject, CLLocationManagerDelegate {
 
 
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-
         self.authStatus = status
-        
         switch status {
             case .notDetermined, .restricted, .denied:
-                return
+                self.cLLocationManager.requestWhenInUseAuthorization()
             case .authorizedAlways, .authorizedWhenInUse: do {
                 self.cLLocationManager.startUpdatingLocation()
             }
             @unknown default:
                 self.cLLocationManager.requestWhenInUseAuthorization()
         }
-
-    //    print(#function, status.name)
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
+        print(#function, "latitude: " + (locations.last?.coordinate.latitude.description ?? "" +
+                         ", longitude: " + (locations.last?.coordinate.longitude.description ?? "")))
+
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-    //    print(#function, error.localizedDescription)
+     //  print(#function, error.localizedDescription)
     }
-
-
-
 }
 

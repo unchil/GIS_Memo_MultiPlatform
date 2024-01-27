@@ -8,16 +8,7 @@
 
 import Foundation
 import shared
-
-
-/*
-enum AsyncWeatherInfoState {
-    case loading
-    case empty
-    case success(CURRENTWEATHER_TBL)
-    case error(String)
-}
- */
+import CoreLocation
 
 
 @MainActor
@@ -28,65 +19,60 @@ class MainViewModel: ObservableObject {
     let OpenWeatherSdkApiKey = "OpenWeatherSdkApiKey"
     let units = "metric"
     
-    @Published var weather:AsyncWeatherInfoState?
+    @Published var weather:AsyncWeatherInfoState = AsyncWeatherInfoState.Empty()
 
-    
     init(repository: GisMemoRepository) {
         self.repository = repository
-        self.connectWeatherInfoStream()
-    
+        self.setWeatherInfo()
+        self.connectStream()
     }
     
-    func connectWeatherInfoStream(){
+    private func setWeatherInfo() {
         Task{
-            do{
-                try await repository.setWeatherInfo()
-            }catch{
-                print(#function, error.localizedDescription)
-            }
-        }
-
-        Task {
             do {
- 
-                try await repository._currentWeatherStateFlow.collect(
-                collector:Collector<AsyncWeatherInfoState> { value in
-                    self.weather = value
-                })
-       
-
-                
+                try await repository.setWeatherInfo()
             } catch {
-              print("currentWeatherStateFlow", error )
+                print(#function, error.localizedDescription )
             }
         }
-
-
     }
     
+    private func connectStream() {
+        Task{
+            do {
+                try await repository._currentWeatherStateFlow.collect(
+                    collector:Collector<AsyncWeatherInfoState> { value in
+                        DispatchQueue.main.async {
+                            self.weather = value
+                        }
+                    })
+            } catch {
+                print(#function, error.localizedDescription )
+            }
+        }
+    }
     
     func getCurrentWeather()  {
-        switch self.locationService.authStatus {
-            case .notDetermined, .restricted, .denied: do {}
-            case .authorizedAlways, .authorizedWhenInUse: do {
-                self.locationService.getCurrentLocation { location in
-                    Task{
-                        do{
-                            try await self.repository.getWeatherData(
-                                lat: location.coordinate.latitude.description,
-                                lon: location.coordinate.longitude.description,
-                                appid: self.OpenWeatherSdkApiKey,
-                                units: self.units)
-                        }catch {
-                            print(#function, error.localizedDescription)
-                        }
+        if(self.locationService.authStatus == CLAuthorizationStatus.authorizedAlways
+           || self.locationService.authStatus == CLAuthorizationStatus.authorizedWhenInUse){
+            self.locationService.getCurrentLocation { location in
+                Task{
+                    do{
+                        try await self.repository.getWeatherData(
+                            lat: location.coordinate.latitude.description,
+                            lon: location.coordinate.longitude.description,
+                            appid: self.OpenWeatherSdkApiKey,
+                            units: self.units)
+                        
+                    }catch {
+                        print(#function, error.localizedDescription)
                     }
-                }}
-            @unknown default: do {}
+                }
+            }
         }
     }
     
-    
+
     
     
     
