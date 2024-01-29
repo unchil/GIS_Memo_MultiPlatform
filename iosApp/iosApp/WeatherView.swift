@@ -18,6 +18,9 @@ struct WeatherView: View {
     var body: some View {
         
         Text(self.weatherInfo)
+            .task {
+                await viewModel.setWeatherInfo()
+            }
             .onAppear{
                 viewModel.getCurrentWeather()
             }.onChange(of: viewModel.weather){
