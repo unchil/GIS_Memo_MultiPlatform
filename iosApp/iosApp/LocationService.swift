@@ -53,8 +53,8 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print(#function, "latitude: " + (locations.last?.coordinate.latitude.description ?? "" +
-                         ", longitude: " + (locations.last?.coordinate.longitude.description ?? "")))
+        print(#function, "latitude:", (locations.last?.coordinate.latitude.description ?? "" ), 
+               ", longitude:", (locations.last?.coordinate.longitude.description ?? "")  )
 
     }
 
