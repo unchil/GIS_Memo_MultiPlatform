@@ -61,7 +61,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.unchil.gismemo_multiplatform.PlatformObject
+import com.jetbrains.handson.kmm.shared.getPlatform
 import com.unchil.gismemo_multiplatform.android.LocalChangeLocale
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.LocalUsableDarkMode
@@ -497,7 +497,7 @@ fun PrevSettingsView(){
     val permissionsManager = PermissionsManager()
     val navController = rememberNavController()
     val context = LocalContext.current
-    val repository = PlatformObject.getRepository(context)
+    val repository = getPlatform().getRepository(context)!!
     CompositionLocalProvider(
         LocalPermissionsManager provides permissionsManager,
         LocalRepository provides repository

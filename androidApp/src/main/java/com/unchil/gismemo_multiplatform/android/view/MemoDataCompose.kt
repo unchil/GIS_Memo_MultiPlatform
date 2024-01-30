@@ -56,7 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import coil3.size.Size
 import com.jetbrains.handson.kmm.shared.data.WriteMemoData
-import com.unchil.gismemo_multiplatform.PlatformObject
+import com.jetbrains.handson.kmm.shared.getPlatform
 import com.unchil.gismemo_multiplatform.android.LocalRepository
 import com.unchil.gismemo_multiplatform.android.LocalUsableHaptic
 import com.unchil.gismemo_multiplatform.android.common.LocalPermissionsManager
@@ -797,7 +797,7 @@ fun PrevMemoDataCompose(){
     val context = LocalContext.current
     val permissionsManager = PermissionsManager()
     val navController = rememberNavController()
-    val repository = PlatformObject.getRepository(context)
+    val repository = getPlatform().getRepository(context)!!
     CompositionLocalProvider(
         LocalPermissionsManager provides permissionsManager,
         LocalRepository provides repository

@@ -1,7 +1,6 @@
-package com.unchil.gismemo_multiplatform
+package com.jetbrains.handson.kmm.shared
 
 import coil3.PlatformContext
-import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 import platform.Foundation.NSDate
 import platform.Foundation.timeIntervalSince1970
@@ -13,7 +12,7 @@ class IOSPlatform: Platform {
     override val repository: GisMemoRepository
         get() = GisMemoRepository( DatabaseDriverFactory() )
 
-    override fun getRepository(context: PlatformContext): GisMemoRepository {
+    override fun getRepository(context: PlatformContext?): GisMemoRepository {
         return repository
     }
 

@@ -13,21 +13,24 @@ import shared
 struct WeatherView: View {
     
     @ObservedObject private(set) var viewModel: MainViewModel
-    @State var weatherInfo:String = /*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/
+    @State var weatherInfo:String = "Beautiful, World!"
     
     var body: some View {
         
         Text(self.weatherInfo)
-            .task {
-                await viewModel.setWeatherInfo()
+        .task {
+            await viewModel.setWeatherInfo()
+        }
+        .onAppear{
+            self.weatherInfo = viewModel.systemName
+            self.viewModel.getCurrentWeather()
+        }.onChange(of: viewModel.weather){
+            
+            if let result = viewModel.weather as? AsyncWeatherInfoState.Success{
+                self.weatherInfo = result.data.description()
             }
-            .onAppear{
-                viewModel.getCurrentWeather()
-            }.onChange(of: viewModel.weather){
-                if let result = viewModel.weather as? AsyncWeatherInfoState.Success{
-                    self.weatherInfo = result.data.description()
-                }
-            }
+            
+        }
     }
 }
 

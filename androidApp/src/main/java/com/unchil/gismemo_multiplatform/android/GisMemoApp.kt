@@ -9,13 +9,15 @@ import coil3.fetch.NetworkFetcher
 import coil3.memory.MemoryCache
 import coil3.util.DebugLogger
 import com.jetbrains.handson.kmm.shared.GisMemoRepository
-import com.unchil.gismemo_multiplatform.PlatformObject
+import com.jetbrains.handson.kmm.shared.getPlatform
+
 
 class GisMemoApp: Application(), SingletonImageLoader.Factory {
 
     override fun onCreate() {
         super.onCreate()
-        repository = PlatformObject.getRepository(applicationContext)
+
+        repository = getPlatform().getRepository(applicationContext)
     }
     companion object {
         var repository:GisMemoRepository? = null

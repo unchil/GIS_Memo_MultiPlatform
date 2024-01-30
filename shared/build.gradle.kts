@@ -49,6 +49,13 @@ kotlin {
                 implementation(libs.coil.compose.core)
                 implementation(libs.coil.network)
 
+                implementation("co.touchlab:stately-common:2.0.6")
+                implementation("co.touchlab:stately-isolate:2.0.6")
+                implementation("co.touchlab:stately-iso-collections:2.0.6")
+
+                implementation(libs.paging.common)
+                implementation(libs.paging.compose.common)
+
 
             }
         }
@@ -61,7 +68,7 @@ kotlin {
         androidMain {
             dependencies {
                 implementation(libs.sqldelight.android.driver)
-                implementation(libs.paging.compose.common)
+
                 implementation(libs.ktor.client.okhttp)
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.coil.core.android)

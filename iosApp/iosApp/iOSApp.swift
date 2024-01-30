@@ -4,11 +4,11 @@ import shared
 @main
 struct iOSApp: App {
 
-    let repository = GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory())
+    let repository = PlatformObject().platform.getRepository(context: nil)
     
 	var body: some Scene {
 		WindowGroup {
-            WeatherView(viewModel: .init(repository: repository))
+            WeatherView(viewModel: .init(repository: repository!))
 		}
 	}
 }

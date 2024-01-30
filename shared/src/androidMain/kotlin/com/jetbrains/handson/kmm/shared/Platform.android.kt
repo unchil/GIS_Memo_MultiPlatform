@@ -1,8 +1,6 @@
-package com.unchil.gismemo_multiplatform
+package com.jetbrains.handson.kmm.shared
 
 import android.content.Context
-import coil3.PlatformContext
-import com.jetbrains.handson.kmm.shared.GisMemoRepository
 import com.jetbrains.handson.kmm.shared.cache.DatabaseDriverFactory
 
 class AndroidPlatform : Platform {
@@ -16,11 +14,13 @@ class AndroidPlatform : Platform {
     }
 
 
-    override fun getRepository(context: Context): GisMemoRepository? {
+    override fun getRepository(context: Context?): GisMemoRepository? {
          if(repository != null){
             repository
         }else {
-            repository = GisMemoRepository( DatabaseDriverFactory(context) )
+             context?.let {
+                 repository = GisMemoRepository( DatabaseDriverFactory(it) )
+             }
         }
         return repository
     }

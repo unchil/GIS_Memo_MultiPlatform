@@ -13,7 +13,7 @@ import com.jetbrains.handson.kmm.shared.entity.MEMO_TAG_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_TEXT_TBL
 import com.jetbrains.handson.kmm.shared.entity.MEMO_WEATHER_TBL
-import com.unchil.gismemo_multiplatform.PlatformObject
+import com.jetbrains.handson.kmm.shared.getPlatform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -459,7 +459,7 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
         var secretArray  = listOf(0L,1L)
         var markerArray = listOf(0L,1L)
         var fromDate = 0L
-        var toDate = PlatformObject.currentTime
+        var toDate = getPlatform().getCurrentTime()
 
         SearchQueryData.Types.forEach {
             when(it){
@@ -569,7 +569,7 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
         var secretArray  = listOf(0L,1L)
         var markerArray = listOf(0L,1L)
         var fromDate = 0L
-        var toDate = PlatformObject.currentTime
+        var toDate = getPlatform().getCurrentTime()
 
         SearchQueryData.Types.forEach {
             when(it){

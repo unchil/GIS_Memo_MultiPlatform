@@ -9,6 +9,7 @@
 import Foundation
 import shared
 import CoreLocation
+import UIKit
 
 
 @MainActor
@@ -19,6 +20,11 @@ class MainViewModel: ObservableObject {
     let OpenWeatherSdkApiKey = "OpenWeatherSdkApiKey"
     let units = "metric"
     var getWeatherInfoTask:Task<Void, Never>?
+    
+
+    let currentTime = PlatformObject().platform.getCurrentTime()
+    let systemName =  PlatformObject().platform.name
+    
     
     @Published var weather:AsyncWeatherInfoState = AsyncWeatherInfoState.Empty()
 
