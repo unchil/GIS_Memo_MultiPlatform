@@ -4,11 +4,13 @@ import shared
 @main
 struct iOSApp: App {
 
-    let repository = PlatformObject().platform.getRepository(context: nil)
+
+    
+    let repository = IOSPlatform().getRepository(context: nil)
     
 	var body: some Scene {
 		WindowGroup {
-            WeatherView(viewModel: .init(repository: repository!))
+            WeatherView(viewModel: .init(repository: repository))
 		}
 	}
 }
