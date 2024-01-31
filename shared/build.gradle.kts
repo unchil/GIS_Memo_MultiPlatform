@@ -74,6 +74,7 @@ kotlin {
                 implementation(libs.coil.core.android)
                 implementation(libs.coil.compose.core.android)
                 implementation(libs.coil.network)
+
             }
         }
 
@@ -82,6 +83,8 @@ kotlin {
                 implementation(libs.sqldelight.native.driver)
                 implementation(libs.paging.runtime.uikit)
                 implementation(libs.ktor.client.darwin)
+
+                implementation(libs.androidx.recyclerview)
 
             }
         }
@@ -99,8 +102,6 @@ android {
 
     }
 }
-
-
 
 
 

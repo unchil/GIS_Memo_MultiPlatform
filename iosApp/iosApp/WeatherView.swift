@@ -22,7 +22,6 @@ struct WeatherView: View {
             await viewModel.setWeatherInfo()
         }
         .onAppear{
-            self.weatherInfo = viewModel.systemName
             self.viewModel.getCurrentWeather()
         }.onChange(of: viewModel.weather){
             

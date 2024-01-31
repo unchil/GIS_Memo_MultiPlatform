@@ -22,9 +22,7 @@ class MainViewModel: ObservableObject {
     var getWeatherInfoTask:Task<Void, Never>?
     
 
-    let currentTime = PlatformObject().platform.getCurrentTime()
-    let systemName =  PlatformObject().platform.name
-    
+
     
     @Published var weather:AsyncWeatherInfoState = AsyncWeatherInfoState.Empty()
 

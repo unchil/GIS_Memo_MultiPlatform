@@ -20,6 +20,8 @@ class IOSPlatform: Platform {
         return (NSDate().timeIntervalSince1970 * 1000).toLong()
     }
 
+
+
 }
 
 actual fun getPlatform(): Platform = IOSPlatform()
