@@ -20,7 +20,50 @@ class Collector<T> : Kotlinx_coroutines_coreFlowCollector {
         callback(value as! T)
         completionHandler(nil)
     }
- 
+
 }
 
 
+class PagingDataCollector_MEMO_TBL: Kotlinx_coroutines_coreFlowCollector {
+    
+    private let pagingCollectionViewController: PagingCollectionViewController<MEMO_TBL>
+     
+     init(pagingCollectionViewController: PagingCollectionViewController<MEMO_TBL>) {
+       self.pagingCollectionViewController = pagingCollectionViewController
+     }
+     
+     func emit(value: Any?, completionHandler: @escaping (Error?) -> Void) {
+       let pagingData = value as! Paging_commonPagingData<MEMO_TBL>
+       DispatchQueue.main.async {
+         self.pagingCollectionViewController.submitData(
+            pagingData: pagingData, 
+            completionHandler: {_ in
+                print("completed PagingDataCollector")
+            }
+         )
+       }
+     }
+}
+
+/*
+ class ViewModelCollector: Kotlinx_coroutines_coreFlowCollector {
+   
+   private let pagingCollectionViewController: Paging_runtime_uikitPagingCollectionViewController<Repository>
+   
+   init(pagingCollectionViewController: Paging_runtime_uikitPagingCollectionViewController<Repository>) {
+     self.pagingCollectionViewController = pagingCollectionViewController
+   }
+   
+   func emit(value: Any?, completionHandler: @escaping (Error?) -> Void) {
+     switch (value as! ViewModel) {
+       case is ViewModelSearchResults:
+         let viewModel = value as! ViewModelSearchResults
+         DispatchQueue.main.async {
+           viewModel.repositories.collect(collector: PagingDataCollector(pagingCollectionViewController: self.pagingCollectionViewController), completionHandler: {_ in print("completed ViewModelCollector")})
+         }
+       default:
+         print("Unsupported ViewModel:", value)
+     }
+   }
+ }
+ */
