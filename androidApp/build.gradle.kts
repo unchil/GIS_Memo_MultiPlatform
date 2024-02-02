@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.androidApplication)
@@ -8,6 +10,7 @@ plugins {
 android {
     namespace = "com.unchil.gismemo_multiplatform.android"
     compileSdk = 34
+
     defaultConfig {
         applicationId = "com.unchil.gismemo_multiplatform.android"
         minSdk = 33
@@ -15,9 +18,21 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+
+
+
         buildConfigField("String", "MAPS_API_KEY", getApiKey("MAPS_API_KEY"))
         buildConfigField("String", "OPENWEATHER_KEY", getApiKey("OPENWEATHER_KEY"))
+
+        "providers" to listOf(
+            // Replace with your actual test runner provider(s)
+            "androidx.test.runner.AndroidJUnitRunner"
+        )
+
     }
+    
+    
+    
     buildFeatures {
         compose = true
         buildConfig = true
@@ -127,5 +142,5 @@ dependencies {
 }
 
 fun getApiKey(propertyKey: String):String {
-    return com.android.build.gradle.internal.cxx.configure.gradleLocalProperties(rootDir).getProperty(propertyKey)
+    return gradleLocalProperties(rootDir, providers).getProperty(propertyKey)
 }
