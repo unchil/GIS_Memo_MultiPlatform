@@ -72,8 +72,6 @@ val LocalUsableDarkMode = compositionLocalOf{ false }
 val LocalUsableDynamicColor = compositionLocalOf{ false }
 val LocalRepository = compositionLocalOf<GisMemoRepository> { error("No GisMemoRepository found!") }
 
-
-
 class MainActivity : ComponentActivity() {
 
     private val permissionsManager = PermissionsManager()
