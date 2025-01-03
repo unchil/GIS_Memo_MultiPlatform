@@ -53,7 +53,7 @@ kotlin {
                 implementation("co.touchlab:stately-isolate:2.0.6")
                 implementation("co.touchlab:stately-iso-collections:2.0.6")
 
-                implementation(libs.paging.common)
+             //   implementation(libs.paging.common)
                 implementation(libs.paging.compose.common)
 
 

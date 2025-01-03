@@ -16,7 +16,7 @@ import platform.UIKit.UICollectionView
 import platform.darwin.NSInteger
 
 // Making abstract causes the compilation error "Non-final Kotlin subclasses of Objective-C classes are not yet supported".
-class PagingCollectionViewController<MEMO_TBL : Any> {
+class PagingCollectionViewController< MEMO_TBL : Any> {
 
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     private val workerDispatcher: CoroutineDispatcher = Dispatchers.Default

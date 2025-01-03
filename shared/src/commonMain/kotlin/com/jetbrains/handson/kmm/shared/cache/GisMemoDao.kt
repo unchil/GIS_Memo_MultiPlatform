@@ -531,7 +531,6 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
         )
     }
 
-
     /*
     In your Pager,
     you are providing a lambda which returns the same instance of PagingSource
@@ -550,7 +549,6 @@ internal class GisMemoDao(databaseDriverFactory: DatabaseDriverFactory) {
          )
 
      */
-
 
     internal fun memoOffsetQueryPagingSource():PagingSource<Int, MEMO_TBL> {
         return QueryPagingSource(
