@@ -23,7 +23,7 @@ class Collector<T> : Kotlinx_coroutines_coreFlowCollector {
 
 }
 
-
+/*
 class PagingDataCollector_MEMO_TBL<MEMO_TBL>: Kotlinx_coroutines_coreFlowCollector {
 
 
@@ -50,6 +50,8 @@ class PagingDataCollector_MEMO_TBL<MEMO_TBL>: Kotlinx_coroutines_coreFlowCollect
        }
      }
 }
+
+ */
 
 /*
  class ViewModelCollector: Kotlinx_coroutines_coreFlowCollector {

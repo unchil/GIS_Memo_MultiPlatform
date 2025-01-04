@@ -28,5 +28,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "GIS_Memo_MultiPlatform"
-include("androidApp")
-include("shared")
+include(":androidApp")
+include(":shared")

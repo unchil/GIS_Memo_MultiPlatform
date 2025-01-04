@@ -31,10 +31,14 @@ ktorVersion = "2.3.7"
 mapsCompose = "2.11.2"
 v_ComposeMaterial = "1.6.0-beta03"
 navigationCompose = "2.7.6"
-pagingCommon = "3.3.0-alpha02-0.4.0"
-pagingRuntime = "3.3.5"
-#pagingCommon = "3.1.1-0.3.1"
-#pagingRuntime = "3.1.1"
+# The versioning scheme is of the form X-Y where:
+#X is the AndroidX Paging version that is being tracked.
+#Y is the Multiplatform Paging version.
+pagingAndroidX = "3.3.0-alpha02"
+pagingMultiplatform = "3.3.0-alpha02-0.5.1"
+
+
+
 playServicesLocation = "21.0.1"
 playServicesMaps = "18.2.0"
 v_ComposeRuntime = "1.6.0-beta03"
@@ -139,13 +143,17 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorVersion" }
 
 #Paging
-androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingRuntime" }
-androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingRuntime" }
-androidx-paging-rxjava3 = { module = "androidx.paging:paging-rxjava3", version.ref = "pagingRuntime" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingAndroidX" }
+androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingAndroidX" }
+androidx-paging-rxjava3 = { module = "androidx.paging:paging-rxjava3", version.ref = "pagingAndroidX" }
 
-paging-common = { module = "app.cash.paging:paging-common", version.ref = "pagingCommon" }
-paging-compose-common = { module = "app.cash.paging:paging-compose-common", version.ref = "pagingCommon" }
-paging-runtime-uikit = { module = "app.cash.paging:paging-runtime-uikit", version.ref = "pagingCommon" }
+paging-common = { module = "app.cash.paging:paging-common", version.ref = "pagingMultiplatform" }
+paging-compose-common = { module = "app.cash.paging:paging-compose-common", version.ref = "pagingMultiplatform" }
+paging-runtime-uikit = { module = "app.cash.paging:paging-runtime-uikit", version.ref = "pagingMultiplatform" }
+
+
+
+
 
 kotlin-multiplatform-plugin = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "v_kotlinMultiplatform"}
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
