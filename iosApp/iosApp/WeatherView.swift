@@ -13,23 +13,21 @@ import shared
 struct WeatherView: View {
     
     @ObservedObject private(set) var viewModel: MainViewModel
-    @State var weatherInfo:String = "Beautiful, World!"
-    
+
     var body: some View {
-        
-        Text(self.weatherInfo)
-        .task {
-            await viewModel.setWeatherInfo()
-        }
-        .onAppear{
-            self.viewModel.getCurrentWeather()
-        }.onChange(of: viewModel.weather){
-            
-            if let result = viewModel.weather as? AsyncWeatherInfoState.Success{
-                self.weatherInfo = result.data.description()
-            }
-            
+        TestView()
+    }
+    
+    private func TestView() ->AnyView{
+        switch viewModel.weather {
+        case .loading:
+            return AnyView(Text("Loading...").multilineTextAlignment(.center))
+        case .error(let description):
+            return AnyView(Text(description).multilineTextAlignment(.center))
+        case .result(let weather):
+            return AnyView(Text(weather).multilineTextAlignment(.center))
         }
     }
+    
 }
 

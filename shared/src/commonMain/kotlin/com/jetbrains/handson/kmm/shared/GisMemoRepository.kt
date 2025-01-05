@@ -1,5 +1,6 @@
 package com.jetbrains.handson.kmm.shared
 
+import androidx.compose.runtime.MutableState
 import app.cash.paging.Pager
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
@@ -9,6 +10,7 @@ import com.jetbrains.handson.kmm.shared.data.SearchQueryData
 import com.jetbrains.handson.kmm.shared.data.WriteMemoData
 import com.jetbrains.handson.kmm.shared.entity.AsyncWeatherInfoState
 import com.jetbrains.handson.kmm.shared.entity.CURRENTLOCATION_TBL
+import com.jetbrains.handson.kmm.shared.entity.CURRENTWEATHER_TBL
 import com.jetbrains.handson.kmm.shared.entity.DrawingPolyline
 import com.jetbrains.handson.kmm.shared.entity.LatLngAlt
 import com.jetbrains.handson.kmm.shared.entity.MEMO_FILE_TBL
@@ -33,6 +35,8 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
 
     val currentSelectedTab: MutableStateFlow<WriteMemoData.Type?>
             = MutableStateFlow(null)
+
+
 
 
     val _currentWeatherStateFlow: MutableStateFlow<AsyncWeatherInfoState>
@@ -487,6 +491,15 @@ class GisMemoRepository(databaseDriverFactory: DatabaseDriverFactory) {
 
     fun insertCurrentLocation(it:LatLngAlt){
         gisMemoDao.insertCurrentLocation(it)
+    }
+
+    @Throws(Exception::class)
+    suspend fun getWeatherInfo():String{
+        return if (gisMemoDao.currentWeather != null) {
+            gisMemoDao.currentWeather.description
+        }else {
+            "This message is produced by the repository."
+        }
     }
 
     suspend fun getWeatherData(
