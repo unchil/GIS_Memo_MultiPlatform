@@ -31,3 +31,8 @@ struct WeatherView: View {
     
 }
 
+struct WeatherView_Previews: PreviewProvider {
+    static var previews: some View {
+        WeatherView(viewModel: .init(repository: IOSPlatform().getRepository(context: nil)))
+    }
+}

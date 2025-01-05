@@ -39,7 +39,6 @@ class MainViewModel: ObservableObject {
              }catch{
                  self.weather = .error(error.localizedDescription)
              }
-             
          }
     }
     

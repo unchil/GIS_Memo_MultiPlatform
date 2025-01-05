@@ -23,35 +23,23 @@ class Collector<T> : Kotlinx_coroutines_coreFlowCollector {
 
 }
 
-/*
-class PagingDataCollector_MEMO_TBL<MEMO_TBL>: Kotlinx_coroutines_coreFlowCollector {
 
 
-     let pagingCollectionViewController: PagingCollectionViewController<MEMO_TBL>
-     
-     init(
-           pagingCollectionViewController: PagingCollectionViewController<MEMO_TBL>
-     ){
-        
-         self.pagingCollectionViewController = pagingCollectionViewController
-     }
-     
-     func emit(value: Any?, completionHandler: @escaping (Error?) -> Void) {
-         
-       let pagingData = value as! Paging_commonPagingData<MEMO_TBL>
+class MemoPagingDataCollector: Kotlinx_coroutines_coreFlowCollector {
 
-       DispatchQueue.main.async {
-         self.pagingCollectionViewController.submitData(
-            pagingData: pagingData, 
-            completionHandler: {_ in
-                print("completed PagingDataCollector")
-            }
-         )
-       }
-     }
+    private let pagingCollectionViewController: Paging_runtime_uikitPagingCollectionViewController<MEMO_TBL>
+
+  init(pagingCollectionViewController: Paging_runtime_uikitPagingCollectionViewController<MEMO_TBL>) {
+    self.pagingCollectionViewController = pagingCollectionViewController
+  }
+
+  func emit(value: Any?, completionHandler: @escaping (Error?) -> Void) {
+    let pagingData = value as! Paging_commonPagingData<MEMO_TBL>
+    DispatchQueue.main.async {
+      self.pagingCollectionViewController.submitData(pagingData: pagingData, completionHandler: {_ in print("completed MemoPagingDataCollector")})
+    }
+  }
 }
-
- */
 
 /*
  class ViewModelCollector: Kotlinx_coroutines_coreFlowCollector {

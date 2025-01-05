@@ -1,6 +1,7 @@
 import SwiftUI
 import shared
 
+
 struct ContentView: View {
 	
     let msg = Greeting().greet()
@@ -9,9 +10,9 @@ struct ContentView: View {
 	}
 }
 
-#Preview {
-    ContentView()
+
+struct Content_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
-
-
-
