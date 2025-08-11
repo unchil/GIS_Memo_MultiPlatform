@@ -11,16 +11,6 @@ A Kotlin Multiplatform sample application that allows you to save memos with GIS
 | **Networking** | Ktor |
 | **Image Loading**| Coil 3 |
 
-## Screenshots
-
-| Memo Map | Memo Details |
-|---|---|
-| <img src="androidApp/src/main/res/drawable/memomap.jpg" width="300"> | <img src="androidApp/src/main/res/drawable/snapshot.jpeg" width="300"> |
-
-| Camera & Video | Speech-to-Text | Weather |
-|---|---|---|
-| <img src="androidApp/src/main/res/drawable/camera.jpg" width="300"> | <img src="androidApp/src/main/res/drawable/speechrecognizer.jpg" width="300"> | <img src="androidApp/src/main/res/drawable/weathercontent.jpg" width="300"> |
-
 
 ## Features
 
